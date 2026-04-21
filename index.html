@@ -22,13 +22,17 @@
 
   <!-- Meta refresh redirect to root path for non-JS browsers -->
   <noscript>
-    <meta http-equiv="refresh" content="0;url=/">
+    <meta http-equiv="refresh" content="0;url=/pages/index.html">
   </noscript>
+  <script>
+    // Ensure local/dev visits to "/" land on the real homepage file.
+    window.location.replace('/pages/index.html');
+  </script>
 </head>
 
 <body>
   <noscript>
-    <p>Please enable JavaScript to view this website. <a href="/">Click here to go to the homepage</a>.</p>
+    <p>Please enable JavaScript to view this website. <a href="/pages/index.html">Click here to go to the homepage</a>.</p>
   </noscript>
 </body>
 

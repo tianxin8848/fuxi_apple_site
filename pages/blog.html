@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuxi Tech Blog | Threat Research & Insights</title>
-    <!-- Tailwind CSS v3 + Font Awesome (for icons) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS v3 + Font Awesome (for icons) - Local versions -->
+    <link rel="stylesheet" href="../css/vendor/tailwind.css">
     <!-- Custom Tailwind config override for modern dark/cyber theme -->
     <script>
         tailwind.config = {
@@ -39,8 +39,8 @@
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/vendor/inter-local.css">
+    <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
     <style>
         /* custom utility for smooth scroll & video overlay */
         html {
@@ -101,7 +101,7 @@
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300 py-3">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center">
             <a href="/" class="flex items-center gap-2">
-                <img src="../img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
+                <img src="../img/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
             </a>
             <div class="hidden md:flex items-center space-x-7">
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
@@ -158,7 +158,7 @@
                 <!-- Blog Card 1: Threat Research -->
                 <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden blog-card animate-on-scroll">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="../img/cyber-security-concept-digital-art_23-2151637760.avif" alt="AI-Driven Threat Hunting" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="../img/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="AI-Driven Threat Hunting" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute top-4 left-4">
                             <span class="category-badge bg-blue-500/20 text-blue-400 border border-blue-500/30">Threat Research</span>
                         </div>
@@ -177,7 +177,7 @@
                 <!-- Blog Card 2: Events -->
                 <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.1s;">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="../img/Cover-Cyber-Security-1-1600x600.jpg" alt="Fuxi at CyberSec 2026" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="../img/img/Cover-Cyber-Security-1-1600x600.jpg" alt="Fuxi at CyberSec 2026" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute top-4 left-4">
                             <span class="category-badge bg-green-500/20 text-green-400 border border-green-500/30">Events</span>
                         </div>
@@ -196,7 +196,7 @@
                 <!-- Blog Card 3: Whitepaper -->
                 <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.2s;">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="../img/960x0.jpg" alt="The Portable SOC Guide" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="../img/img/960x0.jpg" alt="The Portable SOC Guide" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute top-4 left-4">
                             <span class="category-badge bg-purple-500/20 text-purple-400 border border-purple-500/30">Whitepaper</span>
                         </div>
@@ -215,7 +215,7 @@
                 <!-- Blog Card 4: Technology -->
                 <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.3s;">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="../img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="The Future of AI in Cyber Defense" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="../img/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="The Future of AI in Cyber Defense" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute top-4 left-4">
                             <span class="category-badge bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">Technology</span>
                         </div>
@@ -234,7 +234,7 @@
                 <!-- Blog Card 5: Education -->
                 <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.4s;">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="../img/computer-science-degree.jpg" alt="Closing the Skills Gap" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="../img/img/computer-science-degree.jpg" alt="Closing the Skills Gap" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute top-4 left-4">
                             <span class="category-badge bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Education</span>
                         </div>
@@ -253,7 +253,7 @@
                 <!-- Blog Card 6: Threat Alert -->
                 <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.5s;">
                     <div class="relative h-56 overflow-hidden">
-                        <img src="../img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="2026 Ransomware Trends" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="../img/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="2026 Ransomware Trends" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute top-4 left-4">
                             <span class="category-badge bg-red-500/20 text-red-400 border border-red-500/30">Threat Alert</span>
                         </div>
@@ -293,7 +293,7 @@
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-2">
-                        <img src="../img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
+                        <img src="../img/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
                     </div>
                     <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
                     <div class="flex space-x-4 mt-5">
