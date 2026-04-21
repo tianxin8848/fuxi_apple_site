@@ -148,6 +148,23 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px -5px rgba(255,0,0,0.4);
         }
+        .nav-cta-apple {
+            border-radius: 9999px;
+            min-height: 34px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            background: #ff1a1a;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
+            line-height: 1;
+            transition: background-color 0.22s ease;
+        }
+        .nav-cta-apple:hover {
+            background: #ff3030;
+        }
         .nav-link-trigger {
             position: relative;
         }
@@ -374,11 +391,15 @@
                 <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/contact" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Contact</a>
-                <a href="/" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Contact Us</a>
+
             </div>
-            <button class="md:hidden text-white text-2xl focus:outline-none" id="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
+                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
+                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
         </div>
         <!-- mobile menu (simple) -->
         <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
