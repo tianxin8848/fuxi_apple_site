@@ -121,4 +121,109 @@ vercel --prod
 3. 查看 "Build Logs" 确保构建成功
 
 #### 测试网站
-1. 首页：`https://tasei.asia/` -
+1. 首页：`https://tasei.asia/` - 应该显示首页
+2. 其他页面：
+   - `https://tasei.asia/products`
+   - `https://tasei.asia/solutions`
+   - `https://tasei.asia/blog`
+   - `https://tasei.asia/company`
+   - `https://tasei.asia/contact`
+
+## 故障排除
+
+### 如果仍然出现 404 错误：
+
+#### 1. 检查构建输出
+```bash
+# 本地构建检查
+npm run build
+ls -la dist/
+find dist -name "*.html"
+```
+
+应该看到：
+```
+dist/
+├── 404.html
+├── css/
+├── img/
+├── js/
+└── pages/
+    ├── index.html
+    ├── products.html
+    ├── solutions.html
+    ├── blog.html
+    ├── company.html
+    └── contact.html
+```
+
+#### 2. 检查 Vercel 构建日志
+- 确保 `npm run build` 成功执行
+- 检查是否有错误或警告
+
+#### 3. 检查路由配置
+- 确保 `vercel.json` 文件在项目根目录
+- 确保配置语法正确（JSON 格式）
+
+#### 4. 测试重写规则
+可以使用浏览器开发者工具检查：
+1. 打开 `https://tasei.asia/`
+2. 查看网络请求
+3. 检查实际请求的 URL
+
+### 常见错误解决方案：
+
+#### 错误 1：构建失败
+```
+npm ERR! missing script: build
+```
+解决方案：确保 `package.json` 中有 `build` 脚本
+
+#### 错误 2：文件未找到
+```
+404: NOT_FOUND
+```
+解决方案：检查 `vercel.json` 中的重写规则路径是否正确
+
+#### 错误 3：权限问题
+解决方案：确保所有文件有正确的读写权限
+
+## 文件清单
+
+确保以下文件已提交：
+
+1. `vercel.json` - Vercel 配置文件
+2. `webpack.config.prod.js` - 修复后的构建配置
+3. `pages/*.html` - 修复链接后的页面文件
+4. `fix_index_links.sh` - 修复脚本（可选）
+5. `VERCEL_DEPLOYMENT.md` - 部署指南（可选）
+
+## 本地测试
+
+在部署前本地测试：
+```bash
+# 构建项目
+npm run build
+
+# 启动服务器
+npm run serve
+
+# 访问测试
+curl -I http://localhost:3000/
+# 应该返回 200 OK
+```
+
+## 技术支持
+
+如果问题仍然存在，请提供：
+1. Vercel 构建日志截图
+2. `dist/` 目录结构
+3. 浏览器控制台错误信息
+4. 网络请求截图
+
+## 联系信息
+
+- 项目路径：`/Users/xi/WebstormProjects/apr21-website`
+- 部署域名：`https://tasei.asia/`
+- 错误代码：`NOT_FOUND`
+- 错误 ID：`hkg1::85p5t-1776748930141-de504f6c8971`
