@@ -1,0 +1,56 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/dist/$1"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/dist/pages/index.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/"
+    },
+    {
+      "source": "/products",
+      "destination": "/dist/pages/products.html"
+    },
+    {
+      "source": "/solutions",
+      "destination": "/dist/pages/solutions.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/dist/pages/blog.html"
+    },
+    {
+      "source": "/company",
+      "destination": "/dist/pages/company.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/dist/pages/contact.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/"
+    },
+    {
+      "source": "/pages/([^/.]+)\\.html",
+      "destination": "/$1"
+    }
+  ]
+}
