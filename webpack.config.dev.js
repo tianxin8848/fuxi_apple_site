@@ -9,11 +9,11 @@ module.exports = merge(common, {
     hot: true,
     open: true,
     static: [
-      './',           // 根目录
-      './pages',      // 页面目录
-      './img',        // 图片目录
-      './css',        // CSS目录
-      './js'          // JS目录
+      { directory: './', publicPath: '/' },                 // 根目录
+      { directory: './pages', publicPath: '/pages' },       // 页面目录
+      { directory: './img/img', publicPath: '/img' },       // 统一图片URL前缀
+      { directory: './css', publicPath: '/css' },           // CSS目录
+      { directory: './js', publicPath: '/js' }              // JS目录
     ],
     watchFiles: ['pages/**/*.html', 'img/**/*', 'css/**/*', 'js/**/*'],
     // 使用自定义中间件处理无后缀URL（在静态文件服务之前）
