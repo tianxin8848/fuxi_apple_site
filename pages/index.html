@@ -112,6 +112,16 @@
         body {
             background-color: #050505;
             color: #ffffff; /* Fallback text color when utility CSS fails */
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        section {
+            content-visibility: auto;
+            contain-intrinsic-size: 900px;
+        }
+        section:first-of-type {
+            content-visibility: visible;
+            contain-intrinsic-size: auto;
         }
         .video-overlay-gradient {
             background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.65), rgba(0,0,0,0.4));
@@ -148,12 +158,65 @@
         }
         .animate-on-scroll {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            filter: blur(8px);
+            transform: translate3d(0, 30px, 0) scale(0.985);
+            transition:
+                opacity 950ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
+                filter 950ms cubic-bezier(0.22, 1, 0.36, 1);
+            transition-delay: var(--reveal-delay, 0ms);
+            will-change: transform, opacity, filter;
         }
         .animate-on-scroll.visible {
             opacity: 1;
-            transform: translateY(0);
+            filter: blur(0);
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+        .text-reveal {
+            opacity: 0;
+            transform: translate3d(0, 18px, 0);
+            filter: blur(8px);
+            transition:
+                opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+                filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+            transition-delay: var(--text-delay, 0ms);
+            will-change: transform, opacity, filter;
+        }
+        .text-reveal.visible {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            filter: blur(0);
+        }
+        .text-gradient-reveal {
+            background-image: linear-gradient(90deg, #ffffff 0%, #ff7a7a 45%, #ff0000 75%, #ffffff 100%);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGradientShift 2.4s ease-out both;
+        }
+        @keyframes textGradientShift {
+            from {
+                background-position: 150% 0;
+            }
+            to {
+                background-position: 0 0;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            .animate-on-scroll,
+            .text-reveal,
+            .text-gradient-reveal {
+                animation: none !important;
+                transition: none !important;
+                opacity: 1 !important;
+                filter: none !important;
+                transform: none !important;
+            }
         }
     </style>
 </head>
@@ -199,14 +262,15 @@
         <div class="relative z-20 text-center px-5 max-w-4xl mx-auto">
             <div class="animate-[fadeUp_0.8s_ease-out]">
                 <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">
-                    Explore the World's First <span class="text-cyber-red">Portable SIEM Platform</span>
+                    <span class="text-reveal" style="--text-delay: 50ms;">Explore the World's First</span>
+                    <span class="text-cyber-red text-reveal text-gradient-reveal block" style="--text-delay: 220ms;">Portable SIEM Platform</span>
                 </h1>
-                <p class="text-base md:text-lg text-gray-200 mt-6 max-w-2xl mx-auto leading-relaxed">
+                <p class="text-base md:text-lg text-gray-200 mt-6 max-w-2xl mx-auto leading-relaxed text-reveal" style="--text-delay: 380ms;">
                     A compact, lightweight, all-in-one security information and event management solution
                     designed to deliver real-time threat detection, log analysis, and incident response
                     capabilities anywhere, anytime.
                 </p>
-                <div class="flex flex-wrap justify-center gap-4 mt-8">
+                <div class="flex flex-wrap justify-center gap-4 mt-8 text-reveal" style="--text-delay: 520ms;">
                     <a href="/" class="bg-cyber-red hover:bg-red-700 text-white px-7 py-3 rounded-md font-semibold text-base transition-all shadow-md btn-primary">Talk to an Expert</a>
                     <a href="/" class="border border-white/60 hover:bg-white/10 text-white px-7 py-3 rounded-md font-semibold transition">Learn More</a>
                 </div>
@@ -443,6 +507,12 @@
 
         // scroll animation using intersection observer (pure vanilla)
         const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        const textRevealElements = document.querySelectorAll('.text-reveal');
+        animatedElements.forEach((el, index) => {
+            if (!el.style.getPropertyValue('--reveal-delay')) {
+                el.style.setProperty('--reveal-delay', `${Math.min(index * 70, 320)}ms`);
+            }
+        });
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if(entry.isIntersecting) {
@@ -457,8 +527,28 @@
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.querySelector('video');
             if(video) {
+                video.preload = 'metadata';
                 video.play().catch(e => console.log("autoplay blocked:", e));
             }
+
+            // progressive image loading hints (better smoothness while scrolling)
+            const images = document.querySelectorAll('img');
+            images.forEach((img, index) => {
+                if (index < 2) {
+                    img.loading = 'eager';
+                    img.fetchPriority = 'high';
+                } else {
+                    img.loading = 'lazy';
+                    img.fetchPriority = 'auto';
+                }
+                img.decoding = 'async';
+            });
+
+            // reveal hero text gradually on first paint
+            requestAnimationFrame(() => {
+                textRevealElements.forEach(el => el.classList.add('visible'));
+            });
+
             // manually trigger visible for any element already in view (just in case)
             animatedElements.forEach(el => {
                 const rect = el.getBoundingClientRect();
