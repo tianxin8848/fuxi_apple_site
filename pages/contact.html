@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Get in Touch</title>
+    <!-- Tailwind CSS v3 + Font Awesome (for icons) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind config override for modern dark/cyber theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-red': '#ff0000',
+                        'dark-bg': '#050505',
+                        'card-bg': '#0a0a0a',
+                        'muted-text': '#b0b0b0',
+                        'border-glow': 'rgba(255, 0, 0, 0.2)',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'Segoe UI', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.8s ease-out forwards',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { textShadow: '0 0 5px rgba(255,0,0,0.3)' },
+                            '50%': { textShadow: '0 0 20px rgba(255,0,0,0.7)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* custom utility for smooth scroll & video overlay */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #050505;
+        }
+        .nav-blur {
+            backdrop-filter: blur(12px);
+            background-color: rgba(5, 5, 5, 0.85);
+            border-bottom: 1px solid rgba(255,0,0,0.2);
+        }
+        .btn-primary {
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(255,0,0,0.4);
+        }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .contact-card {
+            transition: all 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(255, 0, 0, 0.2);
+        }
+        .form-input {
+            background-color: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+        }
+        .form-input.is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important;
+        }
+        .map-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(255,0,0,0.05));
+            border: 1px solid rgba(255,0,0,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+
+    <!-- Navigation (fixed, glassmorphic) -->
+    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300 py-3">
+        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center">
+            <a href="../pages/index.html" class="flex items-center gap-2">
+                <img src="../img/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
+            </a>
+            <div class="hidden md:flex items-center space-x-7">
+                <a href="../pages/index.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
+                <a href="../pages/products.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Products</a>
+                <a href="../pages/solutions.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Solutions</a>
+                <a href="../pages/blog.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
+                <a href="../pages/company.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
+                <a href="../pages/contact.html" class="text-sm font-medium text-cyber-red transition">Contact</a>
+                <a href="#" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Talk to an Expert</a>
+            </div>
+            <button class="md:hidden text-white text-2xl focus:outline-none" id="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- mobile menu (simple) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
+            <a href="../pages/index.html" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
+            <a href="../pages/products.html" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
+            <a href="../pages/solutions.html" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
+            <a href="../pages/blog.html" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
+            <a href="../pages/company.html" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
+            <a href="../pages/contact.html" class="py-2 text-cyber-red">Contact</a>
+            <a href="#" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Talk to an Expert</a>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="pt-32 pb-16 px-5 bg-gradient-to-b from-dark-bg to-black">
+        <div class="container mx-auto text-center">
+            <div class="animate-[fadeUp_0.8s_ease-out]">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                    GET IN <span class="text-cyber-red">TOUCH</span>
+                </h1>
+                <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
+                    Have questions about our products or solutions? We're here to help.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Three Column Layout -->
+    <section class="py-16 px-5">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Google Maps -->
+                <div class="lg:col-span-1 animate-on-scroll">
+                    <div class="map-container h-full">
+                        <!-- Google Maps Embed -->
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.107674715121!2d113.939774315443!3d22.535485985185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3403f5b3b3b3b3b3%3A0x3b3b3b3b3b3b3b3b!2sShenzhen%2C%20Guangdong%2C%20China!5e0!3m2!1sen!2sus!4v1641234567890!5m2!1sen!2sus" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0; min-height: 400px;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Middle Column: Contact Information -->
+                <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="bg-card-bg border border-gray-800 rounded-xl p-8 h-full contact-card">
+                        <h2 class="text-2xl font-bold mb-8">Contact Information</h2>
+                        
+                        <!-- Phone -->
+                        <div class="flex items-start mb-8">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone text-cyber-red text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold text-lg">Phone</h3>
+                                <p class="text-muted-text mt-1">+852 3611 9814</p>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex items-start mb-8">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope text-cyber-red text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold text-lg">Email</h3>
+                                <p class="text-muted-text mt-1">enquiry@alpacian.com</p>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="flex items-start">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt text-cyber-red text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold text-lg">Location</h3>
+                                <p class="text-muted-text mt-1">深圳市南山区前海梦工厂一期6栋308</p>
+                                <p class="text-muted-text text-sm mt-1">Shenzhen, Guangdong, China</p>
+                            </div>
+                        </div>
+
+                        <!-- Business Hours -->
+                        <div class="mt-10 pt-8 border-t border-gray-800">
+                            <h3 class="font-semibold text-lg mb-4">Business Hours</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-muted-text">Monday - Friday</span>
+                                    <span class="text-white">9:00 AM - 6:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-text">Saturday</span>
+                                    <span class="text-white">10:00 AM - 4:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-muted-text">Sunday</span>
+                                    <span class="text-white">Closed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Contact Form -->
+                <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="bg-card-bg border border-gray-800 rounded-xl p-8 h-full contact-card">
+                        <h2 class="text-2xl font-bold mb-8">Send us a Message</h2>
+                        
+                        <form id="contactForm" class="space-y-6">
+                            <!-- Name -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium mb-2">Name *</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                    placeholder="Your full name"
+                                    required>
+                                <div class="text-red-500 text-sm mt-1 hidden" id="nameError">Please enter your name</div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div>
+                                <label for="phone" class="block text-sm font-medium mb-2">Phone Number *</label>
+                                <input 
+                                    type="tel" 
+                                    id="phone" 
+                                    name="phone" 
+                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                    placeholder="Your phone number"
+                                    required>
+                                <div class="text-red-500 text-sm mt-1 hidden" id="phoneError">Please enter a valid phone number</div>
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium mb-2">Email *</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                    placeholder="Your email address"
+                                    required>
+                                <div class="text-red-500 text-sm mt-1 hidden" id="emailError">Please enter a valid email address</div>
+                            </div>
+
+                            <!-- Subject -->
+                            <div>
+                                <label for="subject" class="block text-sm font-medium mb-2">Subject *</label>
+                                <input 
+                                    type="text" 
+                                    id="subject" 
+                                    name="subject" 
+                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                    placeholder="Message subject"
+                                    required>
+                                <div class="text-red-500 text-sm mt-1 hidden" id="subjectError">Please enter a subject</div>
+                            </div>
+
+                            <!-- Message -->
+                            <div>
+                                <label for="message" class="block text-sm font-medium mb-2">Message *</label>
+                                <textarea 
+                                    id="message" 
+                                    name="message" 
+                                    rows="4" 
+                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                    placeholder="Your message..."
+                                    required></textarea>
+                                <div class="text-red-500 text-sm mt-1 hidden" id="messageError">Please enter your message</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button 
+                                type="submit" 
+                                id="submitBtn"
+                                class="w-full bg-cyber-red hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all btn-primary">
+                                Send Message
+                            </button>
+
+                            <!-- Form Feedback -->
+                            <div id="formFeedback" class="mt-4"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Tailwind only) -->
+    <footer class="bg-black/90 border-t border-red-900/30 py-12 px-5">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2">
+                        <img src="../img/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
+                    </div>
+                    <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
+                    <div class="flex space-x-4 mt-5">
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white">Products</h5>
+                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Fuxi SIEM</a></li>
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Endpoint Security</a></li>
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Network Security</a></li>
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Cloud Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white">Solutions</h5>
+                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Ransomware Defense</a></li>
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Zero Trust</a></li>
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">SOC Modernization</a></li>
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Compliance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white">Company</h5>
+                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                        <li><a href="../pages/company.html" class="hover:text-cyber-red">About Us</a></li>
+                        <li><a href="../pages/company.html" class="hover:text-cyber-red">Careers</a></li>
+                        <li><a href="../pages/blog.html" class="hover:text-cyber-red">News</a></li>
+                        <li><a href="../pages/contact.html" class="hover:text-cyber-red">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-8 border-gray-800">
+            <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
+                <p>© 2026 Fuxi Technology. All rights reserved.</p>
+                <div class="flex gap-6 mt-3 md:mt-0">
+                    <a href="#" class="hover:text-cyber-red">Privacy Policy</a>
+                    <a href="#" class="hover:text-cyber-red">Terms of Service</a>
+                    <a href="#" class="hover:text-cyber-red">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple Intersection Observer for scroll animations (lightweight) -->
+    <script>
+        // mobile menu toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if(menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+        
+        // scroll animation using intersection observer (pure vanilla)
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        animatedElements.forEach(el => observer.observe(el));
+        
+        // manually trigger visible for any element already in view (just in case)
+        document.addEventListener('DOMContentLoaded', () => {
+            animatedElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if(rect.top < window.innerHeight - 100) {
+                    el.classList.add('visible');
+                    observer.unobserve(el);
+                }
+            });
+        });
+
+        // Contact Form Validation and Submission
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formFeedback = document.getElementById('formFeedback');
+        
+        if(contactForm && submitBtn && formFeedback) {
+            // Form validation
+            function validateField(field, errorElement) {
+                const value = field.value.trim();
+                const isValid = value !== '';
+                
+                if(!isValid) {
+                    field.classList.add('is-invalid');
+                    errorElement.classList.remove('hidden');
+                    return false;
+                } else {
+                    field.classList.remove('is-invalid');
+                    errorElement.classList.add('hidden');
+                    return true;
+                }
+            }
+            
+            // Email validation
+            function validateEmail(email, errorElement) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const isValid = emailRegex.test(email.value.trim());
+                
+                if(!isValid) {
+                    email.classList.add('is-invalid');
+                    errorElement.classList.remove('hidden');
+                    return false;
+                } else {
+                    email.classList.remove('is-invalid');
+                    errorElement.classList.add('hidden');
+                    return true;
+                }
+            }
+            
+            // Phone validation (basic)
+            function validatePhone(phone, errorElement) {
+                const phoneRegex = /^[\d\s\-\+\(\)]{10,}$/;
+                const isValid = phoneRegex.test(phone.value.trim());
+                
+                if(!isValid) {
+                    phone.classList.add('is-invalid');
+                    errorElement.classList.remove('hidden');
+                    return false;
+                } else {
+                    phone.classList.remove('is-invalid');
+                    errorElement.classList.add('hidden');
+                    return true;
+                }
+            }
+            
+            // Form submission
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Get form elements
+                const nameField = document.getElementById('name');
+                const phoneField = document.getElementById('phone');
+                const emailField = document.getElementById('email');
+                const subjectField = document.getElementById('subject');
+                const messageField = document.getElementById('message');
+                
+                const nameError = document.getElementById('nameError');
+                const phoneError = document.getElementById('phoneError');
+                const emailError = document.getElementById('emailError');
+                const subjectError = document.getElementById('subjectError');
+                const messageError = document.getElementById('messageError');
+                
+                // Validate all fields
+                const isNameValid = validateField(nameField, nameError);
+                const isPhoneValid = validatePhone(phoneField, phoneError);
+                const isEmailValid = validateEmail(emailField, emailError);
+                const isSubjectValid = validateField(subjectField, subjectError);
+                const isMessageValid = validateField(messageField, messageError);
+                
+                if(isNameValid && isPhoneValid && isEmailValid && isSubjectValid && isMessageValid) {
+                    // Show sending state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Sending...';
+                    formFeedback.innerHTML = '<div class="text-blue-400 text-sm">Sending...</div>';
+                    
+                    try {
+                        // Simulate API call (replace with actual backend endpoint)
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        // Show success message
+                        formFeedback.innerHTML = '<div class="text-green-400 text-sm">Message sent successfully! Thank you.</div>';
+                        contactForm.reset();
+                        
+                        // Reset button after 3 seconds
+                        setTimeout(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = 'Send Message';
+                            formFeedback.innerHTML = '';
+                        }, 3000);
+                        
+                    } catch (error) {
+                        // Show error message
+                        formFeedback.innerHTML = '<div class="text-red-400 text-sm">Unable to send message. Please try again later.</div>';
+                        
+                        // Reset button
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Send Message';
+                        
+                        // Check for connection errors
+                        console.error('Form submission error:', error);
+                        if(error.message && error.message.includes('network')) {
+                            formFeedback.innerHTML = '<div class="text-red-400 text-sm">Cannot connect to the server. → Is the backend running on port 8000? → Check console for details (F12 → Console)</div>';
+                        }
+                    }
+                } else {
+                    // Show validation error
+                    formFeedback.innerHTML = '<div class="text-red-400 text-sm">Please fill all required fields correctly.</div>';
+                }
+            });
+            
+            // Real-time validation
+            const fields = ['name', 'phone', 'email', 'subject', 'message'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                
+                if(field && errorElement) {
+                    field.addEventListener('blur', () => {
+                        if(fieldId === 'email') {
+                            validateEmail(field, errorElement);
+                        } else if(fieldId === 'phone') {
+                            validatePhone(field, errorElement);
+                        } else {
+                            validateField(field, errorElement);
+                        }
+                    });
+                    
+                    field.addEventListener('input', () => {
+                        if(field.classList.contains('is-invalid')) {
+                            field.classList.remove('is-invalid');
+                            errorElement.classList.add('hidden');
+                            formFeedback.innerHTML = '';
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

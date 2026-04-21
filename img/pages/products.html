@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | Fuxi SIEM Platform</title>
+    <!-- Tailwind CSS v3 + Font Awesome (for icons) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Tailwind config override for modern dark/cyber theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-red': '#ff0000',
+                        'dark-bg': '#050505',
+                        'card-bg': '#0a0a0a',
+                        'muted-text': '#b0b0b0',
+                        'border-glow': 'rgba(255, 0, 0, 0.2)',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'Segoe UI', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.8s ease-out forwards',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { textShadow: '0 0 5px rgba(255,0,0,0.3)' },
+                            '50%': { textShadow: '0 0 20px rgba(255,0,0,0.7)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* custom utility for smooth scroll & video overlay */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #050505;
+        }
+        .nav-blur {
+            backdrop-filter: blur(12px);
+            background-color: rgba(5, 5, 5, 0.85);
+            border-bottom: 1px solid rgba(255,0,0,0.2);
+        }
+        .btn-primary {
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(255,0,0,0.4);
+        }
+        .read-more-arrow {
+            transition: transform 0.2s ease;
+        }
+        .group:hover .read-more-arrow {
+            transform: translateX(5px);
+        }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(255, 0, 0, 0.2);
+        }
+        .image-hover {
+            transition: transform 0.5s ease;
+        }
+        .image-hover:hover {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body class="font-sans text-white">
+
+    <!-- Navigation (fixed, glassmorphic) -->
+    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300 py-3">
+        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center">
+            <a href="../pages/index.html" class="flex items-center gap-2">
+                <img src="../static/assets/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
+            </a>
+            <div class="hidden md:flex items-center space-x-7">
+                <a href="../pages/index.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
+                <a href="../pages/products.html" class="text-sm font-medium text-cyber-red transition">Products</a>
+                <a href="../static/solutions.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Solutions</a>
+                <a href="../pages/blog.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
+                <a href="../static/company.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
+                <a href="../static/contact.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Contact</a>
+                <a href="#" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Talk to an Expert</a>
+            </div>
+            <button class="md:hidden text-white text-2xl focus:outline-none" id="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- mobile menu (simple) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
+            <a href="../pages/index.html" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
+            <a href="../pages/products.html" class="py-2 text-cyber-red">Products</a>
+            <a href="../static/solutions.html" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
+            <a href="../pages/blog.html" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
+            <a href="../static/company.html" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
+            <a href="../static/contact.html" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
+            <a href="#" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Talk to an Expert</a>
+        </div>
+    </nav>
+
+    <!-- Product Introduction -->
+    <section class="pt-32 pb-20 px-5 bg-gradient-to-b from-dark-bg to-black">
+        <div class="container mx-auto text-center">
+            <div class="animate-[fadeUp_0.8s_ease-out]">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                    Fuxi <span class="text-cyber-red">SIEM Platform</span>
+                </h1>
+                <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
+                    A portable, AI-enhanced SIEM that unifies log collection, correlation, and incident response for modern enterprises.
+                </p>
+                <div class="mt-10">
+                    <a href="#" class="inline-block bg-cyber-red hover:bg-red-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-all shadow-md btn-primary">
+                        Talk to an expert
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid Section -->
+    <section class="py-16 px-5 bg-dark-bg">
+        <div class="container mx-auto">
+            <div class="text-center mb-14 animate-on-scroll">
+                <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Explore Fuxi <span class="text-cyber-red">SIEM Capabilities</span></h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature Card 1 -->
+                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden feature-card animate-on-scroll">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="../static/assets/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="Endpoint & Email Security" class="w-full h-full object-cover image-hover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold">Endpoint & Email Security</h3>
+                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                            Correlate EDR, email, and network telemetry to stop ransomware and phishing in one place.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature Card 2 -->
+                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="../static/assets/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="Agentic SIEM Analytics" class="w-full h-full object-cover image-hover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold">Agentic SIEM Analytics</h3>
+                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                            Use AI-assisted correlation and playbooks to triage alerts and drive incident workflows.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.2s;">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="../static/assets/img/Advantages-and-Disadvantages-of-LAN-1024x576.jpg" alt="Secure LAN Edge Visibility" class="w-full h-full object-cover image-hover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold">Secure LAN Edge Visibility</h3>
+                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                            Combine switch, Wi‑Fi, and firewall logs to detect lateral movement across your campus and branches.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Left, Text Right -->
+    <section class="py-16 px-5 bg-black/60">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2 animate-on-scroll">
+                    <div class="overflow-hidden rounded-2xl border border-gray-800">
+                        <img src="../static/assets/img/computer-science-degree.jpg" alt="Built for Security Teams" class="w-full h-auto object-cover image-hover">
+                    </div>
+                </div>
+                <div class="lg:w-1/2 animate-on-scroll" style="transition-delay: 0.2s;">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Built for Security Teams</h2>
+                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                        Deploy Fuxi SIEM at the edge, in labs, or in the SOC to run full investigations without depending on fragile remote connectivity.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Text Left, Image Right -->
+    <section class="py-16 px-5 bg-dark-bg">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-12">
+                <div class="lg:w-1/2 animate-on-scroll">
+                    <div class="overflow-hidden rounded-2xl border border-gray-800">
+                        <img src="../static/assets/img/screenshot-event.png" alt="Designed for China's Enterprises" class="w-full h-auto object-cover image-hover">
+                    </div>
+                </div>
+                <div class="lg:w-1/2 animate-on-scroll" style="transition-delay: 0.2s;">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Designed for China's Enterprises</h2>
+                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                        Support local compliance, data residency, and multi-branch architectures while keeping telemetry and alerts under your control.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Tailwind only) -->
+    <footer class="bg-black/90 border-t border-red-900/30 py-12 px-5">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2">
+                        <img src="../static/assets/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
+                    </div>
+                    <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
+                    <div class="flex space-x-4 mt-5">
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white">Products</h5>
+                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Fuxi SIEM</a></li>
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Endpoint Security</a></li>
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Network Security</a></li>
+                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Cloud Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white">Solutions</h5>
+                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Ransomware Defense</a></li>
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Zero Trust</a></li>
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">SOC Modernization</a></li>
+                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Compliance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold text-white">Company</h5>
+                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                        <li><a href="../pages/company.html" class="hover:text-cyber-red">About Us</a></li>
+                        <li><a href="../pages/company.html" class="hover:text-cyber-red">Careers</a></li>
+                        <li><a href="../pages/blog.html" class="hover:text-cyber-red">News</a></li>
+                        <li><a href="../pages/contact.html" class="hover:text-cyber-red">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-8 border-gray-800">
+            <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
+                <p>© 2026 Fuxi Technology. All rights reserved.</p>
+                <div class="flex gap-6 mt-3 md:mt-0">
+                    <a href="#" class="hover:text-cyber-red">Privacy Policy</a>
+                    <a href="#" class="hover:text-cyber-red">Terms of Service</a>
+                    <a href="#" class="hover:text-cyber-red">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple Intersection Observer for scroll animations (lightweight) -->
+    <script>
+        // mobile menu toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if(menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+        
+        // scroll animation using intersection observer (pure vanilla)
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        animatedElements.forEach(el => observer.observe(el));
+        
+        // manually trigger visible for any element already in view (just in case)
+        document.addEventListener('DOMContentLoaded', () => {
+            animatedElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if(rect.top < window.innerHeight - 100) {
+                    el.classList.add('visible');
+                    observer.unobserve(el);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

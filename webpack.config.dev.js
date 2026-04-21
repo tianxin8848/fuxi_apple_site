@@ -8,6 +8,13 @@ module.exports = merge(common, {
     liveReload: true,
     hot: true,
     open: true,
-    static: ['./'],
+    static: [
+      './',           // 根目录
+      './pages',      // 页面目录
+      './img',        // 图片目录
+      './css',        // CSS目录
+      './js'          // JS目录
+    ],
+    watchFiles: ['pages/**/*.html', 'img/**/*', 'css/**/*', 'js/**/*'],
   },
 });
