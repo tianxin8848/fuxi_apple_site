@@ -116,17 +116,17 @@
     <!-- Navigation (fixed, glassmorphic) -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300 py-3">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center">
-            <a href="../pages/index.html" class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2">
                 <img src="../img/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
             </a>
             <div class="hidden md:flex items-center space-x-7">
-                <a href="../pages/index.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
-                <a href="../pages/products.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Products</a>
-                <a href="../pages/solutions.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Solutions</a>
-                <a href="../pages/blog.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
-                <a href="../pages/company.html" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
-                <a href="../pages/contact.html" class="text-sm font-medium text-cyber-red transition">Contact</a>
-                <a href="#" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Talk to an Expert</a>
+                <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
+                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Products</a>
+                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Solutions</a>
+                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
+                <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
+                <a href="/contact" class="text-sm font-medium text-cyber-red transition">Contact</a>
+                <a href="/" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Talk to an Expert</a>
             </div>
             <button class="md:hidden text-white text-2xl focus:outline-none" id="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -134,13 +134,13 @@
         </div>
         <!-- mobile menu (simple) -->
         <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
-            <a href="../pages/index.html" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
-            <a href="../pages/products.html" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
-            <a href="../pages/solutions.html" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
-            <a href="../pages/blog.html" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
-            <a href="../pages/company.html" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
-            <a href="../pages/contact.html" class="py-2 text-cyber-red">Contact</a>
-            <a href="#" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Talk to an Expert</a>
+            <a href="/index" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
+            <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
+            <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
+            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
+            <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
+            <a href="/contact" class="py-2 text-cyber-red">Contact</a>
+            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Talk to an Expert</a>
         </div>
     </nav>
 
@@ -166,13 +166,13 @@
                 <div class="lg:col-span-1 animate-on-scroll">
                     <div class="map-container h-full">
                         <!-- Google Maps Embed -->
-                        <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.107674715121!2d113.939774315443!3d22.535485985185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3403f5b3b3b3b3b3%3A0x3b3b3b3b3b3b3b3b!2sShenzhen%2C%20Guangdong%2C%20China!5e0!3m2!1sen!2sus!4v1641234567890!5m2!1sen!2sus" 
-                            width="100%" 
-                            height="100%" 
-                            style="border:0; min-height: 400px;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.107674715121!2d113.939774315443!3d22.535485985185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3403f5b3b3b3b3b3%3A0x3b3b3b3b3b3b3b3b!2sShenzhen%2C%20Guangdong%2C%20China!5e0!3m2!1sen!2sus!4v1641234567890!5m2!1sen!2sus"
+                            width="100%"
+                            height="100%"
+                            style="border:0; min-height: 400px;"
+                            allowfullscreen=""
+                            loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     </div>
@@ -182,7 +182,7 @@
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.1s;">
                     <div class="bg-card-bg border border-gray-800 rounded-xl p-8 h-full contact-card">
                         <h2 class="text-2xl font-bold mb-8">Contact Information</h2>
-                        
+
                         <!-- Phone -->
                         <div class="flex items-start mb-8">
                             <div class="contact-icon">
@@ -242,16 +242,16 @@
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.2s;">
                     <div class="bg-card-bg border border-gray-800 rounded-xl p-8 h-full contact-card">
                         <h2 class="text-2xl font-bold mb-8">Send us a Message</h2>
-                        
+
                         <form id="contactForm" class="space-y-6">
                             <!-- Name -->
                             <div>
                                 <label for="name" class="block text-sm font-medium mb-2">Name *</label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    name="name" 
-                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    class="w-full px-4 py-3 rounded-lg form-input"
                                     placeholder="Your full name"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="nameError">Please enter your name</div>
@@ -260,11 +260,11 @@
                             <!-- Phone Number -->
                             <div>
                                 <label for="phone" class="block text-sm font-medium mb-2">Phone Number *</label>
-                                <input 
-                                    type="tel" 
-                                    id="phone" 
-                                    name="phone" 
-                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    class="w-full px-4 py-3 rounded-lg form-input"
                                     placeholder="Your phone number"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="phoneError">Please enter a valid phone number</div>
@@ -273,11 +273,11 @@
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium mb-2">Email *</label>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email" 
-                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="w-full px-4 py-3 rounded-lg form-input"
                                     placeholder="Your email address"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="emailError">Please enter a valid email address</div>
@@ -286,11 +286,11 @@
                             <!-- Subject -->
                             <div>
                                 <label for="subject" class="block text-sm font-medium mb-2">Subject *</label>
-                                <input 
-                                    type="text" 
-                                    id="subject" 
-                                    name="subject" 
-                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                <input
+                                    type="text"
+                                    id="subject"
+                                    name="subject"
+                                    class="w-full px-4 py-3 rounded-lg form-input"
                                     placeholder="Message subject"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="subjectError">Please enter a subject</div>
@@ -299,19 +299,19 @@
                             <!-- Message -->
                             <div>
                                 <label for="message" class="block text-sm font-medium mb-2">Message *</label>
-                                <textarea 
-                                    id="message" 
-                                    name="message" 
-                                    rows="4" 
-                                    class="w-full px-4 py-3 rounded-lg form-input" 
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    rows="4"
+                                    class="w-full px-4 py-3 rounded-lg form-input"
                                     placeholder="Your message..."
                                     required></textarea>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="messageError">Please enter your message</div>
                             </div>
 
                             <!-- Submit Button -->
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 id="submitBtn"
                                 class="w-full bg-cyber-red hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all btn-primary">
                                 Send Message
@@ -336,37 +336,37 @@
                     </div>
                     <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
                     <div class="flex space-x-4 mt-5">
-                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
+                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
+                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
+                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
+                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
                     </div>
                 </div>
                 <div>
                     <h5 class="font-semibold text-white">Products</h5>
                     <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Fuxi SIEM</a></li>
-                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Endpoint Security</a></li>
-                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Network Security</a></li>
-                        <li><a href="../pages/products.html" class="hover:text-cyber-red">Cloud Security</a></li>
+                        <li><a href="/products" class="hover:text-cyber-red">Fuxi SIEM</a></li>
+                        <li><a href="/products" class="hover:text-cyber-red">Endpoint Security</a></li>
+                        <li><a href="/products" class="hover:text-cyber-red">Network Security</a></li>
+                        <li><a href="/products" class="hover:text-cyber-red">Cloud Security</a></li>
                     </ul>
                 </div>
                 <div>
                     <h5 class="font-semibold text-white">Solutions</h5>
                     <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Ransomware Defense</a></li>
-                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Zero Trust</a></li>
-                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">SOC Modernization</a></li>
-                        <li><a href="../pages/solutions.html" class="hover:text-cyber-red">Compliance</a></li>
+                        <li><a href="/solutions" class="hover:text-cyber-red">Ransomware Defense</a></li>
+                        <li><a href="/solutions" class="hover:text-cyber-red">Zero Trust</a></li>
+                        <li><a href="/solutions" class="hover:text-cyber-red">SOC Modernization</a></li>
+                        <li><a href="/solutions" class="hover:text-cyber-red">Compliance</a></li>
                     </ul>
                 </div>
                 <div>
                     <h5 class="font-semibold text-white">Company</h5>
                     <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="../pages/company.html" class="hover:text-cyber-red">About Us</a></li>
-                        <li><a href="../pages/company.html" class="hover:text-cyber-red">Careers</a></li>
-                        <li><a href="../pages/blog.html" class="hover:text-cyber-red">News</a></li>
-                        <li><a href="../pages/contact.html" class="hover:text-cyber-red">Contact</a></li>
+                        <li><a href="/company" class="hover:text-cyber-red">About Us</a></li>
+                        <li><a href="/company" class="hover:text-cyber-red">Careers</a></li>
+                        <li><a href="/blog" class="hover:text-cyber-red">News</a></li>
+                        <li><a href="/contact" class="hover:text-cyber-red">Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -374,9 +374,9 @@
             <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
                 <p>© 2026 Fuxi Technology. All rights reserved.</p>
                 <div class="flex gap-6 mt-3 md:mt-0">
-                    <a href="#" class="hover:text-cyber-red">Privacy Policy</a>
-                    <a href="#" class="hover:text-cyber-red">Terms of Service</a>
-                    <a href="#" class="hover:text-cyber-red">Cookie Policy</a>
+                    <a href="/" class="hover:text-cyber-red">Privacy Policy</a>
+                    <a href="/" class="hover:text-cyber-red">Terms of Service</a>
+                    <a href="/" class="hover:text-cyber-red">Cookie Policy</a>
                 </div>
             </div>
         </div>
@@ -392,7 +392,7 @@
                 mobileMenu.classList.toggle('hidden');
             });
         }
-        
+
         // scroll animation using intersection observer (pure vanilla)
         const animatedElements = document.querySelectorAll('.animate-on-scroll');
         const observer = new IntersectionObserver((entries) => {
@@ -404,7 +404,7 @@
             });
         }, { threshold: 0.15 });
         animatedElements.forEach(el => observer.observe(el));
-        
+
         // manually trigger visible for any element already in view (just in case)
         document.addEventListener('DOMContentLoaded', () => {
             animatedElements.forEach(el => {
@@ -420,13 +420,13 @@
         const contactForm = document.getElementById('contactForm');
         const submitBtn = document.getElementById('submitBtn');
         const formFeedback = document.getElementById('formFeedback');
-        
+
         if(contactForm && submitBtn && formFeedback) {
             // Form validation
             function validateField(field, errorElement) {
                 const value = field.value.trim();
                 const isValid = value !== '';
-                
+
                 if(!isValid) {
                     field.classList.add('is-invalid');
                     errorElement.classList.remove('hidden');
@@ -437,12 +437,12 @@
                     return true;
                 }
             }
-            
+
             // Email validation
             function validateEmail(email, errorElement) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 const isValid = emailRegex.test(email.value.trim());
-                
+
                 if(!isValid) {
                     email.classList.add('is-invalid');
                     errorElement.classList.remove('hidden');
@@ -453,12 +453,12 @@
                     return true;
                 }
             }
-            
+
             // Phone validation (basic)
             function validatePhone(phone, errorElement) {
                 const phoneRegex = /^[\d\s\-\+\(\)]{10,}$/;
                 const isValid = phoneRegex.test(phone.value.trim());
-                
+
                 if(!isValid) {
                     phone.classList.add('is-invalid');
                     errorElement.classList.remove('hidden');
@@ -469,60 +469,60 @@
                     return true;
                 }
             }
-            
+
             // Form submission
             contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 // Get form elements
                 const nameField = document.getElementById('name');
                 const phoneField = document.getElementById('phone');
                 const emailField = document.getElementById('email');
                 const subjectField = document.getElementById('subject');
                 const messageField = document.getElementById('message');
-                
+
                 const nameError = document.getElementById('nameError');
                 const phoneError = document.getElementById('phoneError');
                 const emailError = document.getElementById('emailError');
                 const subjectError = document.getElementById('subjectError');
                 const messageError = document.getElementById('messageError');
-                
+
                 // Validate all fields
                 const isNameValid = validateField(nameField, nameError);
                 const isPhoneValid = validatePhone(phoneField, phoneError);
                 const isEmailValid = validateEmail(emailField, emailError);
                 const isSubjectValid = validateField(subjectField, subjectError);
                 const isMessageValid = validateField(messageField, messageError);
-                
+
                 if(isNameValid && isPhoneValid && isEmailValid && isSubjectValid && isMessageValid) {
                     // Show sending state
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = 'Sending...';
                     formFeedback.innerHTML = '<div class="text-blue-400 text-sm">Sending...</div>';
-                    
+
                     try {
                         // Simulate API call (replace with actual backend endpoint)
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        
+
                         // Show success message
                         formFeedback.innerHTML = '<div class="text-green-400 text-sm">Message sent successfully! Thank you.</div>';
                         contactForm.reset();
-                        
+
                         // Reset button after 3 seconds
                         setTimeout(() => {
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = 'Send Message';
                             formFeedback.innerHTML = '';
                         }, 3000);
-                        
+
                     } catch (error) {
                         // Show error message
                         formFeedback.innerHTML = '<div class="text-red-400 text-sm">Unable to send message. Please try again later.</div>';
-                        
+
                         // Reset button
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = 'Send Message';
-                        
+
                         // Check for connection errors
                         console.error('Form submission error:', error);
                         if(error.message && error.message.includes('network')) {
@@ -534,13 +534,13 @@
                     formFeedback.innerHTML = '<div class="text-red-400 text-sm">Please fill all required fields correctly.</div>';
                 }
             });
-            
+
             // Real-time validation
             const fields = ['name', 'phone', 'email', 'subject', 'message'];
             fields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 const errorElement = document.getElementById(fieldId + 'Error');
-                
+
                 if(field && errorElement) {
                     field.addEventListener('blur', () => {
                         if(fieldId === 'email') {
@@ -551,7 +551,7 @@
                             validateField(field, errorElement);
                         }
                     });
-                    
+
                     field.addEventListener('input', () => {
                         if(field.classList.contains('is-invalid')) {
                             field.classList.remove('is-invalid');
