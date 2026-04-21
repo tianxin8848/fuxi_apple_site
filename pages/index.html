@@ -14,6 +14,7 @@
             --color-card-bg: #0a0a0a;
             --color-muted-text: #b0b0b0;
             --color-border-glow: rgba(255, 0, 0, 0.2);
+            --nav-bottom: 72px;
         }
 
         @keyframes fadeUp {
@@ -160,7 +161,7 @@
         }
         .nav-dropdown-backdrop {
             position: fixed;
-            top: 72px;
+            top: var(--nav-bottom);
             left: 0;
             right: 0;
             bottom: 0;
@@ -181,14 +182,14 @@
         }
         .apple-nav-dropdown {
             position: fixed;
-            top: 72px;
+            top: var(--nav-bottom);
             left: 0;
             width: 100vw;
-            min-height: calc(100vh - 72px);
-            padding: 28px 0 40px;
+            min-height: calc(100vh - var(--nav-bottom));
+            padding: 8px 0 36px;
             background: rgba(12, 12, 12, 0.78);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            border-top: 0;
+            box-shadow: none;
             backdrop-filter: blur(26px) saturate(150%);
             -webkit-backdrop-filter: blur(26px) saturate(150%);
             opacity: 0;
@@ -200,7 +201,7 @@
                 visibility 0s linear 320ms;
             z-index: 55;
             overflow-y: auto;
-            transform: translate3d(0, -14px, 0);
+            transform: translate3d(0, -6px, 0);
         }
         .apple-nav-dropdown.active {
             opacity: 1;
@@ -212,7 +213,7 @@
         .apple-nav-dropdown-inner {
             max-width: 1140px;
             margin: 0 auto;
-            padding: 0 32px;
+            padding: 0 32px 0;
             display: grid;
             grid-template-columns: minmax(260px, 1.6fr) minmax(180px, 1fr) minmax(180px, 1fr);
             gap: 32px;
@@ -645,9 +646,12 @@
 
         // desktop nav apple-like dropdown (Products/Solutions)
         const navTriggers = document.querySelectorAll('[data-nav-dropdown-trigger]');
+        const navElement = document.querySelector('nav');
         const navDropdown = document.getElementById('apple-nav-dropdown');
         const navDropdownInner = document.getElementById('apple-nav-dropdown-inner');
         const navBackdrop = document.getElementById('nav-dropdown-backdrop');
+        // Debug switch: keep mega menu always open for element inspection.
+        const DEBUG_KEEP_NAV_DROPDOWN_OPEN = false;
         let navDropdownCloseTimer = null;
         const dropdownOpenState = { isOpen: false };
         let isGlobalPointerTracking = false;
@@ -672,9 +676,16 @@
             }
             scheduleCloseNavDropdown();
         };
+        const syncNavBottom = () => {
+            if (!navElement) return;
+            const navRect = navElement.getBoundingClientRect();
+            const navBottom = Math.max(navRect.bottom, 0);
+            document.documentElement.style.setProperty('--nav-bottom', `${navBottom}px`);
+        };
 
         const openNavDropdown = () => {
             if (!isDesktop() || !navDropdown || !navBackdrop) return;
+            syncNavBottom();
             clearTimeout(navDropdownCloseTimer);
             dropdownOpenState.isOpen = true;
             navDropdown.classList.add('active');
@@ -687,6 +698,7 @@
         };
 
         const scheduleCloseNavDropdown = () => {
+            if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) return;
             clearTimeout(navDropdownCloseTimer);
             navDropdownCloseTimer = setTimeout(() => {
                 dropdownOpenState.isOpen = false;
@@ -703,6 +715,10 @@
         };
 
         if (navTriggers.length && navDropdown && navDropdownInner && navBackdrop) {
+            syncNavBottom();
+            if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) {
+                openNavDropdown();
+            }
             navTriggers.forEach(trigger => {
                 trigger.addEventListener('mouseenter', openNavDropdown);
                 trigger.addEventListener('focus', openNavDropdown);
@@ -721,8 +737,10 @@
                 }
             });
             window.addEventListener('resize', () => {
+                syncNavBottom();
                 if (!isDesktop()) scheduleCloseNavDropdown();
             });
+            window.addEventListener('scroll', syncNavBottom, { passive: true });
         }
 
         // scroll animation using intersection observer (pure vanilla)
