@@ -20,10 +20,10 @@
   <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#050505">
 
-  <!-- Redirect to root path -->
-  <script>
-    window.location.href = '/';
-  </script>
+  <!-- Meta refresh redirect to root path for non-JS browsers -->
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=/">
+  </noscript>
 </head>
 
 <body>
