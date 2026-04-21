@@ -196,9 +196,9 @@
             visibility: hidden;
             pointer-events: none;
             transition:
-                opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
-                transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-                visibility 0s linear 320ms;
+                opacity 0.32s cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 0.38s cubic-bezier(0.25, 0.1, 0.25, 1),
+                visibility 0s linear 0.38s;
             z-index: 55;
             overflow-y: auto;
             transform: translate3d(0, -6px, 0);
@@ -209,6 +209,29 @@
             pointer-events: none;
             transform: translate3d(0, 0, 0);
             transition-delay: 0s;
+        }
+        .apple-menu-item {
+            opacity: 0;
+            transform: translateY(8px);
+            filter: blur(3px);
+            transition:
+                opacity 0.36s cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1),
+                filter 0.36s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transition-delay: 0ms;
+            will-change: opacity, transform, filter;
+        }
+        .apple-nav-dropdown.active .apple-menu-item {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+            transition-delay: calc(140ms + var(--menu-delay, 0ms));
+        }
+        .apple-nav-dropdown.closing .apple-menu-item {
+            opacity: 0;
+            transform: translateY(8px);
+            filter: blur(3px);
+            transition-delay: var(--menu-out-delay, 0ms);
         }
         .apple-nav-dropdown-inner {
             max-width: 1140px;
@@ -231,7 +254,6 @@
             color: #f2f2f2;
             font-weight: 500;
             letter-spacing: 0.01em;
-            transition: background-color 180ms ease, transform 180ms ease, color 180ms ease;
         }
         .apple-nav-primary-links a {
             font-size: 40px;
@@ -352,7 +374,7 @@
                 <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/contact" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Contact</a>
-                <a href="/" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Talk to an Expert</a>
+                <a href="/" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Contact Us</a>
             </div>
             <button class="md:hidden text-white text-2xl focus:outline-none" id="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -366,29 +388,29 @@
             <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
             <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
             <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
-            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Talk to an Expert</a>
+            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
     </nav>
     <div id="nav-dropdown-backdrop" class="nav-dropdown-backdrop"></div>
     <div id="apple-nav-dropdown" class="apple-nav-dropdown" aria-hidden="true">
         <div id="apple-nav-dropdown-inner" class="apple-nav-dropdown-inner">
             <div class="apple-nav-primary-links">
-                <p class="apple-nav-group-title">Explore Fuxi</p>
-                <a href="/products">Fuxi SIEM</a>
-                <a href="/solutions">Capabilities</a>
-                <a href="/contact">Contact Sales</a>
+                <p class="apple-nav-group-title apple-menu-item">Explore Fuxi</p>
+                <a class="apple-menu-item" href="/products">Fuxi SIEM</a>
+                <a class="apple-menu-item" href="/solutions">Capabilities</a>
+                <a class="apple-menu-item" href="/contact">Contact Sales</a>
             </div>
             <div class="apple-nav-secondary-links">
-                <p class="apple-nav-group-title">Shop & Deploy</p>
-                <a href="/products">Shop Fuxi SIEM</a>
-                <a href="/solutions">Deployment Guide</a>
-                <a href="/contact">Get a Quote</a>
+                <p class="apple-nav-group-title apple-menu-item">Shop & Deploy</p>
+                <a class="apple-menu-item" href="/products">Shop Fuxi SIEM</a>
+                <a class="apple-menu-item" href="/solutions">Deployment Guide</a>
+                <a class="apple-menu-item" href="/contact">Get a Quote</a>
             </div>
             <div class="apple-nav-secondary-links">
-                <p class="apple-nav-group-title">Support</p>
-                <a href="/solutions">Architecture Consulting</a>
-                <a href="/company">Enterprise Services</a>
-                <a href="/contact">Schedule a Demo</a>
+                <p class="apple-nav-group-title apple-menu-item">Support</p>
+                <a class="apple-menu-item" href="/solutions">Architecture Consulting</a>
+                <a class="apple-menu-item" href="/company">Enterprise Services</a>
+                <a class="apple-menu-item" href="/contact">Schedule a Demo</a>
             </div>
         </div>
     </div>
@@ -411,7 +433,7 @@
                     capabilities anywhere, anytime.
                 </p>
                 <div class="flex flex-wrap justify-center gap-4 mt-8 text-reveal" style="--text-delay: 520ms;">
-                    <a href="/" class="bg-cyber-red hover:bg-red-700 text-white px-7 py-3 rounded-md font-semibold text-base transition-all shadow-md btn-primary">Talk to an Expert</a>
+                    <a href="/" class="bg-cyber-red hover:bg-red-700 text-white px-7 py-3 rounded-md font-semibold text-base transition-all shadow-md btn-primary">Contact Us</a>
                     <a href="/" class="border border-white/60 hover:bg-white/10 text-white px-7 py-3 rounded-md font-semibold transition">Learn More</a>
                 </div>
             </div>
@@ -650,10 +672,14 @@
         const navElement = document.querySelector('nav');
         const navDropdown = document.getElementById('apple-nav-dropdown');
         const navDropdownInner = document.getElementById('apple-nav-dropdown-inner');
+        const navMenuItems = navDropdownInner ? navDropdownInner.querySelectorAll('.apple-menu-item') : [];
         const navBackdrop = document.getElementById('nav-dropdown-backdrop');
         // Debug switch: keep mega menu always open for element inspection.
         const DEBUG_KEEP_NAV_DROPDOWN_OPEN = false;
+        const NAV_OPEN_DELAY_MS = 120;
         let navDropdownCloseTimer = null;
+        let navDropdownOpenTimer = null;
+        let navDropdownFinalizeCloseTimer = null;
         const dropdownOpenState = { isOpen: false };
         let isGlobalPointerTracking = false;
         const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
@@ -687,8 +713,11 @@
         const openNavDropdown = () => {
             if (!isDesktop() || !navDropdown || !navBackdrop) return;
             syncNavBottom();
+            clearTimeout(navDropdownOpenTimer);
             clearTimeout(navDropdownCloseTimer);
+            clearTimeout(navDropdownFinalizeCloseTimer);
             dropdownOpenState.isOpen = true;
+            navDropdown.classList.remove('closing');
             navDropdown.classList.add('active');
             navDropdown.setAttribute('aria-hidden', 'false');
             navBackdrop.classList.add('active');
@@ -697,37 +726,58 @@
                 isGlobalPointerTracking = true;
             }
         };
+        const scheduleOpenNavDropdown = () => {
+            if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) {
+                openNavDropdown();
+                return;
+            }
+            clearTimeout(navDropdownCloseTimer);
+            clearTimeout(navDropdownOpenTimer);
+            navDropdownOpenTimer = setTimeout(openNavDropdown, NAV_OPEN_DELAY_MS);
+        };
 
         const scheduleCloseNavDropdown = () => {
             if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) return;
+            clearTimeout(navDropdownOpenTimer);
             clearTimeout(navDropdownCloseTimer);
+            clearTimeout(navDropdownFinalizeCloseTimer);
             navDropdownCloseTimer = setTimeout(() => {
                 dropdownOpenState.isOpen = false;
                 if (navDropdown) {
-                    navDropdown.classList.remove('active');
+                    navDropdown.classList.add('closing');
                     navDropdown.setAttribute('aria-hidden', 'true');
                 }
                 if (navBackdrop) navBackdrop.classList.remove('active');
-                if (isGlobalPointerTracking) {
-                    window.removeEventListener('mousemove', handleGlobalPointerMove);
-                    isGlobalPointerTracking = false;
-                }
+                navDropdownFinalizeCloseTimer = setTimeout(() => {
+                    if (navDropdown) {
+                        navDropdown.classList.remove('active');
+                        navDropdown.classList.remove('closing');
+                    }
+                    if (isGlobalPointerTracking) {
+                        window.removeEventListener('mousemove', handleGlobalPointerMove);
+                        isGlobalPointerTracking = false;
+                    }
+                }, 420);
             }, 180);
         };
 
         if (navTriggers.length && navDropdown && navDropdownInner && navBackdrop) {
             syncNavBottom();
+            navMenuItems.forEach((item, index) => {
+                item.style.setProperty('--menu-delay', `${index * 55}ms`);
+                item.style.setProperty('--menu-out-delay', `${Math.max((navMenuItems.length - index - 1) * 26, 0)}ms`);
+            });
             if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) {
                 openNavDropdown();
             }
             navTriggers.forEach(trigger => {
-                trigger.addEventListener('mouseenter', openNavDropdown);
-                trigger.addEventListener('focus', openNavDropdown);
+                trigger.addEventListener('mouseenter', scheduleOpenNavDropdown);
+                trigger.addEventListener('focus', scheduleOpenNavDropdown);
                 trigger.addEventListener('mouseleave', scheduleCloseNavDropdown);
                 trigger.addEventListener('blur', scheduleCloseNavDropdown);
             });
 
-            navDropdownInner.addEventListener('mouseenter', openNavDropdown);
+            navDropdownInner.addEventListener('mouseenter', scheduleOpenNavDropdown);
             navDropdownInner.addEventListener('mouseleave', scheduleCloseNavDropdown);
             navBackdrop.addEventListener('mouseenter', scheduleCloseNavDropdown);
             navBackdrop.addEventListener('click', scheduleCloseNavDropdown);

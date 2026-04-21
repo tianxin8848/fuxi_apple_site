@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Apple官网导航菜单复刻</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background: #f5f5f7;
+  padding-top: 60px;
+}
+
+/* 顶部主导航 */
+nav.main-nav {
+  background: white;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  gap: 2.5rem;
+  position: relative;
+}
+
+.nav-item {
+  position: relative;
+  font-size: 15px;
+  color: #1d1d1f;
+  cursor: pointer;
+}
+
+/* 苹果原版大下拉菜单容器 */
+.mega-menu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  background: white;
+  padding: 40px 60px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+
+  /* 容器初始隐藏状态 */
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: 
+    opacity 0.32s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.38s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* hover展开菜单 */
+.nav-item:hover .mega-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* 菜单列通用样式 */
+.menu-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.column-title {
+  font-size: 13px;
+  color: #86868b;
+  margin-bottom: 8px;
+  /* 标题基础动画 */
+  opacity: 0;
+  transform: translateY(8px);
+  transition: 
+    opacity 0.36s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 0.94);
+  transition-delay: 0ms; /* 第一组最先入场 */
+}
+
+/* 每一行菜单链接 + 逐行错开延迟（核心渐进效果） */
+.menu-link {
+  font-size: 17px;
+  color: #1d1d1f;
+  text-decoration: none;
+  font-weight: 600;
+
+  opacity: 0;
+  transform: translateY(8px);
+  transition: 
+    opacity 0.36s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 0.94);
+}
+
+/* 展开时统一激活所有子元素动画 */
+.nav-item:hover .column-title,
+.nav-item:hover .menu-link {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== 逐行渐进延迟设置（灵魂！从上到下依次增加延迟） ========== */
+/* 第一列 */
+.col1 .column-title { transition-delay: 80ms; }
+.col1 .menu-link:nth-child(1) { transition-delay: 140ms; }
+.col1 .menu-link:nth-child(2) { transition-delay: 200ms; }
+.col1 .menu-link:nth-child(3) { transition-delay: 260ms; }
+.col1 .menu-link:nth-child(4) { transition-delay: 320ms; }
+.col1 .menu-link:nth-child(5) { transition-delay: 380ms; }
+
+/* 第二列 */
+.col2 .column-title { transition-delay: 120ms; }
+.col2 .menu-link:nth-child(1) { transition-delay: 180ms; }
+.col2 .menu-link:nth-child(2) { transition-delay: 240ms; }
+.col2 .menu-link:nth-child(3) { transition-delay: 300ms; }
+.col2 .menu-link:nth-child(4) { transition-delay: 360ms; }
+
+/* 第三列 */
+.col3 .column-title { transition-delay: 160ms; }
+.col3 .menu-link:nth-child(1) { transition-delay: 220ms; }
+.col3 .menu-link:nth-child(2) { transition-delay: 280ms; }
+.col3 .menu-link:nth-child(3) { transition-delay: 340ms; }
+.col3 .menu-link:nth-child(4) { transition-delay: 400ms; }
+.col3 .menu-link:nth-child(5) { transition-delay: 460ms; }
+
+</style>
+</head>
+
+<body>
+<nav class="main-nav">
+  <div class="nav-item">
+    Watch
+    <!-- 下拉大菜单 -->
+    <div class="mega-menu">
+      <!-- 第一列 Explore Watch -->
+      <div class="menu-column col1">
+        <div class="column-title">Explore Watch</div>
+        <a class="menu-link">Explore All Apple Watch</a>
+        <a class="menu-link">Apple Watch Series 11</a>
+        <a class="menu-link">Apple Watch SE 3</a>
+        <a class="menu-link">Apple Watch Ultra 3</a>
+        <a class="menu-link">Apple Watch Nike</a>
+        <a class="menu-link">Apple Watch Hermès</a>
+      </div>
+
+      <!-- 第二列 Shop Watch -->
+      <div class="menu-column col2">
+        <div class="column-title">Shop Watch</div>
+        <a class="menu-link">Shop Apple Watch</a>
+        <a class="menu-link">Apple Watch Bands</a>
+        <a class="menu-link">Apple Watch Accessories</a>
+        <a class="menu-link">Apple Trade In</a>
+        <a class="menu-link">Financing</a>
+        <a class="menu-link">Personal Setup</a>
+      </div>
+
+      <!-- 第三列 More from Watch -->
+      <div class="menu-column col3">
+        <div class="column-title">More from Watch</div>
+        <a class="menu-link">Apple Watch Support</a>
+        <a class="menu-link">AppleCare</a>
+        <a class="menu-link">watchOS 26</a>
+        <a class="menu-link">Apple Watch For Your Kids</a>
+        <a class="menu-link">Apps by Apple</a>
+        <a class="menu-link">Apple Fitness+</a>
+      </div>
+    </div>
+  </div>
+</nav>
+</body>
+</html>
