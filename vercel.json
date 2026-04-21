@@ -9,20 +9,10 @@
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/dist/$1"
-    }
-  ],
   "rewrites": [
     {
       "source": "/",
       "destination": "/dist/pages/index.html"
-    },
-    {
-      "source": "/index",
-      "destination": "/"
     },
     {
       "source": "/products",
@@ -45,12 +35,8 @@
       "destination": "/dist/pages/contact.html"
     },
     {
-      "source": "/index.html",
-      "destination": "/"
-    },
-    {
-      "source": "/pages/([^/.]+)\\.html",
-      "destination": "/$1"
+      "source": "/(.*)",
+      "destination": "/dist/$1"
     }
   ]
 }
