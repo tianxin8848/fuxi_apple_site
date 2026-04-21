@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const app = express();
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 3006;
 
 const distDir = path.join(__dirname, 'dist');
 // Default to source files for local debugging.
@@ -25,6 +25,7 @@ const pageRoutes = {
   '/blog': '/pages/blog.html',
   '/company': '/pages/company.html',
   '/contact': '/pages/contact.html',
+  '/threatmap': '/pages/threatmap.html',
 };
 
 // 处理无后缀URL
