@@ -12,31 +12,27 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/dist/pages/index.html"
+      "destination": "/pages/index.html"
     },
     {
       "source": "/products",
-      "destination": "/dist/pages/products.html"
+      "destination": "/pages/products.html"
     },
     {
       "source": "/solutions",
-      "destination": "/dist/pages/solutions.html"
+      "destination": "/pages/solutions.html"
     },
     {
       "source": "/blog",
-      "destination": "/dist/pages/blog.html"
+      "destination": "/pages/blog.html"
     },
     {
       "source": "/company",
-      "destination": "/dist/pages/company.html"
+      "destination": "/pages/company.html"
     },
     {
       "source": "/contact",
-      "destination": "/dist/pages/contact.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/dist/$1"
+      "destination": "/pages/contact.html"
     }
   ]
 }
