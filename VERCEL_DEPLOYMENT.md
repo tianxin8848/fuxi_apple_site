@@ -45,4 +45,80 @@ sed -i '' 's|href="/index"|href="/"|g' pages/*.html
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/static
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/pages/index.html"
+    },
+    {
+      "source": "/products",
+      "destination": "/pages/products.html"
+    },
+    {
+      "source": "/solutions",
+      "destination": "/pages/solutions.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/pages/blog.html"
+    },
+    {
+      "source": "/company",
+      "destination": "/pages/company.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/pages/contact.html"
+    }
+  ]
+}
+```
+
+## 部署步骤
+
+### 步骤 1：提交所有更改
+```bash
+git add .
+git commit -m "修复 Vercel 部署问题：
+1. 修复 webpack 配置，避免重复文件
+2. 修复 HTML 文件中的 /index 链接
+3. 添加正确的 Vercel 配置文件
+4. 移除导致无限重定向的 index.html"
+git push
+```
+
+### 步骤 2：在 Vercel 上重新部署
+
+#### 方法 A：通过 Vercel Dashboard
+1. 登录 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 找到项目 `tasei.asia`
+3. 点击 "Deployments" 标签
+4. 找到最新的部署，点击 "..." → "Redeploy"
+5. 或者点击 "New Deployment" 重新部署
+
+#### 方法 B：通过 Vercel CLI
+```bash
+# 如果已安装 Vercel CLI
+vercel --prod
+
+# 如果未安装
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+### 步骤 3：验证部署
+
+#### 检查构建日志
+1. 在 Vercel Dashboard 中打开项目
+2. 点击最新的部署
+3. 查看 "Build Logs" 确保构建成功
+
+#### 测试网站
+1. 首页：`https://tasei.asia/` -
