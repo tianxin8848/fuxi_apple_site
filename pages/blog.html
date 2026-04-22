@@ -42,17 +42,66 @@
     <link rel="stylesheet" href="../css/vendor/inter-local.css">
     <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
     <style>
+        :root {
+            --color-cyber-red: #ff0000;
+            --color-dark-bg: #050505;
+            --color-card-bg: #0a0a0a;
+            --color-muted-text: #b0b0b0;
+        }
+        .text-cyber-red {
+            color: var(--color-cyber-red);
+        }
+        .hover\:text-cyber-red:hover {
+            color: var(--color-cyber-red);
+        }
+        .bg-cyber-red {
+            background-color: var(--color-cyber-red);
+        }
+        .bg-dark-bg {
+            background-color: var(--color-dark-bg);
+        }
+        .text-muted-text {
+            color: var(--color-muted-text);
+        }
+        .font-sans {
+            font-family: 'Inter', system-ui, 'Segoe UI', sans-serif;
+        }
         /* custom utility for smooth scroll & video overlay */
         html {
             scroll-behavior: smooth;
         }
         body {
-            background-color: #050505;
+            background-color: var(--color-dark-bg);
+        }
+        section {
+            border: 0;
+        }
+        section + section {
+            border-top: 1px solid rgb(127 29 29 / 0.3);
         }
         .nav-blur {
             backdrop-filter: blur(12px);
-            background-color: rgba(5, 5, 5, 0.85);
+            background-color: rgb(4, 0, 0);
             border-bottom: 1px solid rgba(255,0,0,0.2);
+        }
+        .nav-cta-apple {
+            border-radius: 9999px;
+            min-height: 34px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            background: #ff1a1a;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
+            line-height: 1;
+            transition: background-color 0.22s ease;
+            margin: 10px;
+            white-space: nowrap;
+        }
+        .nav-cta-apple:hover {
+            background: #ff3030;
         }
         .btn-primary {
             transition: all 0.2s ease;
@@ -98,33 +147,38 @@
 <body class="font-sans text-white">
 
     <!-- Navigation (fixed, glassmorphic) -->
-    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300 py-3">
-        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center">
+    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
+        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
                 <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
             </a>
             <div class="hidden md:flex items-center space-x-7">
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
-                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Products</a>
-                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Solutions</a>
-                <a href="/blog" class="text-sm font-medium text-cyber-red transition">Blog</a>
+                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
+                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
+                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
+                <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
                 <a href="/contact" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Contact</a>
-                <a href="/" class="bg-cyber-red text-white px-5 py-2 rounded-md text-sm font-semibold shadow-lg btn-primary">Talk to an Expert</a>
+
             </div>
-            <button class="md:hidden text-white text-2xl focus:outline-none" id="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
+                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
+                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
         </div>
         <!-- mobile menu (simple) -->
         <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
             <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
             <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
             <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
-            <a href="/blog" class="py-2 text-cyber-red">Blog</a>
+            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
             <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
             <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
-            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Talk to an Expert</a>
+            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
     </nav>
 
@@ -288,7 +342,7 @@
     </section>
 
     <!-- Footer (Tailwind only) -->
-    <footer class="bg-black/90 border-t border-red-900/30 py-12 px-5">
+    <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
         <div class="container mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
                 <div class="md:col-span-2">
@@ -331,7 +385,7 @@
                     </ul>
                 </div>
             </div>
-            <hr class="my-8 border-gray-800">
+            <hr class="my-8 border-red-900/30">
             <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
                 <p>© 2026 Fuxi Technology. All rights reserved.</p>
                 <div class="flex gap-6 mt-3 md:mt-0">
