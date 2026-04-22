@@ -1,0 +1,12 @@
+/* Shared typography and nav baseline across pages */
+html,
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Keep top-nav link rendering visually consistent on all pages */
+nav.nav-blur a.text-sm.font-medium {
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
