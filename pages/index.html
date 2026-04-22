@@ -74,10 +74,20 @@
         section {
             content-visibility: auto;
             contain-intrinsic-size: 900px;
+            border: 0;
         }
         section:first-of-type {
             content-visibility: visible;
             contain-intrinsic-size: auto;
+        }
+        section + section {
+            border-top: 1px solid rgb(127 29 29 / 0.3); /* red-900/30 */
+        }
+        .hero-section {
+            position: relative;
+        }
+        .hero-section video {
+            transform: scale(1.01);
         }
         .video-overlay-gradient {
             background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.65), rgba(0,0,0,0.4));
@@ -390,7 +400,7 @@
     </div>
 
     <!-- Hero with video background -->
-    <section class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-20">
+    <section class="hero-section relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-20">
         <video class="absolute top-0 left-0 w-full h-full object-cover z-0" autoplay loop muted playsinline>
             <source src="/img/6330774-hd_1920_1080_30fps.mp4" type="video/mp4">
         </video>
@@ -454,7 +464,7 @@
     </section>
 
     <!-- Explore Fuxi SIEM (3 core features) -->
-    <section class="py-20 px-5 bg-dark-bg border-y border-red-900/30">
+    <section class="py-20 px-5 bg-dark-bg">
         <div class="container mx-auto">
             <div class="text-center mb-14 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold">Explore <span class="text-cyber-red">Fuxi SIEM</span></h2>
@@ -496,7 +506,7 @@
     </section>
 
     <!-- Feature 2: Visualize Your Data (reverse order) -->
-    <section class="py-20 px-5 bg-dark-bg border-t border-red-900/30">
+    <section class="py-20 px-5 bg-dark-bg">
         <div class="container mx-auto flex flex-col lg:flex-row-reverse items-center gap-12">
             <div class="lg:w-1/2 animate-on-scroll">
                 <div class="overflow-hidden rounded-2xl border border-gray-800">
@@ -512,7 +522,7 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-20 px-5 border-y border-red-900/30  bg-dark-bg">
+    <section class="py-20 px-5 bg-dark-bg">
         <div class="container mx-auto">
             <div class="text-center mb-12 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold">Why Customers Choose <span class="text-cyber-red">Fuxi</span></h2>
@@ -618,7 +628,7 @@
                     </ul>
                 </div>
             </div>
-            <hr class="my-8 border-gray-800">
+                <hr class="my-8 border-red-900/30">
             <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
                 <p>© 2026 Fuxi Technology. All rights reserved.</p>
                 <div class="flex gap-6 mt-3 md:mt-0">
