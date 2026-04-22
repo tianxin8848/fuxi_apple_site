@@ -138,7 +138,7 @@
         }
         .nav-blur {
             backdrop-filter: blur(12px);
-            background-color: rgba(5, 5, 5, 0.85);
+            background-color: rgb(4, 0, 0);
             border-bottom: 1px solid rgba(255,0,0,0.2);
         }
         .btn-primary {
@@ -161,6 +161,8 @@
             box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
             line-height: 1;
             transition: background-color 0.22s ease;
+            margin: 10px;
+            white-space: nowrap;
         }
         .nav-cta-apple:hover {
             background: #ff3030;
@@ -380,7 +382,7 @@
 
     <!-- Navigation (fixed, glassmorphic) -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
-        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center">
+        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
                 <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
             </a>
