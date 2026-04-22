@@ -33,6 +33,10 @@
     {
       "source": "/contact",
       "destination": "/pages/contact.html"
+    },
+    {
+      "source": "/threatmap",
+      "destination": "/pages/threatmap.html"
     }
   ]
 }
