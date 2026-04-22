@@ -97,6 +97,18 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(255, 0, 0, 0.2);
+            position: relative;
+            min-height: 400px;
+            height: 100%;
+            flex: 1 1 auto;
+        }
+        .map-container .contact-map-media {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
         }
         .contact-icon {
             width: 50px;
@@ -162,21 +174,19 @@
     <section class="py-16 px-5">
         <div class="container mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left Column: map (Amap in mainland China, Google elsewhere) -->
-                <div class="lg:col-span-1 animate-on-scroll">
-                    <div class="map-container h-full relative">
+                <!-- Left Column: map (CN: AMap JS API 2.0; else Google iframe) -->
+                <div class="lg:col-span-1 animate-on-scroll flex flex-col h-full min-h-[400px]">
+                    <div class="map-container w-full">
                         <iframe
                             id="contact-map-iframe"
+                            class="contact-map-media"
                             title="Office location"
                             src="about:blank"
-                            width="100%"
-                            height="100%"
-                            style="border:0; min-height: 400px;"
                             allowfullscreen=""
                             loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"
-                            data-google-src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0-b9LKqTpXBLBIr64VcRS1fmLYw01x4I&amp;q=35+Liyumen+St%2C+Nanshan%2C+Shen+Zhen+Shi%2C+Guangdong+Province%2C+China%2C+518052&amp;zoom=11"
-                            data-amap-src="https://restapi.amap.com/v3/staticmap?location=113.900788,22.518796&zoom=10&size=400*400&labels=前海梦工场一期,2,0,16,0xFFFFFF,0x008000:113.900788,22.518796&key=490e38a5e4877eac313744bd561fbb54"></iframe>                            ">
+                            data-google-src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0-b9LKqTpXBLBIr64VcRS1fmLYw01x4I&amp;q=35+Liyumen+St%2C+Nanshan%2C+Shen+Zhen+Shi%2C+Guangdong+Province%2C+China%2C+518052&amp;zoom=11"></iframe>
+                        <div id="contact-amap-root" class="contact-map-media" role="region" aria-label="Office location map" hidden></div>
                     </div>
                 </div>
 
@@ -384,6 +394,12 @@
         </div>
     </footer>
 
+    <!-- AMap JS API 2.0: securityJsCode must be set before loader.js (see https://lbs.amap.com/api/javascript-api-v2/tutorails/display-a-map) -->
+    <script>
+        window._AMapSecurityConfig = { securityJsCode: '29d30abe3d9d523e21d52892e2aabac4' };
+    </script>
+    <script src="https://webapi.amap.com/loader.js"></script>
+
     <!-- Simple Intersection Observer for scroll animations (lightweight) -->
     <script>
         // mobile menu toggle
@@ -418,13 +434,71 @@
             });
         });
 
-        // Contact map: Amap (Web URI) for mainland China (ISO CN), Google Embed elsewhere; default Google if geo lookup fails
+        // Contact map: mainland CN → AMap JS API 2.0 (Loader); else → Google embed iframe
         (function initContactMapByRegion() {
             const iframe = document.getElementById('contact-map-iframe');
-            if(!iframe) return;
+            const amapRoot = document.getElementById('contact-amap-root');
+            if(!iframe || !amapRoot) return;
             const googleSrc = iframe.getAttribute('data-google-src');
-            const amapSrc = iframe.getAttribute('data-amap-src');
-            if(!googleSrc || !amapSrc) return;
+            if(!googleSrc) return;
+
+            const AMAP_KEY = '6bc94bab2fb33d00570c95b30b7f359c';
+            const AMAP_CENTER = [113.900788, 22.518796];
+            const AMAP_ZOOM = 16;
+            let amapLoadGeneration = 0;
+            let disposeAmap = null;
+
+            function teardownAmap() {
+                amapLoadGeneration += 1;
+                if(typeof disposeAmap === 'function') {
+                    disposeAmap();
+                    disposeAmap = null;
+                }
+                amapRoot.dataset.amapReady = '';
+            }
+
+            function mountAmapJsMap() {
+                if(amapRoot.dataset.amapReady === '1') return;
+                if(typeof AMapLoader === 'undefined') {
+                    console.error('AMap Loader (webapi.amap.com/loader.js) is not available.');
+                    return;
+                }
+                const gen = amapLoadGeneration;
+                AMapLoader.load({
+                    key: AMAP_KEY,
+                    version: '2.0',
+                }).then((AMap) => {
+                    if(gen !== amapLoadGeneration) return;
+                    const map = new AMap.Map(amapRoot, {
+                        viewMode: '2D',
+                        zoom: AMAP_ZOOM,
+                        center: AMAP_CENTER,
+                        mapStyle: 'amap://styles/dark',
+                    });
+                    const marker = new AMap.Marker({
+                        position: AMAP_CENTER,
+                        title: '深圳市南山区前海梦工场一期6栋308',
+                    });
+                    map.add(marker);
+                    amapRoot.dataset.amapReady = '1';
+
+                    const resize = () => {
+                        try {
+                            map.resize();
+                        } catch(e) { /* ignore */ }
+                    };
+                    requestAnimationFrame(resize);
+                    const ro = new ResizeObserver(resize);
+                    ro.observe(amapRoot);
+
+                    disposeAmap = () => {
+                        ro.disconnect();
+                        map.destroy();
+                    };
+                }).catch((e) => {
+                    console.error(e);
+                });
+            }
 
             async function resolveCountryCode() {
                 const geoEndpoints = [
@@ -451,7 +525,17 @@
 
             resolveCountryCode().then((countryCode) => {
                 const useAmap = countryCode === 'CN';
-                iframe.src = useAmap ? amapSrc : googleSrc;
+                if(useAmap) {
+                    iframe.setAttribute('hidden', '');
+                    iframe.src = 'about:blank';
+                    amapRoot.removeAttribute('hidden');
+                    mountAmapJsMap();
+                } else {
+                    teardownAmap();
+                    amapRoot.setAttribute('hidden', '');
+                    iframe.removeAttribute('hidden');
+                    iframe.src = googleSrc;
+                }
             });
         })();
 
