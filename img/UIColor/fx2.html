@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple风格色卡 - 黑色层级 + 红色色系</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            padding: 60px 40px;
+            background-color: #f0f0f2;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 10px;
+        }
+
+        .desc {
+            color: #86868b;
+            font-size: 15px;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        /* 苹果风格色块网格布局 */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .color-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+        }
+
+        .color-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .color-block {
+            width: 100%;
+            height: 120px;
+        }
+
+        .color-info {
+            padding: 14px;
+            background: #ffffff;
+        }
+
+        .color-code {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+
+        .color-name {
+            font-size: 12px;
+            color: #86868b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Apple UI 色系色卡</h1>
+    <p class="desc">深色主题分层黑色系 + 苹果官方红色渐变色系 · 可直接用于网站开发取色</p>
+
+    <!-- 第一部分：苹果黑色深灰分层色系（网站板块区分专用） -->
+    <div class="section">
+        <h2>⚫ 黑色层级色系（背景/板块/卡片分层）</h2>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-block" style="background:#050505;"></div>
+                <div class="color-info">
+                    <div class="color-code">#050505</div>
+                    <div class="color-name">页面最深底层背景</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#0A0A0A;"></div>
+                <div class="color-info">
+                    <div class="color-code">#0A0A0A</div>
+                    <div class="color-name">全局页面背景</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#121212;"></div>
+                <div class="color-info">
+                    <div class="color-code">#121212</div>
+                    <div class="color-name">导航栏/头部背景</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#1C1C1E;"></div>
+                <div class="color-info">
+                    <div class="color-code">#1C1C1E</div>
+                    <div class="color-name">大内容板块背景</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#242426;"></div>
+                <div class="color-info">
+                    <div class="color-code">#242426</div>
+                    <div class="color-name">卡片模块背景</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#2C2C2E;"></div>
+                <div class="color-info">
+                    <div class="color-code">#2C2C2E</div>
+                    <div class="color-name">按钮/容器背景</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#3A3A3C;"></div>
+                <div class="color-info">
+                    <div class="color-code">#3A3A3C</div>
+                    <div class="color-name">分割线/边框</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#48484A;"></div>
+                <div class="color-info">
+                    <div class="color-code">#48484A</div>
+                    <div class="color-name">浅灰边框/图标</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二部分：苹果官方红色全梯度色系（强调/警告/按钮/高亮） -->
+    <div class="section">
+        <h2>🔴 苹果官方红色渐变色系（强调色/按钮/警示）</h2>
+        <div class="color-grid">
+            <div class="color-card">
+                <div class="color-block" style="background:#450A0A;"></div>
+                <div class="color-info">
+                    <div class="color-code">#450A0A</div>
+                    <div class="color-name">暗红背景（深色底）</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#601010;"></div>
+                <div class="color-info">
+                    <div class="color-code">#601010</div>
+                    <div class="color-name">深酒红</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#8B1C1C;"></div>
+                <div class="color-info">
+                    <div class="color-code">#8B1C1C</div>
+                    <div class="color-name">暗砖红</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#C41E3A;"></div>
+                <div class="color-info">
+                    <div class="color-code">#C41E3A</div>
+                    <div class="color-name">苹果原生正红</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#FF3B30;"></div>
+                <div class="color-info">
+                    <div class="color-code">#FF3B30</div>
+                    <div class="color-name">系统警告红</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#FF453A;"></div>
+                <div class="color-info">
+                    <div class="color-code">#FF453A</div>
+                    <div class="color-name">亮红按钮主色</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#FF6B6B;"></div>
+                <div class="color-info">
+                    <div class="color-code">#FF6B6B</div>
+                    <div class="color-name">浅红高亮</div>
+                </div>
+            </div>
+            <div class="color-card">
+                <div class="color-block" style="background:#FFA4A4;"></div>
+                <div class="color-info">
+                    <div class="color-code">#FFA4A4</div>
+                    <div class="color-name">淡红辅助色</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
