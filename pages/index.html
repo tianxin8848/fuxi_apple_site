@@ -16,7 +16,7 @@
             --color-dark-bg: #050505;
             --color-card-bg: #0a0a0a;
             --color-muted-text: #b0b0b0;
-            --nav-bottom: 72px;
+            --nav-bottom: 48px;
         }
 
         @keyframes fadeUp {
@@ -109,6 +109,15 @@
             background-color: rgb(4, 0, 0);
             border-bottom: 1px solid rgba(255,0,0,0.2);
         }
+        nav.nav-blur > .container {
+            height: 48px;
+            box-sizing: border-box;
+        }
+        nav.nav-blur > .container img {
+            max-height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
         .btn-primary {
             transition: all 0.2s ease;
         }
@@ -118,8 +127,7 @@
         }
         .nav-cta-apple {
             border-radius: 9999px;
-            min-height: 34px;
-            padding: 0 14px;
+            padding: 6px 14px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -129,7 +137,6 @@
             box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
             line-height: 1;
             transition: background-color 0.22s ease;
-            margin: 10px;
             white-space: nowrap;
         }
         .nav-cta-apple:hover {
@@ -348,7 +355,7 @@
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
+                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
             </a>
             <div class="hidden md:flex items-center space-x-7">
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
