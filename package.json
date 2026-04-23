@@ -14,7 +14,8 @@
     "build": "webpack --config webpack.config.prod.js",
     "serve": "node server.js",
     "build-and-serve": "npm run build && npm run serve",
-    "vercel-build": "npm run build"
+    "partials": "node scripts/inline-partials.js",
+    "vercel-build": "node scripts/inline-partials.js && npm run build"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",

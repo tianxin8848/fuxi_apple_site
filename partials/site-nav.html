@@ -1,0 +1,34 @@
+    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
+        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
+            <a href="/" class="flex items-center gap-2">
+                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
+            </a>
+            <div class="hidden md:flex items-center space-x-7">
+                <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
+                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
+                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
+                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
+                <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
+                <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
+                <!-- <a href="/contact" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Contact</a> -->
+
+            </div>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
+                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
+                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
+        </div>
+        <!-- mobile menu (simple) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
+            <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
+            <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
+            <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
+            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
+            <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
+            <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
+            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
+        </div>
+    </nav>

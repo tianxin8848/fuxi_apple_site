@@ -16,7 +16,6 @@
             --color-dark-bg: #050505;
             --color-card-bg: #0a0a0a;
             --color-muted-text: #b0b0b0;
-            --nav-bottom: 48px;
         }
 
         @keyframes fadeUp {
@@ -64,6 +63,7 @@
     <link rel="stylesheet" href="../css/vendor/inter-local.css">
     <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
     <link rel="stylesheet" href="../css/nav-baseline.css">
+    <link rel="stylesheet" href="../css/site-nav.css">
     <style>
         /* custom utility for smooth scroll & video overlay */
         html {
@@ -104,54 +104,12 @@
         .feature-img-hover:hover {
             transform: scale(1.03);
         }
-        .nav-blur {
-            backdrop-filter: blur(12px);
-            background-color: rgb(4, 0, 0);
-            border-bottom: 1px solid rgba(255,0,0,0.2);
-        }
-        nav.nav-blur > .container {
-            height: 48px;
-            box-sizing: border-box;
-        }
-        nav.nav-blur > .container img {
-            max-height: 40px;
-            width: auto;
-            object-fit: contain;
-        }
         .btn-primary {
             transition: all 0.2s ease;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px -5px rgba(255,0,0,0.4);
-        }
-        .nav-cta-apple {
-            border-radius: 9999px;
-            padding: 6px 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            letter-spacing: 0.01em;
-            background: #ff1a1a;
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
-            line-height: 1;
-            transition: background-color 0.22s ease;
-            white-space: nowrap;
-        }
-        .nav-cta-apple:hover {
-            background: #ff3030;
-        }
-        .nav-link-trigger {
-            position: relative;
-        }
-        .nav-link-trigger::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -10px;
-            height: 12px;
         }
         .nav-dropdown-backdrop {
             position: fixed;
@@ -351,7 +309,8 @@
 </head>
 <body class="font-sans bg-black text-white">
 
-    <!-- Navigation (fixed, glassmorphic) -->
+    <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
+    <!-- SITE_NAV_PARTIAL_BEGIN -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
@@ -386,6 +345,8 @@
             <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
     </nav>
+    <!-- SITE_NAV_PARTIAL_END -->
+
     <div id="nav-dropdown-backdrop" class="nav-dropdown-backdrop"></div>
     <div id="apple-nav-dropdown" class="apple-nav-dropdown" aria-hidden="true">
         <div id="apple-nav-dropdown-inner" class="apple-nav-dropdown-inner">
@@ -444,7 +405,7 @@
             </div>
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- card 1 -->
-                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
                     <img src="/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="threat detection" class="w-full h-56 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Advanced Threat Detection</h3>
@@ -453,7 +414,7 @@
                     </div>
                 </div>
                 <!-- card 2 -->
-                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
                     <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="cybersec event" class="w-full h-56 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Fuxi at CyberSec 2026</h3>
@@ -462,7 +423,7 @@
                     </div>
                 </div>
                 <!-- card 3 -->
-                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
                     <img src="/img/960x0.jpg" alt="portable guide" class="w-full h-56 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Portable Security Guide</h3>
@@ -481,17 +442,17 @@
                 <h2 class="text-3xl md:text-4xl font-bold">Explore <span class="text-cyber-red">Fuxi SIEM</span></h2>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-7 rounded-xl bg-card-bg border border-gray-800 hover:border-cyber-red/40 transition animate-on-scroll">
+                <div class="text-center p-7 rounded-xl bg-card-bg border border-red-900/30 hover:border-cyber-red/40 transition animate-on-scroll">
                     <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-shield-alt text-3xl text-cyber-red"></i></div>
                     <h3 class="text-xl font-bold">Endpoint & Email Protection</h3>
                     <p class="text-muted-text mt-3 text-sm">Harden laptops, servers, and mailboxes against ransomware, phishing, and zero-day threats.</p>
                 </div>
-                <div class="text-center p-7 rounded-xl bg-card-bg border border-gray-800 hover:border-cyber-red/40 transition animate-on-scroll">
+                <div class="text-center p-7 rounded-xl bg-card-bg border border-red-900/30 hover:border-cyber-red/40 transition animate-on-scroll">
                     <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-robot text-3xl text-cyber-red"></i></div>
                     <h3 class="text-xl font-bold">AI-powered SOC Automation</h3>
                     <p class="text-muted-text mt-3 text-sm">Apply agentic AI across alerts, events, and tickets to cut response time and fatigue.</p>
                 </div>
-                <div class="text-center p-7 rounded-xl bg-card-bg border border-gray-800 hover:border-cyber-red/40 transition animate-on-scroll">
+                <div class="text-center p-7 rounded-xl bg-card-bg border border-red-900/30 hover:border-cyber-red/40 transition animate-on-scroll">
                     <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-network-wired text-3xl text-cyber-red"></i></div>
                     <h3 class="text-xl font-bold">Secure LAN & Remote Sites</h3>
                     <p class="text-muted-text mt-3 text-sm">Converge LAN and security for branches, factories, and remote offices with one platform.</p>
@@ -504,7 +465,7 @@
     <section class="py-20 px-5 bg-dark-bg ">
         <div class="container mx-auto flex flex-col lg:flex-row items-center gap-12 ">
             <div class="lg:w-1/2 animate-on-scroll">
-                <div class="overflow-hidden rounded-2xl border border-gray-800">
+                <div class="overflow-hidden rounded-2xl border border-red-900/30">
                     <img src="/img/23_0127_ecd_ps-cyber_header_1600x600.png" alt="security team" class="w-full h-auto object-cover transition-transform duration-700 feature-img-hover">
                 </div>
             </div>
@@ -520,7 +481,7 @@
     <section class="py-20 px-5 bg-dark-bg">
         <div class="container mx-auto flex flex-col lg:flex-row-reverse items-center gap-12">
             <div class="lg:w-1/2 animate-on-scroll">
-                <div class="overflow-hidden rounded-2xl border border-gray-800">
+                <div class="overflow-hidden rounded-2xl border border-red-900/30">
                     <img src="/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="data viz" class="w-full h-auto object-cover feature-img-hover transition-transform duration-700">
                 </div>
             </div>
@@ -539,19 +500,19 @@
                 <h2 class="text-3xl md:text-4xl font-bold">Why Customers Choose <span class="text-cyber-red">Fuxi</span></h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="bg-card-bg border border-gray-800 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">98%</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Customer Satisfaction</div>
                 </div>
-                <div class="bg-card-bg border border-gray-800 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">300+</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Deployments</div>
                 </div>
-                <div class="bg-card-bg border border-gray-800 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">24x7</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Security Monitoring</div>
                 </div>
-                <div class="bg-card-bg border border-gray-800 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">10k+</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Protected Identities</div>
                 </div>
@@ -567,7 +528,7 @@
                 <p class="text-muted-text mt-2">Meet the Fuxi team at leading cybersecurity conferences and community events.</p>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-card-bg rounded-xl overflow-hidden border border-gray-800 hover:border-cyber-red/40 transition group animate-on-scroll">
+                <div class="bg-card-bg rounded-xl overflow-hidden border border-red-900/30 hover:border-cyber-red/40 transition group animate-on-scroll">
                     <img src="/img/003-North-Zone-of-Qianhai-Shenzhen-Hong-Kong-Youth-Innovation-and-Entrepreneur-Hub-in-Shenzhen-by-L-A-Design-Group-960x720.jpg" class="h-52 w-full object-cover" alt="event">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">CyberSec Shenzhen 2026</h3>
@@ -575,7 +536,7 @@
                         <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Register Now <i class="fas fa-arrow-right ml-2 read-more-arrow text-xs"></i></a>
                     </div>
                 </div>
-                <div class="bg-card-bg rounded-xl overflow-hidden border border-gray-800 hover:border-cyber-red/40 transition group animate-on-scroll">
+                <div class="bg-card-bg rounded-xl overflow-hidden border border-red-900/30 hover:border-cyber-red/40 transition group animate-on-scroll">
                     <img src="/img/computer-science-degree.jpg" class="h-52 w-full object-cover" alt="workshop">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Fuxi SOC Modernization Workshop</h3>
@@ -583,7 +544,7 @@
                         <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Join Workshop <i class="fas fa-arrow-right ml-2 read-more-arrow text-xs"></i></a>
                     </div>
                 </div>
-                <div class="bg-card-bg rounded-xl overflow-hidden border border-gray-800 hover:border-cyber-red/40 transition group animate-on-scroll">
+                <div class="bg-card-bg rounded-xl overflow-hidden border border-red-900/30 hover:border-cyber-red/40 transition group animate-on-scroll">
                     <img src="/img/Advantages-and-Disadvantages-of-LAN-1024x576.jpg" class="h-52 w-full object-cover" alt="webinar">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Zero Trust and OT Security Webinar</h3>

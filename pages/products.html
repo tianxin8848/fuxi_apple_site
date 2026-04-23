@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="../css/vendor/inter-local.css">
     <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
     <link rel="stylesheet" href="../css/nav-baseline.css">
+    <link rel="stylesheet" href="../css/site-nav.css">
     <style>
         :root {
             --color-cyber-red: #ff0000;
@@ -83,30 +84,6 @@
         }
         section + section {
             border-top: 1px solid rgb(127 29 29 / 0.3);
-        }
-        .nav-blur {
-            backdrop-filter: blur(12px);
-            background-color: rgb(4, 0, 0);
-            border-bottom: 1px solid rgba(255,0,0,0.2);
-        }
-        .nav-cta-apple {
-            border-radius: 9999px;
-            min-height: 34px;
-            padding: 0 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            letter-spacing: 0.01em;
-            background: #ff1a1a;
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
-            line-height: 1;
-            transition: background-color 0.22s ease;
-            margin: 10px;
-            white-space: nowrap;
-        }
-        .nav-cta-apple:hover {
-            background: #ff3030;
         }
         .btn-primary {
             transition: all 0.2s ease;
@@ -148,11 +125,12 @@
 </head>
 <body class="font-sans text-white">
 
-    <!-- Navigation (fixed, glassmorphic) -->
+    <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
+    <!-- SITE_NAV_PARTIAL_BEGIN -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-11 w-auto object-contain" onerror="this.style.display='none'">
+                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
             </a>
             <div class="hidden md:flex items-center space-x-7">
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
@@ -173,7 +151,7 @@
             </div>
         </div>
         <!-- mobile menu (simple) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/30/40 px-5 py-4 flex flex-col space-y-3">
             <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
             <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
             <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
@@ -183,6 +161,8 @@
             <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
     </nav>
+    <!-- SITE_NAV_PARTIAL_END -->
+
 
     <!-- Product Introduction -->
     <section class="pt-32 pb-20 px-5 bg-gradient-to-b from-dark-bg to-black">
@@ -211,7 +191,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Feature Card 1 -->
-                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden feature-card animate-on-scroll">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden feature-card animate-on-scroll">
                     <div class="relative h-56 overflow-hidden">
                         <img src="/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="Endpoint & Email Security" class="w-full h-full object-cover image-hover">
                     </div>
@@ -224,7 +204,7 @@
                 </div>
 
                 <!-- Feature Card 2 -->
-                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.1s;">
                     <div class="relative h-56 overflow-hidden">
                         <img src="/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="Agentic SIEM Analytics" class="w-full h-full object-cover image-hover">
                     </div>
@@ -237,7 +217,7 @@
                 </div>
 
                 <!-- Feature Card 3 -->
-                <div class="bg-card-bg border border-gray-800 rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.2s;">
+                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.2s;">
                     <div class="relative h-56 overflow-hidden">
                         <img src="/img/Advantages-and-Disadvantages-of-LAN-1024x576.jpg" alt="Secure LAN Edge Visibility" class="w-full h-full object-cover image-hover">
                     </div>
@@ -257,7 +237,7 @@
         <div class="container mx-auto">
             <div class="flex flex-col lg:flex-row items-center gap-12">
                 <div class="lg:w-1/2 animate-on-scroll">
-                    <div class="overflow-hidden rounded-2xl border border-gray-800">
+                    <div class="overflow-hidden rounded-2xl border border-red-900/30">
                         <img src="/img/computer-science-degree.jpg" alt="Built for Security Teams" class="w-full h-auto object-cover image-hover">
                     </div>
                 </div>
@@ -276,7 +256,7 @@
         <div class="container mx-auto">
             <div class="flex flex-col lg:flex-row-reverse items-center gap-12">
                 <div class="lg:w-1/2 animate-on-scroll">
-                    <div class="overflow-hidden rounded-2xl border border-gray-800">
+                    <div class="overflow-hidden rounded-2xl border border-red-900/30">
                         <img src="/img/screenshot-event.png" alt="Designed for China's Enterprises" class="w-full h-auto object-cover image-hover">
                     </div>
                 </div>

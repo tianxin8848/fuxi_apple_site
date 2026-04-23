@@ -1,0 +1,52 @@
+:root {
+    --nav-bottom: 48px;
+}
+
+.nav-blur {
+    backdrop-filter: blur(12px);
+    background-color: rgb(4, 0, 0);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+nav.nav-blur > .container {
+    height: 48px;
+    box-sizing: border-box;
+}
+
+nav.nav-blur > .container img {
+    max-height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+.nav-cta-apple {
+    border-radius: 9999px;
+    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: #ff1a1a;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
+    line-height: 1;
+    transition: background-color 0.22s ease;
+    white-space: nowrap;
+}
+
+.nav-cta-apple:hover {
+    background: #ff3030;
+}
+
+.nav-link-trigger {
+    position: relative;
+}
+
+.nav-link-trigger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 12px;
+}
