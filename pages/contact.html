@@ -132,7 +132,7 @@
             box-shadow: 0 10px 25px -5px rgba(255, 0, 0, 0.2);
         }
         .form-input {
-            background-color: rgba(10, 10, 10, 0.8);
+            background-color: #0a0a0a;
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             transition: all 0.2s ease;
@@ -145,6 +145,40 @@
         .form-input.is-invalid {
             border-color: #dc3545 !important;
             box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25) !important;
+        }
+        /* Country combobox: solid panel, list shows ~5 rows then scrolls, width matches trigger.
+           Borders use explicit colors here because this build's tailwind.css omits border-gray-700,
+           so Preflight's `*, ::before, ::after { border-color: #e5e7eb }` would otherwise win. */
+        .country-select-dropdown {
+            background-color: #0a0a0a;
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #374151;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.95);
+        }
+        .country-select-dropdown .country-select-search-wrap {
+            background-color: #0a0a0a;
+            border-bottom: 1px solid #374151;
+        }
+        .country-select-list {
+            max-height: calc(5 * 3rem);
+            overflow-y: auto;
+            background-color: #0a0a0a;
+            scrollbar-color: #52525b #0a0a0a;
+            scrollbar-width: thin;
+        }
+        .country-select-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .country-select-list::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        .country-select-list::-webkit-scrollbar-thumb {
+            background: #52525b;
+            border-radius: 4px;
+        }
+        .country-select-list .country-option:hover {
+            background-color: #1f2937;
         }
         .map-container {
             border-radius: 12px;
@@ -353,17 +387,56 @@
                                 <div class="text-red-500 text-sm mt-1 hidden" id="emailError">Please enter a valid email address</div>
                             </div>
 
-                            <!-- Subject -->
+                            <!-- Country -->
                             <div>
-                                <label for="subject" class="block text-sm font-medium mb-2">Subject *</label>
-                                <input
-                                    type="text"
-                                    id="subject"
-                                    name="subject"
-                                    class="w-full px-4 py-3 rounded-lg form-input"
-                                    placeholder="Message subject"
-                                    required>
-                                <div class="text-red-500 text-sm mt-1 hidden" id="subjectError">Please enter a subject</div>
+                                <label for="country" class="block text-sm font-medium mb-2">Country *</label>
+                                <div class="relative">
+                                    <input
+                                        type="text"
+                                        id="countryInput"
+                                        class="w-full px-4 py-3 rounded-lg form-input pr-10"
+                                        placeholder="Select your country"
+                                        readonly
+                                        required>
+                                    <input
+                                        type="hidden"
+                                        id="country"
+                                        name="country"
+                                        required>
+                                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-text pointer-events-none">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                    <div id="countryDropdown" class="country-select-dropdown hidden absolute top-full left-0 mt-1 rounded-lg z-50 overflow-hidden">
+                                        <div class="country-select-search-wrap px-4 py-3">
+                                            <input
+                                                type="text"
+                                                id="countrySearch"
+                                                class="w-full px-4 py-2 rounded-lg form-input text-sm"
+                                                placeholder="Search country..."
+                                                autocomplete="off">
+                                        </div>
+                                        <div id="countryList" class="country-select-list">
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="China">China</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="United States">United States</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="United Kingdom">United Kingdom</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Canada">Canada</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Australia">Australia</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Germany">Germany</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="France">France</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Japan">Japan</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="South Korea">South Korea</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Singapore">Singapore</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Hong Kong">Hong Kong</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Taiwan">Taiwan</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="India">India</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Brazil">Brazil</div>
+                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Other">Other</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-red-500 text-sm mt-1 hidden" id="countryError">Please select your country</div>
                             </div>
 
                             <!-- Message -->
@@ -378,6 +451,7 @@
                                     required></textarea>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="messageError">Please enter your message</div>
                             </div>
+
 
                             <!-- Submit Button -->
                             <button
@@ -659,23 +733,23 @@
                 const nameField = document.getElementById('name');
                 const phoneField = document.getElementById('phone');
                 const emailField = document.getElementById('email');
-                const subjectField = document.getElementById('subject');
+                const countryField = document.getElementById('country');
                 const messageField = document.getElementById('message');
 
                 const nameError = document.getElementById('nameError');
                 const phoneError = document.getElementById('phoneError');
                 const emailError = document.getElementById('emailError');
-                const subjectError = document.getElementById('subjectError');
+                const countryError = document.getElementById('countryError');
                 const messageError = document.getElementById('messageError');
 
                 // Validate all fields
                 const isNameValid = validateField(nameField, nameError);
                 const isPhoneValid = validatePhone(phoneField, phoneError);
                 const isEmailValid = validateEmail(emailField, emailError);
-                const isSubjectValid = validateField(subjectField, subjectError);
+                const isCountryValid = validateField(countryField, countryError);
                 const isMessageValid = validateField(messageField, messageError);
 
-                if(isNameValid && isPhoneValid && isEmailValid && isSubjectValid && isMessageValid) {
+                if(isNameValid && isPhoneValid && isEmailValid && isCountryValid && isMessageValid) {
                     // Show sending state
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = 'Sending...';
@@ -717,7 +791,7 @@
             });
 
             // Real-time validation
-            const fields = ['name', 'phone', 'email', 'subject', 'message'];
+            const fields = ['name', 'phone', 'email', 'country', 'message'];
             fields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 const errorElement = document.getElementById(fieldId + 'Error');
@@ -742,6 +816,77 @@
                     });
                 }
             });
+
+            // Country dropdown functionality
+            const countryInput = document.getElementById('countryInput');
+            const countryDropdown = document.getElementById('countryDropdown');
+            const countrySearch = document.getElementById('countrySearch');
+            const countryList = document.getElementById('countryList');
+            const countryHidden = document.getElementById('country');
+            const countryError = document.getElementById('countryError');
+
+            if(countryInput && countryDropdown && countrySearch && countryList && countryHidden) {
+                // Toggle dropdown
+                countryInput.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    countryDropdown.classList.toggle('hidden');
+                });
+
+                // Search functionality
+                countrySearch.addEventListener('input', () => {
+                    const searchTerm = countrySearch.value.toLowerCase();
+                    const options = countryList.querySelectorAll('.country-option');
+
+                    options.forEach(option => {
+                        const text = option.textContent.toLowerCase();
+                        if(text.includes(searchTerm)) {
+                            option.style.display = 'block';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                });
+
+                // Select country
+                countryList.addEventListener('click', (e) => {
+                    const option = e.target.closest('.country-option');
+                    if(option) {
+                        const value = option.dataset.value;
+                        countryInput.value = value;
+                        countryHidden.value = value;
+                        countryDropdown.classList.add('hidden');
+
+                        // Clear error if any
+                        countryInput.classList.remove('is-invalid');
+                        countryError.classList.add('hidden');
+                        formFeedback.innerHTML = '';
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if(!countryInput.contains(e.target) && !countryDropdown.contains(e.target)) {
+                        countryDropdown.classList.add('hidden');
+                    }
+                });
+
+                // Validate country on blur
+                countryInput.addEventListener('blur', () => {
+                    if(!countryHidden.value) {
+                        countryInput.classList.add('is-invalid');
+                        countryError.classList.remove('hidden');
+                    }
+                });
+
+                // Clear error on input
+                countryInput.addEventListener('input', () => {
+                    if(countryInput.classList.contains('is-invalid')) {
+                        countryInput.classList.remove('is-invalid');
+                        countryError.classList.add('hidden');
+                        formFeedback.innerHTML = '';
+                    }
+                });
+            }
         }
     </script>
 </body>
