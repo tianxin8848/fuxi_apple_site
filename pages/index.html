@@ -90,12 +90,20 @@
         .hero-section {
             position: relative;
         }
-        .hero-section video {
-            transform: scale(1.01);
+        .hero-matrix-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: block;
+            background: #000;
         }
-        .video-overlay-gradient {
-            background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,0,0.65), rgba(0,0,0,0.4));
-        }
+        /* .video-overlay-gradient {
+            background:
+                radial-gradient(ellipse 120% 80% at 50% 45%, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.72) 58%, rgba(0, 0, 0, 0.9) 100%),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.82) 100%);
+        } */
         .stat-hover:hover {
             transform: translateY(-5px);
             border-color: #ff0000;
@@ -369,11 +377,9 @@
         </div>
     </div>
 
-    <!-- Hero with video background -->
+    <!-- Hero with Matrix binary rain background -->
     <section class="hero-section relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-20">
-        <video class="absolute top-0 left-0 w-full h-full object-cover z-0" autoplay loop muted playsinline>
-            <source src="/img/6330774-hd_1920_1080_30fps.mp4" type="video/mp4">
-        </video>
+        <canvas id="hero-matrix-canvas" class="hero-matrix-canvas" aria-hidden="true"></canvas>
         <div class="absolute inset-0 video-overlay-gradient z-10"></div>
         <div class="relative z-20 text-center px-5 max-w-4xl mx-auto">
             <div class="animate-[fadeUp_0.8s_ease-out]">
@@ -766,12 +772,86 @@
         }, { threshold: 0.15 });
         animatedElements.forEach(el => observer.observe(el));
 
-        // video autoplay handling: ensure video tries to play
+        // hero + media bootstrapping
         document.addEventListener('DOMContentLoaded', () => {
-            const video = document.querySelector('video');
-            if(video) {
-                video.preload = 'metadata';
-                video.play().catch(e => console.log("autoplay blocked:", e));
+            const matrixCanvas = document.getElementById('hero-matrix-canvas');
+            if (matrixCanvas) {
+                const matrixContext = matrixCanvas.getContext('2d');
+                let matrixDrops = [];
+                let matrixColumns = 0;
+                let matrixFontSize = 16;
+                let matrixAnimationFrameId = null;
+                let matrixLastFrameTime = 0;
+                const matrixFrameIntervalMs = 42;
+                const matrixChars = '01';
+                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                const setupMatrixCanvas = () => {
+                    const width = Math.floor(matrixCanvas.clientWidth || window.innerWidth);
+                    const height = Math.floor(matrixCanvas.clientHeight || window.innerHeight);
+                    matrixCanvas.width = width;
+                    matrixCanvas.height = height;
+                    matrixFontSize = width < 640 ? 14 : 16;
+                    matrixColumns = Math.ceil(width / matrixFontSize);
+                    matrixDrops = Array.from({ length: matrixColumns }, () => Math.floor(Math.random() * height / matrixFontSize));
+                    matrixContext.fillStyle = '#000000';
+                    matrixContext.fillRect(0, 0, width, height);
+                    matrixContext.font = `${matrixFontSize}px monospace`;
+                };
+
+                const drawMatrix = (timestamp) => {
+                    if (!matrixContext) return;
+                    if (timestamp - matrixLastFrameTime < matrixFrameIntervalMs) {
+                        matrixAnimationFrameId = window.requestAnimationFrame(drawMatrix);
+                        return;
+                    }
+                    matrixLastFrameTime = timestamp;
+                    matrixContext.fillStyle = 'rgba(0, 0, 0, 0.12)';
+                    matrixContext.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+                    matrixContext.font = `${matrixFontSize}px monospace`;
+                    for (let i = 0; i < matrixColumns; i += 1) {
+                        const char = matrixChars.charAt((Math.random() * matrixChars.length) | 0);
+                        const x = i * matrixFontSize;
+                        const y = matrixDrops[i] * matrixFontSize;
+                        matrixContext.fillStyle = i % 8 === 0 ? '#ff4a4a' : '#ff0000';
+                        matrixContext.fillText(char, x, y);
+                        if (y > matrixCanvas.height && Math.random() > 0.972) {
+                            matrixDrops[i] = 0;
+                        } else {
+                            matrixDrops[i] += 1;
+                        }
+                    }
+                    matrixAnimationFrameId = window.requestAnimationFrame(drawMatrix);
+                };
+
+                setupMatrixCanvas();
+                if (reduceMotion) {
+                    matrixContext.fillStyle = '#870000';
+                    matrixContext.font = `${matrixFontSize}px monospace`;
+                    for (let x = 0; x < matrixCanvas.width; x += matrixFontSize * 2) {
+                        for (let y = 0; y < matrixCanvas.height; y += matrixFontSize * 2) {
+                            matrixContext.fillText(Math.random() > 0.5 ? '1' : '0', x, y);
+                        }
+                    }
+                } else {
+                    matrixAnimationFrameId = window.requestAnimationFrame(drawMatrix);
+                }
+
+                let matrixResizeTimer = null;
+                window.addEventListener('resize', () => {
+                    if (matrixResizeTimer) window.clearTimeout(matrixResizeTimer);
+                    matrixResizeTimer = window.setTimeout(() => {
+                        if (matrixAnimationFrameId) {
+                            window.cancelAnimationFrame(matrixAnimationFrameId);
+                            matrixAnimationFrameId = null;
+                        }
+                        setupMatrixCanvas();
+                        if (!reduceMotion) {
+                            matrixLastFrameTime = 0;
+                            matrixAnimationFrameId = window.requestAnimationFrame(drawMatrix);
+                        }
+                    }, 120);
+                }, { passive: true });
             }
 
             // progressive image loading hints (better smoothness while scrolling)
