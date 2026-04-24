@@ -136,34 +136,32 @@
             position: relative;
             max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            align-items: flex-start;
+            overflow-x: auto;
+            padding: 2rem 0;
         }
         .timeline-container::before {
             content: '';
             position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            transform: translateX(-50%);
-            width: 2px;
-            background: linear-gradient(to bottom, rgba(255,0,0,0.3), rgba(255,0,0,0.1));
+            top: 50px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255,0,0,0.1), rgba(255,0,0,0.3), rgba(255,0,0,0.1));
         }
         .timeline-item {
             position: relative;
-            margin-bottom: 3rem;
-            display: flex;
-            align-items: center;
-        }
-        .timeline-item:nth-child(odd) {
-            flex-direction: row;
-        }
-        .timeline-item:nth-child(even) {
-            flex-direction: row-reverse;
+            flex: 1;
+            min-width: 300px;
+            margin: 0 2rem;
+            text-align: center;
         }
         .timeline-dot {
             position: absolute;
+            top: -30px;
             left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             width: 16px;
             height: 16px;
             border-radius: 50%;
@@ -172,45 +170,37 @@
             box-shadow: 0 0 0 3px rgba(255,0,0,0.3);
             z-index: 1;
         }
-        .timeline-date {
-            flex: 0 0 200px;
-            text-align: right;
-            padding-right: 2rem;
-        }
-        .timeline-item:nth-child(even) .timeline-date {
-            text-align: left;
-            padding-right: 0;
-            padding-left: 2rem;
-        }
-        .timeline-content {
-            flex: 1;
-            background: var(--color-card-bg);
-            border: 1px solid rgba(255,0,0,0.3);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
+        .timeline-item > div {
+            position: relative;
+            z-index: 2;
+            margin-top: 40px;
         }
         @media (max-width: 768px) {
+            .timeline-container {
+                flex-direction: column;
+                align-items: flex-start;
+                overflow-x: visible;
+                padding: 0;
+            }
             .timeline-container::before {
+                top: 0;
                 left: 30px;
+                right: auto;
+                width: 2px;
+                height: 100%;
+                background: linear-gradient(to bottom, rgba(255,0,0,0.3), rgba(255,0,0,0.1));
             }
             .timeline-item {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                padding-left: 70px;
+                min-width: auto;
+                width: 100%;
+                margin: 0 0 3rem 0;
+                padding-left: 70px !important;
+                text-align: left !important;
             }
             .timeline-dot {
-                left: 22px;
                 top: 0;
+                left: 22px;
                 transform: none;
-            }
-            .timeline-date {
-                text-align: left !important;
-                padding: 0 0 0.5rem 0 !important;
-                flex: none;
-            }
-            .timeline-content {
-                flex: none;
-                width: 100%;
             }
         }
     </style>
@@ -279,11 +269,9 @@
             <div class="timeline-container animate-on-scroll">
                 <!-- Milestone 1 -->
                 <div class="timeline-item">
-                    <div class="timeline-date">
-                        <div class="text-cyber-red font-bold text-lg">2026-3</div>
-                    </div>
                     <div class="timeline-dot"></div>
-                    <div class="timeline-content">
+                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-6">
+                        <div class="text-cyber-red font-bold text-lg mb-2">2026-3</div>
                         <h3 class="text-xl font-bold mb-2">Foundation</h3>
                         <p class="text-muted-text">
                             Fuxi Technology was founded in Shenzhen with a mission to revolutionize network security.
@@ -292,11 +280,9 @@
                 </div>
                 <!-- Milestone 2 -->
                 <div class="timeline-item">
-                    <div class="timeline-date">
-                        <div class="text-cyber-red font-bold text-lg">2026-7</div>
-                    </div>
                     <div class="timeline-dot"></div>
-                    <div class="timeline-content">
+                    <div class="bg-card-bg border border-red-800 rounded-xl p-6">
+                        <div class="text-cyber-red font-bold text-lg mb-2">2026-7</div>
                         <h3 class="text-xl font-bold mb-2">FuxiOS Launch</h3>
                         <p class="text-muted-text">
                             Released our flagship operating system, setting a new benchmark for integrated security.
