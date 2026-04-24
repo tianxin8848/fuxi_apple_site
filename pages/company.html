@@ -138,6 +138,7 @@
             margin: 0 auto;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 1.5rem;
             overflow-x: auto;
             padding: 9rem 0.75rem;
@@ -154,8 +155,8 @@
         }
         .timeline-item {
             position: relative;
-            flex: 0 0 320px;
-            min-width: 320px;
+            flex: 0 0 460px;
+            min-width: 460px;
             min-height: 220px;
         }
         .timeline-dot {
@@ -174,7 +175,8 @@
         .timeline-card {
             position: absolute;
             left: 50%;
-            width: 380px;
+            width: 440px;
+            max-width: calc(100vw - 2rem);
             transform: translateX(-50%);
             z-index: 2;
         }
