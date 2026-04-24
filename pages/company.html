@@ -134,60 +134,73 @@
         /* Timeline styles */
         .timeline-container {
             position: relative;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            align-items: flex-start;
+            overflow-x: auto;
+            padding: 2rem 0;
         }
         .timeline-container::before {
             content: '';
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(255,0,0,0.3), rgba(255,0,0,0.1));
+            top: 50px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255,0,0,0.1), rgba(255,0,0,0.3), rgba(255,0,0,0.1));
         }
         .timeline-item {
             position: relative;
-            margin-bottom: 3rem;
-            width: 100%;
-        }
-        .timeline-item:nth-child(odd) {
-            padding-right: calc(50% + 2rem);
-            text-align: right;
-        }
-        .timeline-item:nth-child(even) {
-            padding-left: calc(50% + 2rem);
-            text-align: left;
+            flex: 1;
+            min-width: 300px;
+            margin: 0 2rem;
+            text-align: center;
         }
         .timeline-dot {
             position: absolute;
-            top: 0;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 16px;
             height: 16px;
             border-radius: 50%;
             background-color: #ff0000;
             border: 3px solid #050505;
             box-shadow: 0 0 0 3px rgba(255,0,0,0.3);
+            z-index: 1;
         }
-        .timeline-item:nth-child(odd) .timeline-dot {
-            right: calc(50% - 8px);
-        }
-        .timeline-item:nth-child(even) .timeline-dot {
-            left: calc(50% - 8px);
+        .timeline-item > div {
+            position: relative;
+            z-index: 2;
+            margin-top: 40px;
         }
         @media (max-width: 768px) {
+            .timeline-container {
+                flex-direction: column;
+                align-items: flex-start;
+                overflow-x: visible;
+                padding: 0;
+            }
             .timeline-container::before {
+                top: 0;
                 left: 30px;
+                right: auto;
+                width: 2px;
+                height: 100%;
+                background: linear-gradient(to bottom, rgba(255,0,0,0.3), rgba(255,0,0,0.1));
             }
             .timeline-item {
+                min-width: auto;
+                width: 100%;
+                margin: 0 0 3rem 0;
                 padding-left: 70px !important;
-                padding-right: 0 !important;
                 text-align: left !important;
             }
-            .timeline-item:nth-child(odd) .timeline-dot,
-            .timeline-item:nth-child(even) .timeline-dot {
+            .timeline-dot {
+                top: 0;
                 left: 22px;
-                right: auto;
+                transform: none;
             }
         }
     </style>
@@ -257,22 +270,22 @@
                 <!-- Milestone 1 -->
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="bg-card-bg border border-red-800 rounded-xl p-6">
-                        <div class="text-cyber-red font-bold text-lg mb-2">2026-7</div>
-                        <h3 class="text-xl font-bold mb-2">FuxiOS Launch</h3>
+                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-6">
+                        <div class="text-cyber-red font-bold text-lg mb-2">2026-3</div>
+                        <h3 class="text-xl font-bold mb-2">Foundation</h3>
                         <p class="text-muted-text">
-                            Released our flagship operating system, setting a new benchmark for integrated security.
+                            Fuxi Technology was founded in Shenzhen with a mission to revolutionize network security.
                         </p>
                     </div>
                 </div>
                 <!-- Milestone 2 -->
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-6">
-                        <div class="text-cyber-red font-bold text-lg mb-2">2026-3</div>
-                        <h3 class="text-xl font-bold mb-2">Foundation</h3>
+                    <div class="bg-card-bg border border-red-800 rounded-xl p-6">
+                        <div class="text-cyber-red font-bold text-lg mb-2">2026-7</div>
+                        <h3 class="text-xl font-bold mb-2">FuxiOS Launch</h3>
                         <p class="text-muted-text">
-                            Fuxi Technology was founded in Shenzhen with a mission to revolutionize network security.
+                            Released our flagship operating system, setting a new benchmark for integrated security.
                         </p>
                     </div>
                 </div>
