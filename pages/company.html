@@ -43,7 +43,7 @@
         }
     </script>
     <link rel="stylesheet" href="../css/vendor/inter-local.css">
-    <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/nav-baseline.css">
     <link rel="stylesheet" href="../css/site-nav.css">
     <style>
@@ -337,7 +337,7 @@
                 <!-- Value Card 1 -->
                 <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 value-card animate-on-scroll">
                     <div class="icon-container">
-                        <i class="fas fa-shield-alt text-3xl text-cyber-red"></i>
+                        <i class="fas fa-shield text-3xl text-cyber-red"></i>
                     </div>
                     <h3 class="text-xl font-bold">Security First</h3>
                     <p class="text-muted-text mt-3 text-sm leading-relaxed">
@@ -348,7 +348,7 @@
                 <!-- Value Card 2 -->
                 <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 value-card animate-on-scroll" style="transition-delay: 0.1s;">
                     <div class="icon-container">
-                        <i class="fas fa-globe text-3xl text-cyber-red"></i>
+                        <i class="fas fa-cloud text-3xl text-cyber-red"></i>
                     </div>
                     <h3 class="text-xl font-bold">Global Impact</h3>
                     <p class="text-muted-text mt-3 text-sm leading-relaxed">
@@ -359,7 +359,7 @@
                 <!-- Value Card 3 -->
                 <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 value-card animate-on-scroll" style="transition-delay: 0.2s;">
                     <div class="icon-container">
-                        <i class="fas fa-user text-3xl text-cyber-red"></i>
+                        <i class="fas fa-chart-line text-3xl text-cyber-red"></i>
                     </div>
                     <h3 class="text-xl font-bold">Customer Success</h3>
                     <p class="text-muted-text mt-3 text-sm leading-relaxed">
@@ -436,7 +436,7 @@
                 mobileMenu.classList.toggle('hidden');
             });
         }
-        
+
         // scroll animation using intersection observer (pure vanilla)
         const animatedElements = document.querySelectorAll('.animate-on-scroll');
         const observer = new IntersectionObserver((entries) => {
@@ -448,7 +448,7 @@
             });
         }, { threshold: 0.15 });
         animatedElements.forEach(el => observer.observe(el));
-        
+
         // manually trigger visible for any element already in view (just in case)
         document.addEventListener('DOMContentLoaded', () => {
             animatedElements.forEach(el => {
