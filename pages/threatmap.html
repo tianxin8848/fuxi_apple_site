@@ -81,25 +81,28 @@
         }
 
         #globe-wrap {
-            min-height: 620px;
+            height: 620px;
             position: relative;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         #globe-stage {
-            width: min(100%, 760px);
-            aspect-ratio: 1 / 1;
-            position: relative;
+            position: absolute;
+            inset: 0;
         }
 
         #globe-viz {
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
             border-radius: 50%;
             overflow: hidden;
+        }
+
+        #globe-viz canvas {
+            display: block !important;
+            margin: 0 auto !important;
         }
 
         .metric-box {
@@ -135,10 +138,7 @@
                 grid-template-columns: 1fr;
             }
             #globe-wrap {
-                min-height: 500px;
-            }
-            #globe-stage {
-                width: min(100%, 560px);
+                height: 500px;
             }
         }
     </style>
@@ -250,6 +250,7 @@
     const metricBlocked = document.getElementById('metric-blocked');
     const globeViz = document.getElementById('globe-viz');
     const globeStage = document.getElementById('globe-stage');
+    const globeWrap = document.getElementById('globe-wrap');
 
     let totalEvents = 13280;
     let totalCritical = 428;
@@ -341,8 +342,15 @@
     }
 
     function resize() {
-        const target = globeStage;
-        const size = Math.max(280, Math.min(target.clientWidth, target.clientHeight));
+        const wrapStyles = window.getComputedStyle(globeWrap);
+        const horizontalPadding = parseFloat(wrapStyles.paddingLeft) + parseFloat(wrapStyles.paddingRight);
+        const verticalPadding = parseFloat(wrapStyles.paddingTop) + parseFloat(wrapStyles.paddingBottom);
+        const availableWidth = Math.max(0, globeWrap.clientWidth - horizontalPadding);
+        const availableHeight = Math.max(0, globeWrap.clientHeight - verticalPadding);
+        const size = Math.max(280, Math.min(availableWidth, availableHeight));
+
+        globeViz.style.width = size + 'px';
+        globeViz.style.height = size + 'px';
         if (size !== globeSize) {
             globeSize = size;
             globe.width(globeSize).height(globeSize);
