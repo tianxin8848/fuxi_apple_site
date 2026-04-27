@@ -224,7 +224,7 @@
             </div>
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-base font-semibold">Live Threat Events</h2>
-                <span class="text-xs text-gray-400">auto refresh 1.4s</span>
+                <span class="text-xs text-gray-400">stable view</span>
             </div>
             <div id="threat-list" class="space-y-2 max-h-[520px] overflow-auto pr-1"></div>
         </aside>
@@ -298,6 +298,10 @@
     globe.controls().enableDamping = true;
     globe.controls().dampingFactor = 0.08;
 
+    metricEvents.textContent = totalEvents.toLocaleString();
+    metricCritical.textContent = totalCritical.toLocaleString();
+    metricBlocked.textContent = totalBlocked.toLocaleString();
+
     function addThreatEffect() {
         const from = randomLatLng();
         const to = randomLatLng();
@@ -333,12 +337,6 @@
         listEl.prepend(item);
         while (listEl.children.length > 12) listEl.removeChild(listEl.lastChild);
 
-        totalEvents += Math.floor(Math.random() * 9) + 1;
-        totalCritical += Math.floor(Math.random() * 2);
-        totalBlocked += Math.floor(Math.random() * 8) + 1;
-        metricEvents.textContent = totalEvents.toLocaleString();
-        metricCritical.textContent = totalCritical.toLocaleString();
-        metricBlocked.textContent = totalBlocked.toLocaleString();
     }
 
     function resize() {
@@ -361,8 +359,7 @@
     window.addEventListener('resize', resize);
 
     function startExperience() {
-        for (let i = 0; i < 14; i++) addThreatEffect();
-        setInterval(addThreatEffect, 1400);
+        for (let i = 0; i < 36; i++) addThreatEffect();
     }
 
     startExperience();
