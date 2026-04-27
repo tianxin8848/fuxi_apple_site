@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Globe.GL 地球可视化</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+</head>
+<body>
+<div id="globe"></div>
+<script>
+  // 创建地球
+  const globe = Globe()(document.getElementById('globe'))
+    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+    .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+    .atmosphereColor('rgba(0, 100, 255, 0.3)')
+    .atmosphereAltitude(0.02);
+
+  // 威胁地图数据：飞线（从主要国家首都出发的攻击情况）
+  const threatArcs = [
+    // 北京出发的攻击
+    { startLat: 39.9042, startLng: 116.4074, endLat: 38.9072, endLng: -77.0369, threatLevel: 5, startName: '北京', endName: '华盛顿' },
+    { startLat: 39.9042, startLng: 116.4074, endLat: 51.5074, endLng: -0.1278, threatLevel: 3, startName: '北京', endName: '伦敦' },
+    { startLat: 39.9042, startLng: 116.4074, endLat: 35.6762, endLng: 139.6503, threatLevel: 4, startName: '北京', endName: '东京' },
+
+    // 华盛顿出发的攻击
+    { startLat: 38.9072, startLng: -77.0369, endLat: 51.5074, endLng: -0.1278, threatLevel: 4, startName: '华盛顿', endName: '伦敦' },
+    { startLat: 38.9072, startLng: -77.0369, endLat: 35.6762, endLng: 139.6503, threatLevel: 5, startName: '华盛顿', endName: '东京' },
+
+    // 伦敦出发的攻击
+    { startLat: 51.5074, startLng: -0.1278, endLat: 48.8566, endLng: 2.3522, threatLevel: 2, startName: '伦敦', endName: '巴黎' },
+    { startLat: 51.5074, startLng: -0.1278, endLat: 55.7558, endLng: 37.6173, threatLevel: 3, startName: '伦敦', endName: '莫斯科' },
+
+    // 东京出发的攻击
+    { startLat: 35.6762, startLng: 139.6503, endLat: -33.8688, endLng: 151.2093, threatLevel: 4, startName: '东京', endName: '悉尼' },
+
+    // 莫斯科出发的攻击
+    { startLat: 55.7558, startLng: 37.6173, endLat: 48.8566, endLng: 2.3522, threatLevel: 5, startName: '莫斯科', endName: '巴黎' },
+
+    // 悉尼出发的攻击
+    { startLat: -33.8688, startLng: 151.2093, endLat: 15.7975, endLng: -47.8919, threatLevel: 3, startName: '悉尼', endName: '巴西利亚' }
+  ];
+
+  // 添加飞线（Arcs Layer）
+  globe.arcsData(threatArcs)
+    .arcColor((d) => {
+      // 根据威胁等级设置颜色
+      const threatLevel = d.threatLevel;
+      if (threatLevel >= 5) return 'rgba(255, 0, 0, 0.8)';
+      if (threatLevel >= 3) return 'rgba(255, 165, 0, 0.8)';
+      return 'rgba(255, 255, 0, 0.8)';
+    })
+    .arcStroke(0.7) // 设置固定的细线宽度
+    .arcAltitude(0.2)
+    .arcDashLength(0.3) // 增加虚线长度
+    .arcDashGap(0.01) // 减小间隙
+    .arcDashAnimateTime(3000) // 调整动画时间，使效果更流畅
+    .arcLabel((d) => `${d.startName} → ${d.endName}\n威胁等级: ${d.threatLevel}`)
+    .arcsTransitionDuration(1000);
+
+  // 添加控制
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 0.5;
+</script>
+</body>
+</html>

@@ -6,6 +6,6 @@ dist
 .cache
 fonts/*
 
-img/00/*
+
 img/img/*
 img/logimg/*
