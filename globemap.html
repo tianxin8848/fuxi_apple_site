@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Globe.GL 地球可视化</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        #globe { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="globe"></div>
+    <script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+    <script>
+        // 创建地球
+        const globe = Globe()(document.getElementById('globe'))
+            .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+            .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+            .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png');
+
+        // 添加控制
+        globe.controls().autoRotate = true;
+        globe.controls().autoRotateSpeed = 0.5;
+    </script>
+</body>
+</html>
