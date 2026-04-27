@@ -95,11 +95,11 @@
             position: relative;
         }
 
-        #globe-canvas {
-            width: 100% !important;
-            height: 100% !important;
-            display: block;
+        #globe-viz {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
+            overflow: hidden;
         }
 
         .metric-box {
@@ -198,7 +198,7 @@
     <div class="threat-layout">
         <section id="globe-wrap" class="glass-card p-3 md:p-4">
             <div id="globe-stage">
-                <canvas id="globe-canvas"></canvas>
+                <div id="globe-viz"></div>
             </div>
             <div class="absolute left-5 bottom-5 flex gap-2">
                 <span class="chip">Threat Pulses</span>
@@ -240,41 +240,27 @@
         });
     }
 </script>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-  }
-}
-</script>
-<script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-    import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+<script src="//cdn.jsdelivr.net/npm/globe.gl"></script>
+<script>
     const threatTypes = ['DDoS', 'Ransomware', 'Botnet C2', 'Phishing Wave', 'Credential Stuffing', 'Malware Beacon'];
     const regions = ['CN', 'US', 'JP', 'DE', 'SG', 'AU', 'GB', 'BR', 'IN', 'ZA'];
     const listEl = document.getElementById('threat-list');
     const metricEvents = document.getElementById('metric-events');
     const metricCritical = document.getElementById('metric-critical');
     const metricBlocked = document.getElementById('metric-blocked');
-    const canvas = document.getElementById('globe-canvas');
+    const globeViz = document.getElementById('globe-viz');
     const globeStage = document.getElementById('globe-stage');
-    const globeWrap = document.getElementById('globe-wrap');
-    canvas.style.visibility = 'hidden';
 
     let totalEvents = 13280;
     let totalCritical = 428;
     let totalBlocked = 12744;
+    const maxArcs = 80;
+    const arcPalette = ['#ff2a35', '#ff4d57', '#ff7d86', '#ffd1d5'];
+    const arcsData = [];
+    const pointsData = [];
+    let globeSize = 560;
 
-    function latLngToVector3(lat, lng, radius) {
-        const phi = (90 - lat) * (Math.PI / 180);
-        const theta = (lng + 180) * (Math.PI / 180);
-        const x = -(radius * Math.sin(phi) * Math.cos(theta));
-        const z = radius * Math.sin(phi) * Math.sin(theta);
-        const y = radius * Math.cos(phi);
-        return new THREE.Vector3(x, y, z);
-    }
-
-    function randomPoint() {
+    function randomLatLng() {
         return {
             lat: (Math.random() * 180) - 90,
             lng: (Math.random() * 360) - 180
@@ -285,153 +271,59 @@
         return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-    camera.position.set(0, 0, 11);
+    const globe = new Globe(globeViz)
+        .globeImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
+        .backgroundColor('rgba(0,0,0,0)')
+        .showAtmosphere(true)
+        .atmosphereColor('#ff3f4e')
+        .atmosphereAltitude(0.12)
+        .arcColor('color')
+        .arcAltitude('altitude')
+        .arcStroke(0.6)
+        .arcDashLength('dashLength')
+        .arcDashGap('dashGap')
+        .arcDashInitialGap(() => Math.random())
+        .arcDashAnimateTime('dashTime')
+        .arcsTransitionDuration(450)
+        .pointAltitude('altitude')
+        .pointRadius('radius')
+        .pointColor('color');
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-
-    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambient);
-
-    const pointLight = new THREE.PointLight(0xff3340, 2.6, 40);
-    pointLight.position.set(5, 3, 8);
-    scene.add(pointLight);
-
-    const globeGroup = new THREE.Group();
-    scene.add(globeGroup);
-
-    const textureLoader = new THREE.TextureLoader();
-    const texturePromises = [
-        'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg',
-        'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_bump_2048.jpg',
-        'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_specular_2048.jpg'
-    ].map((url) => new Promise((resolve, reject) => {
-        textureLoader.load(url, resolve, undefined, reject);
-    }));
-
-    const earth = new THREE.Mesh(
-        new THREE.SphereGeometry(3, 72, 72),
-        new THREE.MeshStandardMaterial({
-            color: 0xffb3bb,
-            emissive: 0x2d0b12,
-            emissiveIntensity: 0.45,
-            roughness: 0.85,
-            metalness: 0.05
-        })
-    );
-    globeGroup.add(earth);
-
-    const wire = new THREE.Mesh(
-        new THREE.SphereGeometry(3.01, 44, 44),
-        new THREE.MeshBasicMaterial({
-            color: 0xff3340,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.22
-        })
-    );
-    globeGroup.add(wire);
-
-    const atmosphere = new THREE.Mesh(
-        new THREE.SphereGeometry(3.22, 64, 64),
-        new THREE.MeshBasicMaterial({
-            color: 0xff3f4e,
-            transparent: true,
-            opacity: 0.14
-        })
-    );
-    globeGroup.add(atmosphere);
-
-    const latLonGroup = new THREE.Group();
-    const latLonMaterial = new THREE.LineBasicMaterial({
-        color: 0xff4a57,
-        transparent: true,
-        opacity: 0.16
-    });
-    function createLatLine(latDeg) {
-        const points = [];
-        for (let lng = -180; lng <= 180; lng += 4) {
-            points.push(latLngToVector3(latDeg, lng, 3.04));
-        }
-        return new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), latLonMaterial);
-    }
-    function createLonLine(lonDeg) {
-        const points = [];
-        for (let lat = -90; lat <= 90; lat += 4) {
-            points.push(latLngToVector3(lat, lonDeg, 3.04));
-        }
-        return new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), latLonMaterial);
-    }
-    for (let lat = -60; lat <= 60; lat += 15) {
-        latLonGroup.add(createLatLine(lat));
-    }
-    for (let lon = -180; lon < 180; lon += 15) {
-        latLonGroup.add(createLonLine(lon));
-    }
-    globeGroup.add(latLonGroup);
-
-    const starGeometry = new THREE.BufferGeometry();
-    const starCount = 1500;
-    const starPositions = new Float32Array(starCount * 3);
-    for (let i = 0; i < starCount; i++) {
-        starPositions[i * 3] = (Math.random() - 0.5) * 160;
-        starPositions[i * 3 + 1] = (Math.random() - 0.5) * 160;
-        starPositions[i * 3 + 2] = (Math.random() - 0.5) * 160;
-    }
-    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    const stars = new THREE.Points(
-        starGeometry,
-        new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.75 })
-    );
-    scene.add(stars);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    let isUserInteracting = false;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
-    controls.rotateSpeed = 0.7;
-    controls.zoomSpeed = 0.9;
-    controls.enablePan = false;
-    controls.minDistance = 6.5;
-    controls.maxDistance = 16;
-    controls.minPolarAngle = Math.PI * 0.2;
-    controls.maxPolarAngle = Math.PI * 0.8;
-    controls.addEventListener('start', () => { isUserInteracting = true; });
-    controls.addEventListener('end', () => { isUserInteracting = false; });
-
-    const threatEffects = [];
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 0.45;
+    globe.controls().enablePan = false;
+    globe.controls().minDistance = 160;
+    globe.controls().maxDistance = 420;
+    globe.controls().enableDamping = true;
+    globe.controls().dampingFactor = 0.08;
 
     function addThreatEffect() {
-        const from = randomPoint();
-        const to = randomPoint();
-        const start = latLngToVector3(from.lat, from.lng, 3.02);
-        const end = latLngToVector3(to.lat, to.lng, 3.02);
-        const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(4.4);
-        const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-        const points = curve.getPoints(56);
-
-        const line = new THREE.Line(
-            new THREE.BufferGeometry().setFromPoints(points),
-            new THREE.LineBasicMaterial({ color: 0xff4f5f, transparent: true, opacity: 0.95 })
-        );
-        globeGroup.add(line);
-
-        const pulse = new THREE.Mesh(
-            new THREE.SphereGeometry(0.06, 12, 12),
-            new THREE.MeshBasicMaterial({ color: 0xff6b7a, transparent: true, opacity: 1 })
-        );
-        pulse.position.copy(end);
-        globeGroup.add(pulse);
-
-        threatEffects.push({
-            line,
-            pulse,
-            born: performance.now(),
-            ttl: 2300 + Math.random() * 1200
+        const from = randomLatLng();
+        const to = randomLatLng();
+        const colorStart = randomChoice(arcPalette);
+        const colorEnd = randomChoice(arcPalette);
+        arcsData.push({
+            startLat: from.lat,
+            startLng: from.lng,
+            endLat: to.lat,
+            endLng: to.lng,
+            color: [colorStart, colorEnd],
+            altitude: 0.08 + Math.random() * 0.24,
+            dashLength: 0.15 + Math.random() * 0.45,
+            dashGap: 0.2 + Math.random() * 0.6,
+            dashTime: 1300 + Math.random() * 2600
         });
+        pointsData.push({
+            lat: to.lat,
+            lng: to.lng,
+            radius: 0.16 + Math.random() * 0.09,
+            altitude: 0.01,
+            color: '#ffd1d5'
+        });
+        while (arcsData.length > maxArcs) arcsData.shift();
+        while (pointsData.length > maxArcs) pointsData.shift();
+        globe.arcsData(arcsData);
+        globe.pointsData(pointsData);
 
         const item = document.createElement('div');
         item.className = 'threat-item';
@@ -449,78 +341,23 @@
     }
 
     function resize() {
-        const target = globeStage || globeWrap;
+        const target = globeStage;
         const size = Math.max(280, Math.min(target.clientWidth, target.clientHeight));
-        renderer.setSize(size, size, false);
-        camera.aspect = 1;
-        camera.updateProjectionMatrix();
-    }
-
-    function animate(now) {
-        requestAnimationFrame(animate);
-        if (!isUserInteracting) {
-            globeGroup.rotation.y += 0.0016;
+        if (size !== globeSize) {
+            globeSize = size;
+            globe.width(globeSize).height(globeSize);
         }
-        stars.rotation.y += 0.00016;
-        controls.update();
-
-        for (let i = threatEffects.length - 1; i >= 0; i--) {
-            const fx = threatEffects[i];
-            const age = now - fx.born;
-            const t = age / fx.ttl;
-            fx.line.material.opacity = Math.max(0, 0.95 * (1 - t));
-            fx.pulse.scale.setScalar(1 + t * 6);
-            fx.pulse.material.opacity = Math.max(0, 1 - t);
-            if (age > fx.ttl) {
-                globeGroup.remove(fx.line);
-                globeGroup.remove(fx.pulse);
-                fx.line.geometry.dispose();
-                fx.line.material.dispose();
-                fx.pulse.geometry.dispose();
-                fx.pulse.material.dispose();
-                threatEffects.splice(i, 1);
-            }
-        }
-
-        renderer.render(scene, camera);
     }
 
     resize();
     window.addEventListener('resize', resize);
 
     function startExperience() {
-        canvas.style.visibility = 'visible';
-        for (let i = 0; i < 7; i++) addThreatEffect();
+        for (let i = 0; i < 14; i++) addThreatEffect();
         setInterval(addThreatEffect, 1400);
-        requestAnimationFrame(animate);
     }
 
-    Promise.allSettled(texturePromises)
-        .then((results) => {
-            const [atmosResult, bumpResult, specResult] = results;
-
-            if (atmosResult.status === 'fulfilled') {
-                earth.material.map = atmosResult.value;
-            } else {
-                console.error('Failed to load earth atmosphere texture:', atmosResult.reason);
-            }
-
-            if (bumpResult.status === 'fulfilled') {
-                earth.material.bumpMap = bumpResult.value;
-                earth.material.bumpScale = 0.08;
-            } else {
-                console.error('Failed to load earth bump texture:', bumpResult.reason);
-            }
-
-            if (specResult.status === 'fulfilled') {
-                earth.material.roughnessMap = specResult.value;
-            } else {
-                console.error('Failed to load earth specular texture:', specResult.reason);
-            }
-
-            earth.material.needsUpdate = true;
-            startExperience();
-        });
+    startExperience();
 </script>
 </body>
 </html>

@@ -12,10 +12,10 @@
 <script>
   // 创建地球
   const globe = Globe()(document.getElementById('globe'))
-    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
-    .atmosphereColor('rgba(0, 100, 255, 0.3)')
+    .atmosphereColor('rgba(255, 0, 0, 0.3)') // 红色大气层
     .atmosphereAltitude(0.02);
 
   // 威胁地图数据：飞线（从主要国家首都出发的攻击情况）
