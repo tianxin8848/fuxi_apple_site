@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Threat Map - Fuxi Tech</title>
+  <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/assets/fonts/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/assets/css/aos.min.css">
+  <link rel="stylesheet" href="/static/assets/css/modern-style.css">
+  <style>
+    /* Add top padding to body to prevent content from hiding behind fixed navbar */
+    /* This is now handled by modern-style.css */
+    /* body {
+      padding-top: 80px;
+    } */
+    .threatmap-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .threatmap-embed {
+      position: relative;
+      width: 100%;
+      /* 
+         Previous requested size was "increase size" which I set to 85% padding-top.
+         I will keep this larger size as requested before the dashboard restructure.
+      */
+      padding-top: 85%; 
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 18px 32px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: radial-gradient(circle at top, rgba(255,0,0,0.15), transparent 55%);
+    }
+    .threatmap-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    @media (max-width: 991px) {
+      .threatmap-embed {
+        padding-top: 90vh;
+      }
+    }
+    @media (max-width: 576px) {
+      .threatmap-embed {
+        padding-top: 115%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/index">
+        <img src="static/assets/img/Fuxi-test.png" alt="Fuxi Tech">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="/products" id="navProducts" role="button" data-bs-toggle="dropdown" aria-expanded="false">Products</a>
+            <ul class="dropdown-menu" aria-labelledby="navProducts">
+              <li><a class="dropdown-item" href="/products">Fuxi SIEM</a></li>
+              <li><a class="dropdown-item" href="/products">Capabilities</a></li>
+              <li><a class="dropdown-item" href="/contact-us">Contact Sales</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="/solutions" id="navSolutions" role="button" data-bs-toggle="dropdown" aria-expanded="false">Solutions</a>
+            <ul class="dropdown-menu" aria-labelledby="navSolutions">
+              <li><a class="dropdown-item" href="/solutions">Ransomware Defense</a></li>
+              <li><a class="dropdown-item" href="/solutions">Cloud & Zero Trust</a></li>
+              <li><a class="dropdown-item" href="/solutions">SOC Modernization</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link active" href="/threatmap">THREAT MAP</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="/company" id="navCompany" role="button" data-bs-toggle="dropdown" aria-expanded="false">Company</a>
+            <ul class="dropdown-menu" aria-labelledby="navCompany">
+              <li><a class="dropdown-item" href="/company">About Us</a></li>
+              <li><a class="dropdown-item" href="/blog">Blog</a></li>
+              <li><a class="dropdown-item" href="/contact-us">Contact Us</a></li>
+            </ul>
+          </li>
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-primary" href="/contact-us">Contact Us</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Removed as requested -->
+
+  <main class="container py-4" style="padding-top: 140px !important;">
+    <div class="threatmap-wrapper">
+      <div class="row g-4">
+        <div class="col-12">
+          <div class="threatmap-embed">
+            <iframe src="/threat-map.html" title="Threat Map" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="myFooter" class="py-5 mt-auto">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <a href="/index" class="d-inline-flex align-items-center text-decoration-none">
+          <img height="34" src="static/assets/img/Fuxi-test.png" alt="Fuxi Tech">
+        </a>
+        <div class="footer-social d-flex align-items-center gap-3 ms-auto">
+          <a href="#" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+          <a href="#" aria-label="X"><i class="fa fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fa fa-instagram"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa fa-youtube-play"></i></a>
+        </div>
+      </div>
+
+      <hr class="footer-divider my-4">
+
+      <div class="row row-cols-2 row-cols-md-3 g-4">
+        <div class="col">
+          <h5>Get Started</h5>
+          <ul class="list-unstyled">
+            <li><a href="/products">Products</a></li>
+            <li><a href="/solutions">Solutions</a></li>
+            <li><a href="/threatmap">Threat Map</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h5>Company</h5>
+          <ul class="list-unstyled">
+            <li><a href="/company">About Us</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/contact-us">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col">
+          <h5>Support</h5>
+          <ul class="list-unstyled">
+            <li><a href="tel:+85236119814">Call +852 3611 9814</a></li>
+            <li><a href="/contact-us">Experienced a Breach?</a></li>
+            <li><a href="/contact-us">Contact Us</a></li>
+            <li><a href="#">FAQs</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-copyright text-center mt-4">
+        © 2026 Fuxi Technology Limited. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="static/assets/js/jquery.min.js"></script>
+  <script src="static/assets/bootstrap/js/bootstrap.min.js"></script>
+  <script src="static/assets/js/aos.min.js"></script>
+  <script src="static/assets/js/bs-init.js"></script>
+</body>
+</html>
