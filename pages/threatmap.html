@@ -90,6 +90,34 @@
             position: absolute;
             inset: 0;
         }
+        
+        .webgl-fallback-tip {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    z-index: 8;
+    max-width: 360px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 31, 45, 0.35);
+    background: rgba(8, 9, 12, 0.78);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    color: #ffd4d8;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.webgl-fallback-tip strong {
+    display: block;
+    color: #ffffff;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.webgl-fallback-tip span {
+    color: #b6bcc7;
+}
 
         #plane-stage {
             position: absolute;
@@ -168,17 +196,14 @@
         }
 
         #globe-viz {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            overflow: hidden;
+         position: absolute;
+         inset: 0;
+         width: 100%;
+         height: 100%;
         }
 
         #globe-viz canvas {
-            display: block !important;
-            margin: 0 auto !important;
+          display: block !important;
         }
 
         .metric-box {
@@ -299,7 +324,662 @@
         </div>
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
+<!-- ThreatMap Main Section -->
+<main class="pt-28 pb-16 px-5">
+    <section class="container mx-auto">
+        <div class="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+            <div>
+                <div class="inline-flex items-center gap-2 chip mb-4">
+                    <span class="status-dot"></span>
+                    LIVE CYBER THREAT MAP
+                </div>
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight">
+                    Global Cyber <span class="text-cyber-red">ThreatMap</span>
+                </h1>
+                <p class="text-muted-text mt-4 max-w-2xl">
+                    Real-time visualization of global attack paths, source countries, target regions and active cyber events.
+                </p>
+            </div>
 
+            <div class="flex items-center gap-3">
+                <button id="btn-globe" class="mode-btn is-active" type="button">
+                    Globe Earth
+                </button>
+                <button id="btn-plane" class="mode-btn" type="button">
+                    Flat Map
+                </button>
+            </div>
+        </div>
+
+        <div class="threat-layout">
+            <!-- 左侧地图区域 -->
+            <div class="glass-card p-4 relative">
+                <div id="globe-wrap">
+                    <!-- Globe.GL 球体 -->
+                    <div id="globe-stage">
+                        <div id="globe-viz"></div>
+                    </div>
+
+                    <!-- 平面展开地图 -->
+                    <div id="plane-stage">
+                        <div id="plane-map">
+                            <svg id="plane-svg" viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid meet">
+                                <defs>
+                                    <filter id="plane-red-glow" x="-60%" y="-60%" width="220%" height="220%">
+                                        <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+                                        <feMerge>
+                                            <feMergeNode in="blur"></feMergeNode>
+                                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                                        </feMerge>
+                                    </filter>
+
+                                    <linearGradient id="plane-attack-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="rgba(255,31,45,0.1)"></stop>
+                                        <stop offset="50%" stop-color="rgba(255,31,45,0.95)"></stop>
+                                        <stop offset="100%" stop-color="rgba(255,220,225,1)"></stop>
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- 平面地球白天贴图 -->
+                                <image
+                                    id="plane-earth-texture"
+                                    href="https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+                                    x="0"
+                                    y="0"
+                                    width="1000"
+                                    height="520"
+                                    preserveAspectRatio="xMidYMid slice">
+                                </image>
+
+                                <rect x="0" y="0" width="1000" height="520" fill="rgba(0,0,0,0.28)"></rect>
+
+                                <!-- 经纬度网格 -->
+                                <g id="plane-grid"></g>
+
+                                <!-- 攻击线 -->
+                                <g id="plane-arcs"></g>
+
+                                <!-- 国家点位和名称 -->
+                                <g id="plane-labels"></g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div id="view-status">Globe View</div>
+                </div>
+            </div>
+
+            <!-- 右侧威胁信息 -->
+            <aside class="space-y-5">
+                <div class="glass-card p-5">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold">Threat Metrics</h3>
+                        <span class="chip">LIVE</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-5">
+                        <div class="metric-box">
+                            <p class="text-xs text-muted-text">Active Attacks</p>
+                            <p id="metric-attacks" class="text-2xl font-extrabold text-white">1,284</p>
+                        </div>
+
+                        <div class="metric-box">
+                            <p class="text-xs text-muted-text">Blocked</p>
+                            <p id="metric-blocked" class="text-2xl font-extrabold text-white">986</p>
+                        </div>
+
+                        <div class="metric-box">
+                            <p class="text-xs text-muted-text">Countries</p>
+                            <p class="text-2xl font-extrabold text-white">12</p>
+                        </div>
+
+                        <div class="metric-box">
+                            <p class="text-xs text-muted-text">Severity</p>
+                            <p class="text-2xl font-extrabold text-cyber-red">High</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5">
+                    <h3 class="text-lg font-bold">Live Attack Feed</h3>
+
+                    <div class="space-y-3 mt-4">
+                        <div class="threat-item">
+                            <div class="flex justify-between gap-3">
+                                <strong>China → United States</strong>
+                                <span class="chip">DDoS</span>
+                            </div>
+                            <p class="text-xs text-muted-text mt-1">Large-scale TCP flood traffic detected.</p>
+                        </div>
+
+                        <div class="threat-item">
+                            <div class="flex justify-between gap-3">
+                                <strong>Russia → Germany</strong>
+                                <span class="chip">Malware</span>
+                            </div>
+                            <p class="text-xs text-muted-text mt-1">Malicious payload delivery attempt blocked.</p>
+                        </div>
+
+                        <div class="threat-item">
+                            <div class="flex justify-between gap-3">
+                                <strong>Brazil → Japan</strong>
+                                <span class="chip">Phishing</span>
+                            </div>
+                            <p class="text-xs text-muted-text mt-1">Credential phishing infrastructure observed.</p>
+                        </div>
+
+                        <div class="threat-item">
+                            <div class="flex justify-between gap-3">
+                                <strong>India → Singapore</strong>
+                                <span class="chip">Exploit</span>
+                            </div>
+                            <p class="text-xs text-muted-text mt-1">Web exploit probing against public services.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5">
+                    <h3 class="text-lg font-bold">Top Target Regions</h3>
+
+                    <div class="mt-4 space-y-3 text-sm">
+                        <div>
+                            <div class="flex justify-between">
+                                <span class="text-muted-text">United States</span>
+                                <span class="text-white">38%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full mt-1 overflow-hidden">
+                                <div class="h-full bg-cyber-red rounded-full" style="width:38%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between">
+                                <span class="text-muted-text">Japan</span>
+                                <span class="text-white">24%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full mt-1 overflow-hidden">
+                                <div class="h-full bg-cyber-red rounded-full" style="width:24%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between">
+                                <span class="text-muted-text">Germany</span>
+                                <span class="text-white">19%</span>
+                            </div>
+                            <div class="h-2 bg-white/5 rounded-full mt-1 overflow-hidden">
+                                <div class="h-full bg-cyber-red rounded-full" style="width:19%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<!-- Globe.GL 依赖 -->
+<script src="https://unpkg.com/globe.gl"></script>
+
+<script>
+(function () {
+    /*
+     * 坐标说明：
+     * lat = 纬度，北纬为正，南纬为负
+     * lng = 经度，东经为正，西经为负
+     *
+     * 球体 Globe.GL 和平面地图都使用同一套 lat/lng，
+     * 所以国家点位不会出现两套坐标不一致的问题。
+     */
+
+    const countries = [
+        { name: "China", lat: 35.8617, lng: 104.1954 },
+        { name: "United States", lat: 37.0902, lng: -95.7129 },
+        { name: "Russia", lat: 61.5240, lng: 105.3188 },
+        { name: "Germany", lat: 51.1657, lng: 10.4515 },
+        { name: "Brazil", lat: -14.2350, lng: -51.9253 },
+        { name: "Japan", lat: 36.2048, lng: 138.2529 },
+        { name: "India", lat: 20.5937, lng: 78.9629 },
+        { name: "Singapore", lat: 1.3521, lng: 103.8198 },
+        { name: "United Kingdom", lat: 55.3781, lng: -3.4360 },
+        { name: "France", lat: 46.2276, lng: 2.2137 },
+        { name: "Australia", lat: -25.2744, lng: 133.7751 },
+        { name: "South Korea", lat: 35.9078, lng: 127.7669 }
+    ];
+
+    const attacks = [
+        {
+            from: "China",
+            to: "United States",
+            type: "DDoS",
+            startLat: 35.8617,
+            startLng: 104.1954,
+            endLat: 37.0902,
+            endLng: -95.7129,
+            color: "#ff1f2d"
+        },
+        {
+            from: "Russia",
+            to: "Germany",
+            type: "Malware",
+            startLat: 61.5240,
+            startLng: 105.3188,
+            endLat: 51.1657,
+            endLng: 10.4515,
+            color: "#ff4b55"
+        },
+        {
+            from: "Brazil",
+            to: "Japan",
+            type: "Phishing",
+            startLat: -14.2350,
+            startLng: -51.9253,
+            endLat: 36.2048,
+            endLng: 138.2529,
+            color: "#ff7580"
+        },
+        {
+            from: "India",
+            to: "Singapore",
+            type: "Exploit",
+            startLat: 20.5937,
+            startLng: 78.9629,
+            endLat: 1.3521,
+            endLng: 103.8198,
+            color: "#ff1f2d"
+        },
+        {
+            from: "United Kingdom",
+            to: "France",
+            type: "Botnet",
+            startLat: 55.3781,
+            startLng: -3.4360,
+            endLat: 46.2276,
+            endLng: 2.2137,
+            color: "#ff4b55"
+        },
+        {
+            from: "Australia",
+            to: "South Korea",
+            type: "Recon",
+            startLat: -25.2744,
+            startLng: 133.7751,
+            endLat: 35.9078,
+            endLng: 127.7669,
+            color: "#ff7580"
+        }
+    ];
+
+    const globeStage = document.getElementById("globe-stage");
+    const planeStage = document.getElementById("plane-stage");
+    const btnGlobe = document.getElementById("btn-globe");
+    const btnPlane = document.getElementById("btn-plane");
+    const viewStatus = document.getElementById("view-status");
+
+    let globeInstance = null;
+
+    function showStatus(text) {
+        viewStatus.textContent = text;
+        viewStatus.classList.add("show");
+
+        window.setTimeout(() => {
+            viewStatus.classList.remove("show");
+        }, 900);
+    }
+    
+//
+function isWebGLAvailable() {
+    try {
+        const canvas = document.createElement("canvas");
+
+        return !!(
+            window.WebGLRenderingContext &&
+            (
+                canvas.getContext("webgl") ||
+                canvas.getContext("experimental-webgl")
+            )
+        );
+    } catch (e) {
+        return false;
+    }
+}
+
+function safeInitGlobe() {
+    if (!isWebGLAvailable()) {
+        console.warn("WebGL is not available. Fallback to flat map.");
+
+        globeStage.style.display = "none";
+        planeStage.style.display = "block";
+
+        btnGlobe.classList.remove("is-active");
+        btnPlane.classList.add("is-active");
+
+        btnGlobe.disabled = true;
+        btnGlobe.style.opacity = "0.45";
+        btnGlobe.style.cursor = "not-allowed";
+        btnGlobe.title = "当前浏览器环境 WebGL 不可用，无法显示 Globe.GL 球体";
+
+        showStatus("WebGL Disabled, Flat Map Enabled");
+
+        const fallbackTip = document.createElement("div");
+        fallbackTip.className = "webgl-fallback-tip";
+        fallbackTip.innerHTML = `
+            <strong>WebGL unavailable</strong>
+            <span>当前浏览器无法创建 WebGL 上下文，已自动切换到平面威胁地图。</span>
+        `;
+
+        document.getElementById("globe-wrap").appendChild(fallbackTip);
+
+        return;
+    }
+
+    try {
+        initGlobe();
+    } catch (e) {
+        console.error("Globe.GL init failed:", e);
+
+        globeStage.style.display = "none";
+        planeStage.style.display = "block";
+
+        btnGlobe.classList.remove("is-active");
+        btnPlane.classList.add("is-active");
+
+        btnGlobe.disabled = true;
+        btnGlobe.style.opacity = "0.45";
+        btnGlobe.style.cursor = "not-allowed";
+        btnGlobe.title = "Globe.GL 初始化失败，已自动切换到平面地图";
+
+        showStatus("Globe Init Failed, Flat Map Enabled");
+    }
+}
+    function initGlobe() {
+        const globeContainer = document.getElementById("globe-viz");
+        const wrap = document.getElementById("globe-wrap");
+
+        const width = globeContainer.clientWidth || wrap.clientWidth;
+        const height = wrap.clientHeight;
+
+        globeInstance = Globe()
+            .width(width)
+            .height(height)
+            .backgroundColor("rgba(0,0,0,0)")
+            .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
+            .bumpImageUrl("https://unpkg.com/three-globe/example/img/earth-topology.png")
+            .showAtmosphere(true)
+            .atmosphereColor("#ff1f2d")
+            .atmosphereAltitude(0.16)
+
+            /*
+             * 攻击线
+             */
+            .arcsData(attacks)
+            .arcStartLat(d => d.startLat)
+            .arcStartLng(d => d.startLng)
+            .arcEndLat(d => d.endLat)
+            .arcEndLng(d => d.endLng)
+            .arcColor(d => [d.color, "#ffd4d8"])
+            .arcAltitude(0.28)
+            .arcStroke(0.8)
+            .arcDashLength(0.42)
+            .arcDashGap(1.2)
+            .arcDashInitialGap(() => Math.random())
+            .arcDashAnimateTime(2200)
+
+            /*
+             * 国家点
+             */
+            .pointsData(countries)
+            .pointLat(d => d.lat)
+            .pointLng(d => d.lng)
+            .pointColor(() => "#ff1f2d")
+            .pointAltitude(0.025)
+            .pointRadius(0.45)
+            .pointResolution(16)
+
+            /*
+             * 国家名称
+             */
+            .labelsData(countries)
+            .labelLat(d => d.lat)
+            .labelLng(d => d.lng)
+            .labelText(d => d.name)
+            .labelSize(0.85)
+            .labelDotRadius(0.18)
+            .labelAltitude(0.035)
+            .labelColor(() => "rgba(255,255,255,0.95)")
+            .labelResolution(2)
+            (globeContainer);
+
+        /*
+         * 初始视角，面向亚洲和太平洋区域
+         */
+        globeInstance.pointOfView({
+            lat: 24,
+            lng: 105,
+            altitude: 2.05
+        }, 1000);
+
+        /*
+         * 自动旋转
+         */
+        const controls = globeInstance.controls();
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.55;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+
+        /*
+         * 光照增强，让白天贴图更亮
+         */
+        const scene = globeInstance.scene();
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.4);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+
+        window.addEventListener("resize", () => {
+            const nextWidth = globeContainer.clientWidth || wrap.clientWidth;
+            const nextHeight = wrap.clientHeight;
+
+            globeInstance
+                .width(nextWidth)
+                .height(nextHeight);
+        });
+    }
+
+    /*
+     * 经纬度转平面展开图坐标
+     * 使用等距圆柱投影 / Equirectangular Projection
+     * 这个投影最适合和普通世界贴图对齐。
+     */
+    function lonLatToPlane(lng, lat) {
+        return {
+            x: ((lng + 180) / 360) * 1000,
+            y: ((90 - lat) / 180) * 520
+        };
+    }
+
+    function drawPlaneGrid() {
+        const grid = document.getElementById("plane-grid");
+
+        let html = "";
+
+        /*
+         * 经线
+         */
+        for (let lng = -180; lng <= 180; lng += 30) {
+            const x = ((lng + 180) / 360) * 1000;
+
+            html += `
+                <line
+                    x1="${x}"
+                    y1="0"
+                    x2="${x}"
+                    y2="520"
+                    stroke="rgba(255,255,255,0.075)"
+                    stroke-width="1">
+                </line>
+            `;
+        }
+
+        /*
+         * 纬线
+         */
+        for (let lat = -60; lat <= 60; lat += 30) {
+            const y = ((90 - lat) / 180) * 520;
+
+            html += `
+                <line
+                    x1="0"
+                    y1="${y}"
+                    x2="1000"
+                    y2="${y}"
+                    stroke="rgba(255,255,255,0.075)"
+                    stroke-width="1">
+                </line>
+            `;
+        }
+
+        grid.innerHTML = html;
+    }
+
+    function drawPlaneAttacks() {
+        const arcs = document.getElementById("plane-arcs");
+
+        let html = "";
+
+        attacks.forEach((attack, index) => {
+            const start = lonLatToPlane(attack.startLng, attack.startLat);
+            const end = lonLatToPlane(attack.endLng, attack.endLat);
+
+            /*
+             * 处理跨越国际日期变更线的问题。
+             * 如果两点横向距离太大，平面图上会显得攻击线横跨整张图。
+             * 这里保留简单逻辑：仍然画最直观的弧线。
+             */
+            const distance = Math.abs(end.x - start.x);
+            const curveHeight = Math.max(45, Math.min(150, distance * 0.18));
+            const midX = (start.x + end.x) / 2;
+            const midY = (start.y + end.y) / 2 - curveHeight;
+
+            html += `
+                <path
+                    class="plane-arc"
+                    d="M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}"
+                    stroke="${attack.color}"
+                    filter="url(#plane-red-glow)"
+                    style="animation-duration:${3 + index * 0.35}s">
+                </path>
+
+                <circle
+                    cx="${start.x}"
+                    cy="${start.y}"
+                    r="3"
+                    fill="${attack.color}"
+                    filter="url(#plane-red-glow)">
+                </circle>
+
+                <circle
+                    cx="${end.x}"
+                    cy="${end.y}"
+                    r="3"
+                    fill="#ffd4d8"
+                    filter="url(#plane-red-glow)">
+                </circle>
+
+                <circle
+                    cx="${end.x}"
+                    cy="${end.y}"
+                    r="5"
+                    fill="none"
+                    stroke="${attack.color}"
+                    stroke-width="1.5"
+                    filter="url(#plane-red-glow)">
+                    <animate attributeName="r" values="4;15;4" dur="${2 + index * 0.25}s" repeatCount="indefinite"></animate>
+                    <animate attributeName="opacity" values="0.95;0;0.95" dur="${2 + index * 0.25}s" repeatCount="indefinite"></animate>
+                </circle>
+            `;
+        });
+
+        arcs.innerHTML = html;
+    }
+
+    function drawPlaneLabels() {
+        const labelLayer = document.getElementById("plane-labels");
+
+        let html = "";
+
+        countries.forEach((country) => {
+            const point = lonLatToPlane(country.lng, country.lat);
+
+            html += `
+                <circle
+                    cx="${point.x}"
+                    cy="${point.y}"
+                    r="3.3">
+                </circle>
+
+                <text
+                    x="${point.x + 8}"
+                    y="${point.y - 8}">
+                    ${country.name}
+                </text>
+            `;
+        });
+
+        labelLayer.innerHTML = html;
+    }
+
+    function switchToGlobe() {
+        globeStage.style.display = "block";
+        planeStage.style.display = "none";
+
+        btnGlobe.classList.add("is-active");
+        btnPlane.classList.remove("is-active");
+
+        showStatus("Globe View");
+
+        if (globeInstance) {
+            globeInstance.controls().autoRotate = true;
+        }
+    }
+
+    function switchToPlane() {
+        globeStage.style.display = "none";
+        planeStage.style.display = "block";
+
+        btnPlane.classList.add("is-active");
+        btnGlobe.classList.remove("is-active");
+
+        showStatus("Flat Map View");
+
+        if (globeInstance) {
+            globeInstance.controls().autoRotate = false;
+        }
+    }
+
+    function animateMetrics() {
+        const attacksEl = document.getElementById("metric-attacks");
+        const blockedEl = document.getElementById("metric-blocked");
+
+        window.setInterval(() => {
+            const attackValue = 1200 + Math.floor(Math.random() * 320);
+            const blockedValue = 900 + Math.floor(Math.random() * 220);
+
+            attacksEl.textContent = attackValue.toLocaleString();
+            blockedEl.textContent = blockedValue.toLocaleString();
+        }, 2600);
+    }
+
+    btnGlobe.addEventListener("click", switchToGlobe);
+    btnPlane.addEventListener("click", switchToPlane);
+
+    drawPlaneGrid();
+    drawPlaneAttacks(); 
+    drawPlaneLabels();
+    safeInitGlobe(); 
+    animateMetrics();
+})();
+</script>
 
     <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
         <div class="container mx-auto">
