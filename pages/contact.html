@@ -185,6 +185,74 @@
             justify-content: center;
             margin-bottom: 1rem;
         }
+        .contact-main {
+            margin-top: 4rem;
+            min-height: calc(100vh - 4rem);
+            min-height: calc(100dvh - 4rem);
+            display: flex;
+            flex-direction: column;
+        }
+        .contact-hero {
+            padding: 3.5rem 1.25rem 2rem;
+        }
+        .contact-content {
+            padding: 1.5rem 1.25rem 2rem;
+            flex: 1 1 auto;
+            display: flex;
+        }
+        .contact-content-inner {
+            width: 100%;
+        }
+        .contact-content-grid {
+            width: 100%;
+        }
+        @media (min-width: 1024px) {
+            .contact-main {
+                height: calc(100vh - 4rem);
+                height: calc(100dvh - 4rem);
+                overflow: hidden;
+            }
+            .contact-hero {
+                padding-top: 1.5rem;
+                padding-bottom: 1rem;
+            }
+            .contact-hero p {
+                margin-top: 1rem;
+            }
+            .contact-content {
+                padding-top: 1rem;
+                padding-bottom: 1.25rem;
+                min-height: 0;
+            }
+            .contact-content-inner {
+                display: flex;
+                min-height: 0;
+            }
+            .contact-content-grid {
+                gap: 1rem;
+                height: 100%;
+                min-height: 0;
+            }
+            .contact-content-grid > div {
+                min-height: 0;
+            }
+            .contact-map-col {
+                min-height: 0;
+            }
+            .contact-map-col .map-container {
+                min-height: 0;
+                height: 100%;
+            }
+            .contact-scroll-card {
+                max-height: 100%;
+                overflow-y: auto;
+                scrollbar-color: #52525b #0a0a0a;
+                scrollbar-width: thin;
+            }
+            .contact-card {
+                padding: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body class="font-sans text-white">
@@ -228,26 +296,27 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
-    <!-- Page Header -->
-    <section class="pt-32 pb-16 px-5 bg-gradient-to-b from-dark-bg to-black">
-        <div class="container mx-auto text-center">
-            <div class="animate-[fadeUp_0.8s_ease-out]">
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                    GET IN <span class="text-cyber-red">TOUCH</span>
-                </h1>
-                <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
-                    Have questions about our products or solutions? We're here to help.
-                </p>
+    <main class="contact-main">
+        <!-- Page Header -->
+        <section class="contact-hero bg-gradient-to-b from-dark-bg to-black">
+            <div class="container mx-auto text-center">
+                <div class="animate-[fadeUp_0.8s_ease-out]">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                        GET IN <span class="text-cyber-red">TOUCH</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
+                        Have questions about our products or solutions? We're here to help.
+                    </p>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Three Column Layout -->
-    <section class="py-16 px-5">
-        <div class="container mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Three Column Layout -->
+        <section class="contact-content">
+            <div class="container mx-auto contact-content-inner">
+                <div class="contact-content-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left Column: map (CN: AMap JS API 2.0; else Google iframe) -->
-                <div class="lg:col-span-1 animate-on-scroll flex flex-col h-full min-h-[400px]">
+                <div class="lg:col-span-1 animate-on-scroll flex flex-col h-full min-h-[400px] contact-map-col">
                     <div class="map-container w-full">
                         <iframe
                             id="contact-map-iframe"
@@ -264,7 +333,7 @@
 
                 <!-- Middle Column: Contact Information -->
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.1s;">
-                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 h-full contact-card">
+                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 h-full contact-card contact-scroll-card">
                         <h2 class="text-2xl font-bold mb-8">Contact Information</h2>
 
                         <!-- Phone -->
@@ -324,7 +393,7 @@
 
                 <!-- Right Column: Contact Form -->
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.2s;">
-                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 h-full contact-card">
+                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 h-full contact-card contact-scroll-card">
                         <h2 class="text-2xl font-bold mb-8">Send us a Message</h2>
 
                         <form id="contactForm" class="space-y-6">
@@ -447,8 +516,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+            </div>
+        </section>
+    </main>
 
     <!-- Footer (Tailwind only) -->
     <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
