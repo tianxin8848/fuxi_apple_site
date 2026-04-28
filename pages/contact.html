@@ -208,7 +208,9 @@
         }
         @media (min-width: 1024px) {
             .contact-main {
-                height: auto;
+                height: calc(100vh - 4rem);
+                height: calc(100dvh - 4rem);
+                overflow: hidden;
             }
             .contact-hero {
                 padding-top: 1rem;
@@ -226,6 +228,7 @@
                 padding-top: 0.75rem;
                 padding-bottom: 1rem;
                 min-height: 0;
+                flex: 1 1 auto;
             }
             .contact-content-inner {
                 display: flex;
