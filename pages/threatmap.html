@@ -519,8 +519,7 @@
 </main>
 
 <!-- Globe.GL 依赖 -->
-<script src="https://unpkg.com/globe.gl"></script>
-
+<script src="https://unpkg.com/globe.gl@2.41.4/dist/globe.gl.min.js"></script>
 <script>
 (function () {
     /*
@@ -631,65 +630,122 @@
 function isWebGLAvailable() {
     try {
         const canvas = document.createElement("canvas");
+        const contextNames = ["webgl2", "webgl", "experimental-webgl"];
+        const hasWebGLApi = !!(window.WebGLRenderingContext || window.WebGL2RenderingContext);
+        const context = contextNames.reduce((result, name) => result || canvas.getContext(name), null);
 
-        return !!(
-            window.WebGLRenderingContext &&
-            (
-                canvas.getContext("webgl") ||
-                canvas.getContext("experimental-webgl")
-            )
-        );
+        return hasWebGLApi && !!context;
     } catch (e) {
         return false;
     }
 }
 
-function safeInitGlobe() {
+function ensureGlobeLibrary() {
+    if (typeof window.Globe === "function") {
+        return Promise.resolve();
+    }
+
+    const fallbacks = [
+        "https://cdn.jsdelivr.net/npm/globe.gl@2.41.4/dist/globe.gl.min.js",
+        "https://fastly.jsdelivr.net/npm/globe.gl@2.41.4/dist/globe.gl.min.js"
+    ];
+
+    const loadByIndex = (index) => {
+        if (index >= fallbacks.length) {
+            return Promise.reject(new Error("Globe.GL script failed to load from all fallback CDNs."));
+        }
+
+        return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = fallbacks[index];
+            script.async = true;
+            script.onload = () => {
+                if (typeof window.Globe === "function") {
+                    resolve();
+                } else {
+                    reject(new Error("Globe global is still unavailable after script load."));
+                }
+            };
+            script.onerror = () => reject(new Error(`Failed to load ${fallbacks[index]}`));
+            document.head.appendChild(script);
+        }).catch(() => loadByIndex(index + 1));
+    };
+
+    return loadByIndex(0);
+}
+
+function activateFlatFallback(titleText, statusText, tipTitle, tipDesc) {
+    globeStage.style.display = "none";
+    planeStage.style.display = "block";
+
+    btnGlobe.classList.remove("is-active");
+    btnPlane.classList.add("is-active");
+
+    btnGlobe.disabled = true;
+    btnGlobe.style.opacity = "0.45";
+    btnGlobe.style.cursor = "not-allowed";
+    btnGlobe.title = titleText;
+
+    showStatus(statusText);
+
+    const wrap = document.getElementById("globe-wrap");
+    const existing = wrap.querySelector(".webgl-fallback-tip");
+    if (existing) {
+        existing.remove();
+    }
+
+    const fallbackTip = document.createElement("div");
+    fallbackTip.className = "webgl-fallback-tip";
+    fallbackTip.innerHTML = `
+        <strong>${tipTitle}</strong>
+        <span>${tipDesc}</span>
+    `;
+    wrap.appendChild(fallbackTip);
+}
+
+function resolveGlobeInitFailure(error) {
+    const message = String((error && error.message) || error || "");
+    const sandboxedWebGLDisabled =
+        /GL_VENDOR\s*=\s*Disabled/i.test(message) ||
+        /GL_RENDERER\s*=\s*Disabled/i.test(message) ||
+        /Sandboxed\s*=\s*yes/i.test(message) ||
+        /BindToCurrentSequence failed/i.test(message) ||
+        /Error creating WebGL context/i.test(message);
+
+    if (sandboxedWebGLDisabled) {
+        return {
+            title: "当前运行环境禁用了 WebGL（沙箱/GPU 受限）",
+            status: "WebGL Blocked By Runtime Environment",
+            tipTitle: "WebGL blocked by runtime",
+            tipDesc: "检测到当前页面运行在 GPU/WebGL 被禁用的环境中（常见于沙箱预览或受限容器）。请在系统浏览器中通过本地站点地址访问页面，并确认浏览器开启硬件加速。"
+        };
+    }
+
+    return {
+        title: "Globe.GL 初始化失败，已自动切换到平面地图",
+        status: "Globe Init Failed, Flat Map Enabled",
+        tipTitle: "Globe init failed",
+        tipDesc: "球体组件加载或初始化失败，已自动切换到平面威胁地图。"
+    };
+}
+
+async function safeInitGlobe() {
     if (!isWebGLAvailable()) {
-        console.warn("WebGL is not available. Fallback to flat map.");
-
-        globeStage.style.display = "none";
-        planeStage.style.display = "block";
-
-        btnGlobe.classList.remove("is-active");
-        btnPlane.classList.add("is-active");
-
-        btnGlobe.disabled = true;
-        btnGlobe.style.opacity = "0.45";
-        btnGlobe.style.cursor = "not-allowed";
-        btnGlobe.title = "当前浏览器环境 WebGL 不可用，无法显示 Globe.GL 球体";
-
-        showStatus("WebGL Disabled, Flat Map Enabled");
-
-        const fallbackTip = document.createElement("div");
-        fallbackTip.className = "webgl-fallback-tip";
-        fallbackTip.innerHTML = `
-            <strong>WebGL unavailable</strong>
-            <span>当前浏览器无法创建 WebGL 上下文，已自动切换到平面威胁地图。</span>
-        `;
-
-        document.getElementById("globe-wrap").appendChild(fallbackTip);
-
-        return;
+        console.warn("WebGL pre-check failed, but initialization will still be attempted.");
     }
 
     try {
+        await ensureGlobeLibrary();
         initGlobe();
     } catch (e) {
         console.error("Globe.GL init failed:", e);
-
-        globeStage.style.display = "none";
-        planeStage.style.display = "block";
-
-        btnGlobe.classList.remove("is-active");
-        btnPlane.classList.add("is-active");
-
-        btnGlobe.disabled = true;
-        btnGlobe.style.opacity = "0.45";
-        btnGlobe.style.cursor = "not-allowed";
-        btnGlobe.title = "Globe.GL 初始化失败，已自动切换到平面地图";
-
-        showStatus("Globe Init Failed, Flat Map Enabled");
+        const failure = resolveGlobeInitFailure(e);
+        activateFlatFallback(
+            failure.title,
+            failure.status,
+            failure.tipTitle,
+            failure.tipDesc
+        );
     }
 }
     function initGlobe() {
@@ -772,9 +828,11 @@ function safeInitGlobe() {
          * 光照增强，让白天贴图更亮
          */
         const scene = globeInstance.scene();
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.4);
-        directionalLight.position.set(1, 1, 1);
-        scene.add(directionalLight);
+        if (window.THREE && scene) {
+            const directionalLight = new window.THREE.DirectionalLight(0xffffff, 1.4);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+        }
 
         window.addEventListener("resize", () => {
             const nextWidth = globeContainer.clientWidth || wrap.clientWidth;
