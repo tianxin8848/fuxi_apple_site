@@ -106,55 +106,36 @@
             border: 1px solid rgba(255, 31, 45, 0.2);
             border-radius: 10px;
             overflow: hidden;
+            background: #04070d;
             box-shadow: inset 0 0 48px rgba(0, 0, 0, 0.65);
         }
 
-        #plane-basemap {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
-                url('/img/00/map/threat-map/textures/earth-blue-marble.jpg');
-            background-size: 100% 100%, 100% 100%;
-            background-position: center;
-            filter: brightness(1.35) saturate(1.15) contrast(1.06);
-        }
-
-        #plane-labels {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-        }
-
-        .country-label {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            font-size: 10px;
-            line-height: 1.1;
-            color: #f6f8ff;
-            text-shadow: 0 0 7px rgba(0, 0, 0, 0.95);
-            letter-spacing: 0.02em;
-            white-space: nowrap;
-        }
-
-        .country-label::before {
-            content: '';
-            display: inline-block;
-            width: 5px;
-            height: 5px;
-            margin-right: 5px;
-            border-radius: 9999px;
-            background: rgba(255, 132, 143, 0.9);
-            box-shadow: 0 0 8px rgba(255, 31, 45, 0.85);
-            vertical-align: middle;
-        }
-
         #plane-svg {
-            position: absolute;
-            inset: 0;
             width: 100%;
             height: 100%;
+            display: block;
             pointer-events: none;
+            overflow: visible;
+        }
+
+        #plane-countries path {
+            fill: rgba(38, 8, 12, 0.78);
+            stroke: rgba(255, 92, 108, 0.72);
+            stroke-width: 0.55;
+            vector-effect: non-scaling-stroke;
+        }
+
+        #plane-labels text {
+            font-size: 9px;
+            fill: #f6f8ff;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.95);
+            letter-spacing: 0.02em;
+            pointer-events: none;
+        }
+
+        #plane-labels circle {
+            fill: rgba(255, 132, 143, 0.9);
+            filter: drop-shadow(0 0 6px rgba(255, 31, 45, 0.85));
         }
 
         .plane-arc {
@@ -312,9 +293,12 @@
             </div>
             <div id="plane-stage">
                 <div id="plane-map">
-                    <div id="plane-basemap"></div>
-                    <div id="plane-labels"></div>
-                    <svg id="plane-svg" viewBox="0 0 1000 500" preserveAspectRatio="none"></svg>
+                    <svg id="plane-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+                        <g id="plane-countries"></g>
+                        <g id="plane-arcs"></g>
+                        <g id="plane-points"></g>
+                        <g id="plane-labels"></g>
+                    </svg>
                 </div>
             </div>
            
@@ -358,6 +342,8 @@
     }
 </script>
 <script src="//cdn.jsdelivr.net/npm/globe.gl"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
     const threatTypes = ['DDoS', 'Ransomware', 'Botnet C2', 'Phishing Wave', 'Credential Stuffing', 'Malware Beacon'];
     const regions = ['CN', 'US', 'JP', 'DE', 'SG', 'AU', 'GB', 'BR', 'IN', 'ZA'];
@@ -369,8 +355,12 @@
     const globeStage = document.getElementById('globe-stage');
     const globeWrap = document.getElementById('globe-wrap');
     const planeStage = document.getElementById('plane-stage');
+    const planeMap = document.getElementById('plane-map');
     const planeSvg = document.getElementById('plane-svg');
-    const planeLabels = document.getElementById('plane-labels');
+    const planeCountriesLayer = document.getElementById('plane-countries');
+    const planeArcsLayer = document.getElementById('plane-arcs');
+    const planePointsLayer = document.getElementById('plane-points');
+    const planeLabelsLayer = document.getElementById('plane-labels');
     const btnGlobeView = document.getElementById('btn-globe-view');
     const btnPlaneView = document.getElementById('btn-plane-view');
 
@@ -383,43 +373,83 @@
     const pointsData = [];
     let globeSize = 560;
     let currentView = 'globe';
+    const PLANE_VIEW_WIDTH = 1000;
+    const PLANE_VIEW_HEIGHT = 500;
+    let worldGeoJson = null;
+    let projection = null;
+    let geoPath = null;
     const countryLabels = [
-        { name: 'USA', lat: 39.8, lng: -98.6 },
-        { name: 'Canada', lat: 56.1, lng: -106.3 },
-        { name: 'Brazil', lat: -10.3, lng: -53.2 },
-        { name: 'UK', lat: 55.0, lng: -2.5 },
-        { name: 'Germany', lat: 51.0, lng: 10.4 },
-        { name: 'Russia', lat: 61.5, lng: 105.3 },
-        { name: 'China', lat: 35.8, lng: 104.2 },
-        { name: 'India', lat: 21.1, lng: 78.0 },
-        { name: 'Japan', lat: 36.2, lng: 138.3 },
-        { name: 'Australia', lat: -25.3, lng: 133.8 },
-        { name: 'South Africa', lat: -30.6, lng: 22.9 },
-        { name: 'Saudi Arabia', lat: 23.9, lng: 45.1 }
+        { name: 'USA', lat: 39.8283, lng: -98.5795 },
+        { name: 'Canada', lat: 61.0667, lng: -107.9917 },
+        { name: 'Brazil', lat: -10.3333, lng: -53.2000 },
+        { name: 'UK', lat: 54.7024, lng: -3.2766 },
+        { name: 'Germany', lat: 51.1657, lng: 10.4515 },
+        { name: 'Russia', lat: 61.5240, lng: 105.3188 },
+        { name: 'China', lat: 35.8617, lng: 104.1954 },
+        { name: 'India', lat: 20.5937, lng: 78.9629 },
+        { name: 'Japan', lat: 36.2048, lng: 138.2529 },
+        { name: 'Australia', lat: -25.2744, lng: 133.7751 },
+        { name: 'South Africa', lat: -30.5595, lng: 22.9375 },
+        { name: 'Saudi Arabia', lat: 23.8859, lng: 45.0792 }
     ];
 
     function latLngToPlane(lat, lng) {
-        const x = ((lng + 180) / 360) * 1000;
-        const y = ((90 - lat) / 180) * 500;
-        return { x, y };
+        if (!projection) return null;
+        const projected = projection([lng, lat]);
+        if (!projected) return null;
+        return { x: projected[0], y: projected[1] };
+    }
+
+    async function loadWorldMap() {
+        const worldAtlasUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+        const response = await fetch(worldAtlasUrl);
+        if (!response.ok) {
+            throw new Error('Failed to load world atlas data');
+        }
+        const topoData = await response.json();
+        worldGeoJson = topojson.feature(topoData, topoData.objects.countries);
+    }
+
+    function renderPlaneMap() {
+        if (!worldGeoJson) return;
+        projection = d3.geoNaturalEarth1().fitSize([PLANE_VIEW_WIDTH, PLANE_VIEW_HEIGHT], worldGeoJson);
+        geoPath = d3.geoPath(projection);
+
+        const countriesMarkup = worldGeoJson.features.map((feature) => {
+            const d = geoPath(feature);
+            if (!d) return '';
+            return '<path d="' + d + '"></path>';
+        }).join('');
+        planeCountriesLayer.innerHTML = countriesMarkup;
+    }
+
+    function createArcPath(start, end) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const normalX = distance === 0 ? 0 : -dy / distance;
+        const normalY = distance === 0 ? -1 : dx / distance;
+        const curveStrength = Math.max(20, Math.min(95, distance * 0.2 + 24));
+        const ctrlX = (start.x + end.x) / 2 + normalX * curveStrength;
+        const ctrlY = (start.y + end.y) / 2 + normalY * curveStrength;
+        return 'M ' + start.x.toFixed(2) + ' ' + start.y.toFixed(2) +
+            ' Q ' + ctrlX.toFixed(2) + ' ' + ctrlY.toFixed(2) + ' ' + end.x.toFixed(2) + ' ' + end.y.toFixed(2);
     }
 
     function renderPlaneEffects() {
-        if (currentView !== 'plane') return;
+        if (!projection) return;
         const recentArcs = arcsData.slice(-18);
         const recentPoints = pointsData.slice(-20);
-        let svgHtml = '';
+        let arcsMarkup = '';
+        let pointsMarkup = '';
 
         for (let i = 0; i < recentArcs.length; i++) {
             const arc = recentArcs[i];
             const start = latLngToPlane(arc.startLat, arc.startLng);
             const end = latLngToPlane(arc.endLat, arc.endLng);
-            const ctrlX = (start.x + end.x) / 2;
-            const curve = Math.max(20, Math.min(90, Math.abs(end.x - start.x) * 0.2 + 24));
-            const ctrlY = Math.min(start.y, end.y) - curve;
+            if (!start || !end) continue;
             const dashDuration = Math.max(0.8, arc.dashTime / 1400);
-            svgHtml += '<path class="plane-arc" d="M ' + start.x.toFixed(2) + ' ' + start.y.toFixed(2) +
-                ' Q ' + ctrlX.toFixed(2) + ' ' + ctrlY.toFixed(2) + ' ' + end.x.toFixed(2) + ' ' + end.y.toFixed(2) + '"' +
+            arcsMarkup += '<path class="plane-arc" d="' + createArcPath(start, end) + '"' +
                 ' stroke="' + (Array.isArray(arc.color) ? arc.color[0] : arc.color) + '"' +
                 ' style="animation-duration:' + dashDuration.toFixed(2) + 's"></path>';
         }
@@ -427,24 +457,28 @@
         for (let i = 0; i < recentPoints.length; i++) {
             const point = recentPoints[i];
             const pos = latLngToPlane(point.lat, point.lng);
-            svgHtml += '<circle class="plane-impact" cx="' + pos.x.toFixed(2) + '" cy="' + pos.y.toFixed(2) +
+            if (!pos) continue;
+            pointsMarkup += '<circle class="plane-impact" cx="' + pos.x.toFixed(2) + '" cy="' + pos.y.toFixed(2) +
                 '" r="1.2" fill="' + point.color + '"></circle>';
         }
 
-        planeSvg.innerHTML = svgHtml;
+        planeArcsLayer.innerHTML = arcsMarkup;
+        planePointsLayer.innerHTML = pointsMarkup;
     }
 
     function renderCountryLabels() {
-        let html = '';
+        if (!projection) return;
+        let labelsMarkup = '';
         for (let i = 0; i < countryLabels.length; i++) {
             const country = countryLabels[i];
             const pos = latLngToPlane(country.lat, country.lng);
-            const left = (pos.x / 1000) * 100;
-            const top = (pos.y / 500) * 100;
-            html += '<span class="country-label" style="left:' + left.toFixed(2) + '%;top:' + top.toFixed(2) + '%">' +
-                country.name + '</span>';
+            if (!pos) continue;
+            labelsMarkup += '<g transform="translate(' + pos.x.toFixed(2) + ',' + pos.y.toFixed(2) + ')">' +
+                '<circle r="2.4"></circle>' +
+                '<text x="6" y="3">' + country.name + '</text>' +
+                '</g>';
         }
-        planeLabels.innerHTML = html;
+        planeLabelsLayer.innerHTML = labelsMarkup;
     }
 
     function setViewMode(mode) {
@@ -455,7 +489,11 @@
         globe.controls().autoRotate = !isPlane;
         btnPlaneView.classList.toggle('is-active', isPlane);
         btnGlobeView.classList.toggle('is-active', !isPlane);
-        if (isPlane) renderPlaneEffects();
+        if (isPlane) {
+            renderPlaneMap();
+            renderCountryLabels();
+            renderPlaneEffects();
+        }
     }
 
     function randomLatLng() {
@@ -526,7 +564,9 @@
         while (pointsData.length > maxArcs) pointsData.shift();
         globe.arcsData(arcsData);
         globe.pointsData(pointsData);
-        renderPlaneEffects();
+        if (currentView === 'plane') {
+            renderPlaneEffects();
+        }
 
         const item = document.createElement('div');
         item.className = 'threat-item';
@@ -551,19 +591,37 @@
             globeSize = size;
             globe.width(globeSize).height(globeSize);
         }
+        renderPlaneMap();
         renderCountryLabels();
+        renderPlaneEffects();
     }
-
-    resize();
-    window.addEventListener('resize', resize);
-    btnPlaneView.addEventListener('click', () => setViewMode('plane'));
-    btnGlobeView.addEventListener('click', () => setViewMode('globe'));
 
     function startExperience() {
         for (let i = 0; i < 36; i++) addThreatEffect();
     }
 
-    startExperience();
+    async function initializeThreatMap() {
+        try {
+            await loadWorldMap();
+            if (worldGeoJson && worldGeoJson.features) {
+                globe.polygonsData(worldGeoJson.features)
+                    .polygonCapColor(() => 'rgba(255, 31, 45, 0.06)')
+                    .polygonSideColor(() => 'rgba(255, 31, 45, 0.02)')
+                    .polygonStrokeColor(() => 'rgba(255, 90, 100, 0.45)')
+                    .polygonAltitude(0.004);
+            }
+        } catch (error) {
+            console.error('[ThreatMap] Failed to load world map:', error);
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        btnPlaneView.addEventListener('click', () => setViewMode('plane'));
+        btnGlobeView.addEventListener('click', () => setViewMode('globe'));
+        startExperience();
+    }
+
+    initializeThreatMap();
 </script>
 </body>
 </html>
