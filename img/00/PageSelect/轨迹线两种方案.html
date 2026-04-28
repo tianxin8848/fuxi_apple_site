@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>轨迹线三种实现方案</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a1a; color: white; font-family: Arial, sans-serif; }
+    #container { display: flex; flex-direction: column; height: 100vh; }
+    #canvas-container { flex: 1; position: relative; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #controls { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px; z-index: 100; }
+    .control-group { margin-bottom: 15px; }
+    .control-group label { display: block; margin-bottom: 5px; font-size: 14px; }
+    .control-group select, .control-group button { width: 100%; padding: 8px; border: none; border-radius: 4px; background: #2a2a4a; color: white; cursor: pointer; }
+    .control-group button:hover { background: #3a3a5a; }
+    .control-group select:focus, .control-group button:focus { outline: none; }
+    #info { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; font-size: 12px; max-width: 300px; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="canvas-container">
+      <canvas id="canvas"></canvas>
+      <div id="controls">
+        <div class="control-group">
+          <label for="scheme-select">选择方案</label>
+          <select id="scheme-select">
+            <option value="tube">方案1: TubeGeometry + 渐变透明材质</option>
+            <option value="line2">方案2: Line2 宽线尾迹</option>
+            <option value="particles">方案3: 粒子沿曲线运动</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <button id="animate-btn">切换动画</button>
+        </div>
+      </div>
+      <div id="info">
+        <h3>当前方案说明</h3>
+        <p id="scheme-desc">使用 TubeGeometry 创建管状几何体，配合自定义着色器实现渐隐尾迹效果。</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    let scene, camera, renderer, controls;
+    let currentScheme = 'tube';
+    let isAnimating = true;
+    let tubeMesh, line2Mesh, particleSystem;
+    let trail = [];
+    let time = 0;
+
+    const descriptions = {
+      tube: '方案1: 使用 TubeGeometry 创建管状几何体，配合自定义着色器实现渐隐尾迹效果。头部高亮，尾部逐渐透明。',
+      line2: '方案2: 使用 Line2 实现宽线效果，通过顶点颜色渐变实现尾巴效果。',
+      particles: '方案3: 粒子沿曲线运动，保存最近N帧位置，每个粒子透明度和大小递减，形成拖尾效果。'
+    };
+
+    function init() {
+      const canvas = document.getElementById('canvas');
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(5, 5, 5);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x0a0a1a);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      createLights();
+      createGrid();
+      createScheme('tube');
+
+      document.getElementById('scheme-select').addEventListener('change', (e) => {
+        switchScheme(e.target.value);
+      });
+
+      document.getElementById('animate-btn').addEventListener('click', () => {
+        isAnimating = !isAnimating;
+        document.getElementById('animate-btn').textContent = isAnimating ? '暂停动画' : '播放动画';
+      });
+
+      window.addEventListener('resize', onWindowResize);
+
+      animate();
+    }
+
+    function createLights() {
+      const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+      scene.add(ambientLight);
+
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(10, 10, 10);
+      scene.add(pointLight);
+    }
+
+    function createGrid() {
+      const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+      scene.add(gridHelper);
+    }
+
+    function createCurvePoints() {
+      return [
+        new THREE.Vector3(-3, 0, -3),
+        new THREE.Vector3(0, 4, 0),
+        new THREE.Vector3(3, 0, 3)
+      ];
+    }
+
+    function createScheme(scheme) {
+      if (tubeMesh) scene.remove(tubeMesh);
+      if (line2Mesh) scene.remove(line2Mesh);
+      if (particleSystem) {
+        scene.remove(particleSystem.mesh);
+        particleSystem.particles.forEach(p => scene.remove(p));
+      }
+      trail = [];
+
+      const points = createCurvePoints();
+      const curve = new THREE.CatmullRomCurve3(points);
+
+      switch(scheme) {
+        case 'tube':
+          createTubeScheme(curve);
+          break;
+        case 'line2':
+          createLine2Scheme(curve);
+          break;
+        case 'particles':
+          createParticleScheme(curve);
+          break;
+      }
+
+      const curveGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(50));
+      const curveLine = new THREE.Line(curveGeometry, new THREE.LineBasicMaterial({ color: 0x333333 }));
+      scene.add(curveLine);
+
+      currentScheme = scheme;
+      document.getElementById('scheme-desc').textContent = descriptions[scheme];
+    }
+
+    function createTubeScheme(curve) {
+      const tubeGeometry = new THREE.TubeGeometry(curve, 128, 0.1, 8, false);
+
+      const material = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uTime: { value: 0 },
+          uColor: { value: new THREE.Color('#ff3355') }
+        },
+        vertexShader: `
+          varying float vProgress;
+          void main() {
+            vProgress = uv.x;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uTime;
+          uniform vec3 uColor;
+          varying float vProgress;
+          void main() {
+            float head = fract(uTime);
+            float tailLength = 0.18;
+            float d = head - vProgress;
+            if (d < 0.0) d += 1.0;
+            float alpha = smoothstep(tailLength, 0.0, d);
+            gl_FragColor = vec4(uColor, alpha);
+          }
+        `
+      });
+
+      tubeMesh = new THREE.Mesh(tubeGeometry, material);
+      scene.add(tubeMesh);
+    }
+
+    function createLine2Scheme(curve) {
+      const points = curve.getPoints(100);
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+      const colors = [];
+      const color = new THREE.Color();
+
+      for (let i = 0; i < points.length; i++) {
+        const progress = i / (points.length - 1);
+        if (progress < 0.82) {
+          color.setRGB(0.5, 0.1, 0.15);
+        } else {
+          const t = (progress - 0.82) / 0.18;
+          color.setRGB(1, 0.15 + t * 0.85, 0.2 + t * 0.8);
+        }
+        colors.push(color.r, color.g, color.b);
+      }
+
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+      const material = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        linewidth: 3,
+        transparent: true,
+        opacity: 0.8
+      });
+
+      line2Mesh = new THREE.Line(geometry, material);
+      scene.add(line2Mesh);
+    }
+
+    function createParticleScheme(curve) {
+      particleSystem = {
+        curve: curve,
+        particles: [],
+        mesh: null,
+        progress: 0
+      };
+
+      const particleGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+
+      for (let i = 0; i < 30; i++) {
+        const particle = new THREE.Mesh(
+          particleGeometry.clone(),
+          new THREE.MeshBasicMaterial({
+            color: 0xff3355,
+            transparent: true,
+            opacity: 1 - i / 30
+          })
+        );
+        particle.scale.setScalar(1 - i / 30);
+        particleSystem.particles.push(particle);
+        scene.add(particle);
+      }
+    }
+
+    function switchScheme(scheme) {
+      createScheme(scheme);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (isAnimating) {
+        time += 0.008;
+
+        if (currentScheme === 'tube' && tubeMesh) {
+          tubeMesh.material.uniforms.uTime.value = time;
+        }
+
+        if (currentScheme === 'particles' && particleSystem) {
+          particleSystem.progress = (particleSystem.progress + 0.006) % 1;
+          const point = particleSystem.curve.getPoint(particleSystem.progress);
+
+          for (let i = particleSystem.particles.length - 1; i > 0; i--) {
+            const prevParticle = particleSystem.particles[i - 1];
+            particleSystem.particles[i].position.copy(prevParticle.position);
+            particleSystem.particles[i].material.opacity = 1 - i / particleSystem.particles.length;
+          }
+
+          particleSystem.particles[0].position.copy(point);
+          particleSystem.particles[0].material.opacity = 1;
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    init();
+  </script>
+</body>
+</html>

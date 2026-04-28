@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Three.js 地球脉冲点效果</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #020604;
+    }
+    #tip {
+      position: fixed;
+      top: 16px;
+      left: 18px;
+      color: #9fffd0;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      text-shadow: 0 0 10px #00ff99;
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+<div id="tip">Pulse Marker Demo：空心图形从小到大扩散</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+</script>
+<script type="module">
+  import * as THREE from "three";
+  import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+  import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+  import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+  import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(
+    55,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.set(0, 2.2, 5);
+
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+
+  /**
+   * 地球主体
+   */
+  const globeRadius = 1.45;
+
+  const globe = new THREE.Mesh(
+    new THREE.SphereGeometry(globeRadius, 96, 96),
+    new THREE.MeshStandardMaterial({
+      color: "#163524",
+      roughness: 0.8,
+      metalness: 0.1,
+      emissive: "#07160e",
+      emissiveIntensity: 0.8
+    })
+  );
+  scene.add(globe);
+
+  /**
+   * 地球线框
+   */
+  const wire = new THREE.Mesh(
+    new THREE.SphereGeometry(globeRadius + 0.004, 48, 48),
+    new THREE.MeshBasicMaterial({
+      color: "#66ff99",
+      wireframe: true,
+      transparent: true,
+      opacity: 0.08
+    })
+  );
+  scene.add(wire);
+
+  /**
+   * 灯光
+   */
+  scene.add(new THREE.AmbientLight("#ccffdd", 0.7));
+
+  const light = new THREE.PointLight("#66ff99", 4, 10);
+  light.position.set(3, 4, 5);
+  scene.add(light);
+
+  /**
+   * 经纬度转 3D 坐标
+   */
+  function latLngToVec3(lat, lng, radius = globeRadius + 0.03) {
+    const phi = (90 - lat) * Math.PI / 180;
+    const theta = (lng + 180) * Math.PI / 180;
+
+    return new THREE.Vector3(
+      -radius * Math.sin(phi) * Math.cos(theta),
+       radius * Math.cos(phi),
+       radius * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  /**
+   * 让对象贴在球面上
+   */
+  function orientToGlobeSurface(obj, position) {
+    obj.position.copy(position);
+
+    const normal = position.clone().normalize();
+    const target = position.clone().add(normal);
+    obj.lookAt(target);
+  }
+
+  /**
+   * 创建空心多边形脉冲
+   */
+  function createPolygonPulse({
+    lat,
+    lng,
+    sides = 6,
+    color = "#66ff99",
+    baseSize = 0.13,
+    delay = 0,
+    speed = 0.012,
+    maxScale = 3.5
+  }) {
+    const group = new THREE.Group();
+
+    const points = [];
+
+    for (let i = 0; i < sides; i++) {
+      const angle = (i / sides) * Math.PI * 2 + Math.PI / 4;
+      points.push(
+        new THREE.Vector3(
+          Math.cos(angle) * baseSize,
+          Math.sin(angle) * baseSize,
+          0
+        )
+      );
+    }
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+    const material = new THREE.LineBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 1,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const line = new THREE.LineLoop(geometry, material);
+    group.add(line);
+
+    const pos = latLngToVec3(lat, lng);
+    orientToGlobeSurface(group, pos);
+
+    scene.add(group);
+
+    return {
+      group,
+      material,
+      delay,
+      speed,
+      maxScale,
+      update(time) {
+        const p = (time * speed + delay) % 1;
+
+        const scale = 0.15 + p * maxScale;
+        group.scale.setScalar(scale);
+
+        material.opacity = Math.pow(1 - p, 1.6);
+      }
+    };
+  }
+
+  /**
+   * 创建空心圆环脉冲
+   */
+  function createRingPulse({
+    lat,
+    lng,
+    color = "#8fffff",
+    delay = 0,
+    speed = 0.012,
+    maxScale = 3
+  }) {
+    const group = new THREE.Group();
+
+    const geometry = new THREE.RingGeometry(0.07, 0.08, 96);
+
+    const material = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 1,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const ring = new THREE.Mesh(geometry, material);
+    group.add(ring);
+
+    const pos = latLngToVec3(lat, lng);
+    orientToGlobeSurface(group, pos);
+
+    scene.add(group);
+
+    return {
+      group,
+      material,
+      delay,
+      speed,
+      maxScale,
+      update(time) {
+        const p = (time * speed + delay) % 1;
+
+        group.scale.setScalar(0.2 + p * maxScale);
+        material.opacity = Math.pow(1 - p, 1.8);
+      }
+    };
+  }
+
+  /**
+   * 中心发光点
+   */
+  function createGlowPoint(lat, lng, color = "#ccffff") {
+    const textureCanvas = document.createElement("canvas");
+    textureCanvas.width = 128;
+    textureCanvas.height = 128;
+
+    const ctx = textureCanvas.getContext("2d");
+    const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gradient.addColorStop(0, "rgba(255,255,255,1)");
+    gradient.addColorStop(0.25, color);
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 128, 128);
+
+    const texture = new THREE.CanvasTexture(textureCanvas);
+
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const sprite = new THREE.Sprite(material);
+    sprite.position.copy(latLngToVec3(lat, lng, globeRadius + 0.06));
+    sprite.scale.set(0.25, 0.25, 0.25);
+    scene.add(sprite);
+
+    return sprite;
+  }
+
+  /**
+   * 竖向光柱
+   */
+  function createBeam(lat, lng, color = "#ffffff") {
+    const group = new THREE.Group();
+
+    const geometry = new THREE.ConeGeometry(0.06, 0.55, 32, 1, true);
+    const material = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const cone = new THREE.Mesh(geometry, material);
+    cone.position.z = 0.26;
+    cone.rotation.x = Math.PI / 2;
+    group.add(cone);
+
+    const pos = latLngToVec3(lat, lng, globeRadius + 0.02);
+    orientToGlobeSurface(group, pos);
+
+    scene.add(group);
+
+    return {
+      group,
+      material,
+      update(time) {
+        material.opacity = 0.35 + Math.sin(time * 0.08) * 0.25;
+        group.scale.setScalar(0.85 + Math.sin(time * 0.06) * 0.15);
+      }
+    };
+  }
+
+  const effects = [];
+
+  /**
+   * 东京附近
+   */
+  createGlowPoint(35.6762, 139.6503, "rgba(120,240,255,1)");
+  effects.push(createRingPulse({
+    lat: 35.6762,
+    lng: 139.6503,
+    color: "#88ffff",
+    delay: 0,
+    speed: 0.018,
+    maxScale: 3.4
+  }));
+  effects.push(createRingPulse({
+    lat: 35.6762,
+    lng: 139.6503,
+    color: "#88ffff",
+    delay: 0.35,
+    speed: 0.018,
+    maxScale: 3.4
+  }));
+  effects.push(createPolygonPulse({
+    lat: 35.6762,
+    lng: 139.6503,
+    sides: 4,
+    color: "#ffffff",
+    delay: 0.15,
+    speed: 0.014,
+    maxScale: 3.2
+  }));
+  effects.push(createBeam(35.6762, 139.6503, "#ffffff"));
+
+  /**
+   * 其他几个点
+   */
+  const markers = [
+    { lat: 39.9, lng: 116.4, color: "#ff6655", sides: 4 },
+    { lat: 37.5, lng: 127.0, color: "#66ff99", sides: 6 },
+    { lat: 31.2, lng: 121.5, color: "#ffdd77", sides: 4 },
+    { lat: 22.3, lng: 114.1, color: "#88ffff", sides: 6 }
+  ];
+
+  markers.forEach((m, i) => {
+    createGlowPoint(m.lat, m.lng, m.color);
+
+    effects.push(createPolygonPulse({
+      lat: m.lat,
+      lng: m.lng,
+      sides: m.sides,
+      color: m.color,
+      delay: i * 0.18,
+      speed: 0.012,
+      maxScale: 2.6
+    }));
+
+    effects.push(createRingPulse({
+      lat: m.lat,
+      lng: m.lng,
+      color: m.color,
+      delay: i * 0.24,
+      speed: 0.011,
+      maxScale: 2.4
+    }));
+  });
+
+  /**
+   * Bloom 发光
+   */
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+
+  const bloom = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.5,
+    0.45,
+    0.12
+  );
+  composer.addPass(bloom);
+
+  /**
+   * 动画
+   */
+  let frame = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    frame++;
+
+    globe.rotation.y += 0.0012;
+    wire.rotation.y += 0.0012;
+
+    effects.forEach(effect => effect.update(frame));
+
+    controls.update();
+    composer.render();
+  }
+
+  animate();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+</body>
+</html>
