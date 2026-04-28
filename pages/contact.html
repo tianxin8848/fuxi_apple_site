@@ -208,20 +208,23 @@
         }
         @media (min-width: 1024px) {
             .contact-main {
-                height: calc(100vh - 4rem);
-                height: calc(100dvh - 4rem);
-                overflow: hidden;
+                height: auto;
             }
             .contact-hero {
-                padding-top: 1.5rem;
-                padding-bottom: 1rem;
+                padding-top: 1rem;
+                padding-bottom: 0.75rem;
+            }
+            .contact-hero h1 {
+                font-size: clamp(2rem, 3vw, 2.8rem);
+                line-height: 1.1;
             }
             .contact-hero p {
-                margin-top: 1rem;
+                margin-top: 0.5rem;
+                font-size: 1rem;
             }
             .contact-content {
-                padding-top: 1rem;
-                padding-bottom: 1.25rem;
+                padding-top: 0.75rem;
+                padding-bottom: 1rem;
                 min-height: 0;
             }
             .contact-content-inner {
@@ -229,8 +232,8 @@
                 min-height: 0;
             }
             .contact-content-grid {
-                gap: 1rem;
-                height: 100%;
+                gap: 0.75rem;
+                height: auto;
                 min-height: 0;
             }
             .contact-content-grid > div {
@@ -240,17 +243,47 @@
                 min-height: 0;
             }
             .contact-map-col .map-container {
-                min-height: 0;
+                min-height: 320px;
                 height: 100%;
             }
             .contact-scroll-card {
-                max-height: 100%;
-                overflow-y: auto;
-                scrollbar-color: #52525b #0a0a0a;
-                scrollbar-width: thin;
+                max-height: none;
+                overflow: visible;
             }
             .contact-card {
-                padding: 1.25rem;
+                padding: 1rem;
+            }
+            .contact-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                margin-bottom: 0;
+            }
+            .contact-content-grid > div:nth-child(2) .contact-card > h2,
+            .contact-content-grid > div:nth-child(3) .contact-card > h2 {
+                font-size: 1.25rem;
+                margin-bottom: 0.875rem;
+            }
+            .contact-content-grid > div:nth-child(2) .contact-card > .flex.items-start {
+                margin-bottom: 0.75rem;
+            }
+            .contact-content-grid > div:nth-child(2) .contact-card > .mt-10.pt-8 {
+                margin-top: 0.875rem;
+                padding-top: 0.875rem;
+            }
+            #contactForm > * + * {
+                margin-top: 0.75rem !important;
+            }
+            #contactForm label {
+                margin-bottom: 0.375rem;
+                font-size: 0.8125rem;
+            }
+            #contactForm .form-input {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            #contactForm textarea.form-input {
+                min-height: 88px;
             }
         }
     </style>
