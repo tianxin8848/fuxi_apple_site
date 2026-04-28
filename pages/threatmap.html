@@ -106,10 +106,47 @@
             border: 1px solid rgba(255, 31, 45, 0.2);
             border-radius: 10px;
             overflow: hidden;
-            background-image: url('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg');
-            background-size: cover;
-            background-position: center;
             box-shadow: inset 0 0 48px rgba(0, 0, 0, 0.65);
+        }
+
+        #plane-basemap {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)),
+                url('/img/00/map/threat-map/textures/earth-blue-marble.jpg');
+            background-size: 100% 100%, 100% 100%;
+            background-position: center;
+            filter: brightness(1.35) saturate(1.15) contrast(1.06);
+        }
+
+        #plane-labels {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .country-label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            line-height: 1.1;
+            color: #f6f8ff;
+            text-shadow: 0 0 7px rgba(0, 0, 0, 0.95);
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .country-label::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            margin-right: 5px;
+            border-radius: 9999px;
+            background: rgba(255, 132, 143, 0.9);
+            box-shadow: 0 0 8px rgba(255, 31, 45, 0.85);
+            vertical-align: middle;
         }
 
         #plane-svg {
@@ -275,6 +312,8 @@
             </div>
             <div id="plane-stage">
                 <div id="plane-map">
+                    <div id="plane-basemap"></div>
+                    <div id="plane-labels"></div>
                     <svg id="plane-svg" viewBox="0 0 1000 500" preserveAspectRatio="none"></svg>
                 </div>
             </div>
@@ -331,6 +370,7 @@
     const globeWrap = document.getElementById('globe-wrap');
     const planeStage = document.getElementById('plane-stage');
     const planeSvg = document.getElementById('plane-svg');
+    const planeLabels = document.getElementById('plane-labels');
     const btnGlobeView = document.getElementById('btn-globe-view');
     const btnPlaneView = document.getElementById('btn-plane-view');
 
@@ -343,6 +383,20 @@
     const pointsData = [];
     let globeSize = 560;
     let currentView = 'globe';
+    const countryLabels = [
+        { name: 'USA', lat: 39.8, lng: -98.6 },
+        { name: 'Canada', lat: 56.1, lng: -106.3 },
+        { name: 'Brazil', lat: -10.3, lng: -53.2 },
+        { name: 'UK', lat: 55.0, lng: -2.5 },
+        { name: 'Germany', lat: 51.0, lng: 10.4 },
+        { name: 'Russia', lat: 61.5, lng: 105.3 },
+        { name: 'China', lat: 35.8, lng: 104.2 },
+        { name: 'India', lat: 21.1, lng: 78.0 },
+        { name: 'Japan', lat: 36.2, lng: 138.3 },
+        { name: 'Australia', lat: -25.3, lng: 133.8 },
+        { name: 'South Africa', lat: -30.6, lng: 22.9 },
+        { name: 'Saudi Arabia', lat: 23.9, lng: 45.1 }
+    ];
 
     function latLngToPlane(lat, lng) {
         const x = ((lng + 180) / 360) * 1000;
@@ -378,6 +432,19 @@
         }
 
         planeSvg.innerHTML = svgHtml;
+    }
+
+    function renderCountryLabels() {
+        let html = '';
+        for (let i = 0; i < countryLabels.length; i++) {
+            const country = countryLabels[i];
+            const pos = latLngToPlane(country.lat, country.lng);
+            const left = (pos.x / 1000) * 100;
+            const top = (pos.y / 500) * 100;
+            html += '<span class="country-label" style="left:' + left.toFixed(2) + '%;top:' + top.toFixed(2) + '%">' +
+                country.name + '</span>';
+        }
+        planeLabels.innerHTML = html;
     }
 
     function setViewMode(mode) {
@@ -484,6 +551,7 @@
             globeSize = size;
             globe.width(globeSize).height(globeSize);
         }
+        renderCountryLabels();
     }
 
     resize();
