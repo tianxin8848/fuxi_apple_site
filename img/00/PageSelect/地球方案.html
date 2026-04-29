@@ -310,18 +310,35 @@ scene.add(light);
 
 /* 彗星弧线效果 - 确保弧线不穿过地球表面 */
 function createArcCurve(startLat, startLng, endLat, endLng) {
-  const start = latLonToVec3(startLat, startLng, R * 1.01);
-  const end = latLonToVec3(endLat, endLng, R * 1.01);
+  const surfaceRadius = R * 1.01;
+  const start = latLonToVec3(startLat, startLng, surfaceRadius);
+  const end = latLonToVec3(endLat, endLng, surfaceRadius);
 
-  const midPoint = start.clone().add(end).multiplyScalar(0.5);
-  const minHeight = R * 1.15;
-  const maxHeight = R * 1.8;
+  const startDir = start.clone().normalize();
+  const endDir = end.clone().normalize();
 
-  midPoint.normalize();
-  const arcHeight = minHeight + Math.random() * (maxHeight - minHeight);
-  midPoint.multiplyScalar(arcHeight);
+  const midDir = startDir.clone().add(endDir).normalize();
+  const angle = startDir.angleTo(endDir);
+  const minElevation = Math.sin(angle * 0.5) * 0.2 + 0.1;
+  const elevation = minElevation + Math.random() * 0.25;
+  const arcHeight = surfaceRadius * (1 + elevation);
 
-  return new THREE.CatmullRomCurve3([start, midPoint, end]);
+  const midPoint = midDir.clone().multiplyScalar(arcHeight);
+
+  const curve = new THREE.CatmullRomCurve3([start, midPoint, end]);
+
+  const numPoints = 64;
+  const points = curve.getPoints(numPoints);
+  for (let i = 0; i < numPoints; i++) {
+    const p = points[i];
+    const dist = p.length();
+    if (dist < surfaceRadius) {
+      p.normalize().multiplyScalar(surfaceRadius);
+    }
+  }
+
+  const fixedCurve = new THREE.CatmullRomCurve3(points);
+  return fixedCurve;
 }
 
 function createCometArc(curve, color = "#ff2244") {
