@@ -104,15 +104,15 @@
     <h3>光带参数（全局）</h3>
     <div class="row">
       <label for="maxWidth">maxWidth: <span id="maxWidthValue"></span></label>
-      <input id="maxWidth" type="range" min="0.12" max="1.2" step="0.01" value="0.45" />
+      <input id="maxWidth" type="range" min="0.12" max="1.2" step="0.01" value="0.12" />
     </div>
     <div class="row">
       <label for="brightness">brightness: <span id="brightnessValue"></span></label>
-      <input id="brightness" type="range" min="0.5" max="5.0" step="0.05" value="2.1" />
+      <input id="brightness" type="range" min="0.5" max="5.0" step="0.05" value="0.5" />
     </div>
     <div class="row">
       <label for="travelTime">travelTime(s): <span id="travelTimeValue"></span></label>
-      <input id="travelTime" type="range" min="0.4" max="4.0" step="0.1" value="1.5" />
+      <input id="travelTime" type="range" min="0.4" max="4.0" step="0.1" value="8" />
     </div>
     <div class="row">
       <label for="pulseSpeed">pulseSpeed: <span id="pulseSpeedValue"></span></label>
@@ -124,7 +124,7 @@
     </div>
     <div class="row">
       <label for="pulseFrequency">pulseFrequency: <span id="pulseFrequencyValue"></span></label>
-      <input id="pulseFrequency" type="range" min="0.2" max="3.0" step="0.1" value="0.9" />
+      <input id="pulseFrequency" type="range" min="0.2" max="3.0" step="0.1" value="0.3" />
     </div>
     <div class="row">
       <label for="gridCount">gridCount: <span id="gridCountValue"></span></label>
@@ -132,7 +132,7 @@
     </div>
     <div class="row">
       <label for="gridSize">gridSize: <span id="gridSizeValue"></span></label>
-      <input id="gridSize" type="range" min="0.8" max="8.0" step="0.1" value="2.8" />
+      <input id="gridSize" type="range" min="0.8" max="8.0" step="0.1" value="0.8" />
     </div>
     <div class="row">
       <label for="curveHeight">curveHeight: <span id="curveHeightValue"></span></label>
@@ -145,6 +145,18 @@
     <div class="row">
       <label for="color">color</label>
       <input id="color" type="color" value="#ff3a1a" />
+    </div>
+    <div class="row">
+      <label for="pointBrightness">pointBrightness: <span id="pointBrightnessValue"></span></label>
+      <input id="pointBrightness" type="range" min="0.0" max="3.0" step="0.1" value="1.0" />
+    </div>
+    <div class="row">
+      <label for="pointCoreSize">pointCoreSize: <span id="pointCoreSizeValue"></span></label>
+      <input id="pointCoreSize" type="range" min="0.06" max="0.32" step="0.01" value="0.16" />
+    </div>
+    <div class="row">
+      <label for="globeMode">globeMode (贴球面飞行)</label>
+      <input id="globeMode" type="checkbox" />
     </div>
     <div class="row">
       <button id="applyFixedPreset" class="preset-btn" type="button">应用固定参数预设</button>
@@ -218,6 +230,18 @@
 
     const ambient = new THREE.AmbientLight(0x330000, 0.4);
     scene.add(ambient);
+    const globeRadius = 9.0;
+    const globeMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(globeRadius, 64, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x143846,
+        transparent: true,
+        opacity: 0.22,
+        wireframe: true,
+      }),
+    );
+    globeMesh.visible = false;
+    scene.add(globeMesh);
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
@@ -239,6 +263,9 @@
       curveHeight: document.getElementById("curveHeight"),
       segments: document.getElementById("segments"),
       color: document.getElementById("color"),
+      pointBrightness: document.getElementById("pointBrightness"),
+      pointCoreSize: document.getElementById("pointCoreSize"),
+      globeMode: document.getElementById("globeMode"),
       maxWidthValue: document.getElementById("maxWidthValue"),
       brightnessValue: document.getElementById("brightnessValue"),
       travelTimeValue: document.getElementById("travelTimeValue"),
@@ -249,6 +276,8 @@
       gridSizeValue: document.getElementById("gridSizeValue"),
       curveHeightValue: document.getElementById("curveHeightValue"),
       segmentsValue: document.getElementById("segmentsValue"),
+      pointBrightnessValue: document.getElementById("pointBrightnessValue"),
+      pointCoreSizeValue: document.getElementById("pointCoreSizeValue"),
       applyFixedPreset: document.getElementById("applyFixedPreset"),
     };
 
@@ -385,11 +414,53 @@
       ui.pulseFrequencyValue.textContent = `${formatValue(ui.pulseFrequency.value, 1)}Hz`;
       ui.gridCountValue.textContent = String(ui.gridCount.value);
       ui.gridSizeValue.textContent = formatValue(ui.gridSize.value, 1);
+      ui.pointBrightnessValue.textContent = formatValue(ui.pointBrightness.value, 1);
+      ui.pointCoreSizeValue.textContent = formatValue(ui.pointCoreSize.value, 2);
       ui.curveHeightValue.textContent = formatValue(ui.curveHeight.value, 1);
       ui.segmentsValue.textContent = String(ui.segments.value);
     }
 
-    function buildCurve(start, end, height, sideOffset) {
+    function buildCurve(start, end, height, sideOffset, segments) {
+      if (ui.globeMode.checked) {
+        const aDir = start.clone().normalize();
+        const bDir = end.clone().normalize();
+        if (aDir.dot(bDir) > 0.9995) {
+          // 几乎同方向时，为避免切线退化，用一个很小的旋转生成曲线点
+          const axis = new THREE.Vector3(0, 1, 0).cross(aDir).normalize();
+          if (axis.lengthSq() < 1e-6) {
+            axis.set(1, 0, 0).cross(aDir).normalize();
+          }
+          const eps = 0.08; // 小角度
+          const p0 = aDir.clone().multiplyScalar(globeRadius);
+          const p1 = aDir.clone().applyAxisAngle(axis, eps * 0.5).multiplyScalar(globeRadius);
+          const p2 = bDir.clone().multiplyScalar(globeRadius);
+          return new THREE.CatmullRomCurve3([p0, p1, p2], false);
+        }
+
+        // Vector3.slerp 在某些 three 版本中不存在，因此这里手写球面插值
+        // - aDir/bDir: 归一化方向向量
+        // - t: [0,1]
+        function slerpDir(a, b, t) {
+          const dot = Math.min(1, Math.max(-1, a.dot(b)));
+          const omega = Math.acos(dot);
+          if (omega < 1e-5) return a.clone();
+          const sinOmega = Math.sin(omega);
+          const s1 = Math.sin((1 - t) * omega) / sinOmega;
+          const s2 = Math.sin(t * omega) / sinOmega;
+          return a.clone().multiplyScalar(s1).add(b.clone().multiplyScalar(s2));
+        }
+
+        const pts = [];
+        const count = Math.max(24, segments);
+        for (let i = 0; i <= count; i++) {
+          const t = i / count;
+          const dir = slerpDir(aDir, bDir, t).normalize();
+          // 球面贴合模式：始终落在球面半径上，不额外抬离
+          pts.push(dir.multiplyScalar(globeRadius));
+        }
+        return new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.05);
+      }
+
       const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
       const up = new THREE.Vector3(0, 1, 0);
       const dir = new THREE.Vector3().subVectors(end, start).normalize();
@@ -424,7 +495,6 @@
       const positions = new Float32Array(vertCount * 3);
       const progress = new Float32Array(vertCount);
       const indices = [];
-
       const up = new THREE.Vector3(0, 1, 0);
       const fallback = new THREE.Vector3(0, 0, 1);
 
@@ -432,16 +502,47 @@
         const t = i / (points.length - 1);
         const p = points[i];
 
-        const tangent = curve.getTangent(Math.min(1, Math.max(0, t))).normalize();
-        let side = new THREE.Vector3().crossVectors(up, tangent).normalize();
-        if (side.lengthSq() < 1e-6) {
-          side = new THREE.Vector3().crossVectors(fallback, tangent).normalize();
+        let tangent;
+        if (ui.globeMode.checked) {
+          // 球面模式：用相邻点差分估计切线，并投影到切平面，确保 side = normal x tangent 可靠
+          const prev = points[Math.max(0, i - 1)];
+          const next = points[Math.min(points.length - 1, i + 1)];
+          tangent = next.clone().sub(prev);
+          const normalForTangent = p.clone().normalize();
+          // 去掉法线分量，得到切平面内切向量
+          tangent.sub(normalForTangent.clone().multiplyScalar(tangent.dot(normalForTangent)));
+          tangent = tangent.normalize();
+        } else {
+          tangent = curve.getTangent(Math.min(1, Math.max(0, t))).normalize();
+        }
+        let side;
+        if (ui.globeMode.checked) {
+          // 球面贴合：左右偏移方向必须在“球体切平面”内
+          // - normal: 球心指向当前点（球面法线）
+          // - side: 在切平面内，且与切线正交（side = normal x tangent）
+          const normal = p.clone().normalize();
+          side = new THREE.Vector3().crossVectors(normal, tangent).normalize();
+          if (side.lengthSq() < 1e-6) {
+            side = new THREE.Vector3().crossVectors(fallback, tangent).normalize();
+          }
+        } else {
+          // 自由空间模式：使用世界 up 生成横向侧向量
+          side = new THREE.Vector3().crossVectors(up, tangent).normalize();
+          if (side.lengthSq() < 1e-6) {
+            side = new THREE.Vector3().crossVectors(fallback, tangent).normalize();
+          }
         }
 
         // width = maxWidth * sin(PI*t): 两头细，中间宽
         const width = maxWidth * Math.sin(Math.PI * t);
-        const left = p.clone().addScaledVector(side, width);
-        const right = p.clone().addScaledVector(side, -width);
+        let left = p.clone().addScaledVector(side, width);
+        let right = p.clone().addScaledVector(side, -width);
+
+        // 球面贴合：把带状两侧顶点投影回球面，避免出现“切片插进去”的观感
+        if (ui.globeMode.checked) {
+          left.normalize().multiplyScalar(globeRadius);
+          right.normalize().multiplyScalar(globeRadius);
+        }
 
         const li = i * 2;
         const ri = i * 2 + 1;
@@ -481,7 +582,7 @@
       const color = new THREE.Color(colorHex);
       const brightness = Number(ui.brightness.value);
 
-      const curve = buildCurve(start, end, curveHeight, sideOffset);
+      const curve = buildCurve(start, end, curveHeight, sideOffset, segments);
       const geometry = createRibbonGeometry(curve, segments, maxWidth);
       const material = new THREE.ShaderMaterial({
         uniforms: {
@@ -504,10 +605,20 @@
       return mesh;
     }
 
+    function resolveEndpointsOnMode(start, end) {
+      if (!ui.globeMode.checked) {
+        return { start: start.clone(), end: end.clone() };
+      }
+      return {
+        start: start.clone().normalize().multiplyScalar(globeRadius),
+        end: end.clone().normalize().multiplyScalar(globeRadius),
+      };
+    }
+
     // =========================
     // 点位标签实现（A / B 字母）
     // =========================
-    function createTextSprite(text, color = "#ffffff") {
+    function createTextSprite(text, color = "#ffffff", brightness = 1.0) {
       const canvas = document.createElement("canvas");
       canvas.width = 128;
       canvas.height = 128;
@@ -516,7 +627,15 @@
       ctx.font = "bold 64px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillStyle = color;
+      // brightness 用于调节字的 alpha，避免 MeshBasicMaterial 不吃光照导致无法“变亮”
+      const b = Math.max(0.0, Number(brightness));
+      const alpha = Math.min(1.0, Math.max(0.0, b));
+      // 把 hex 转成 rgb
+      const hex = color.replace("#", "");
+      const r = parseInt(hex.length === 3 ? hex[0] + hex[0] : hex.substring(0, 2), 16);
+      const g = parseInt(hex.length === 3 ? hex[1] + hex[1] : hex.substring(2, 4), 16);
+      const bl = parseInt(hex.length === 3 ? hex[2] + hex[2] : hex.substring(4, 6), 16);
+      ctx.fillStyle = `rgba(${r},${g},${bl},${alpha})`;
       ctx.fillText(text, 64, 64);
 
       const texture = new THREE.CanvasTexture(canvas);
@@ -527,9 +646,21 @@
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       });
+      material.opacity = Math.min(1.0, Math.max(0.0, b));
       const sprite = new THREE.Sprite(material);
       sprite.scale.set(0.8, 0.8, 0.8);
       return sprite;
+    }
+
+    // 贴球体表面的“对齐”实现：
+    // - 球心在 (0,0,0)，position 是球面点
+    // - 把 object 的本地法线（默认 +Z）旋转到该点的球面外法线方向
+    function alignToSphereSurface(object, position, fromNormalLocal = new THREE.Vector3(0, 0, 1)) {
+      const normal = position.clone().normalize();
+      const from = fromNormalLocal.clone().normalize();
+      const quaternion = new THREE.Quaternion().setFromUnitVectors(from, normal);
+      object.position.copy(position);
+      object.quaternion.copy(quaternion);
     }
 
     // =========================
@@ -538,30 +669,50 @@
     // =========================
     function createEndpointMarker(position, label, colorHex) {
       const group = new THREE.Group();
+      const pointBrightness = Number(ui.pointBrightness.value);
+      const coreRadius = Number(ui.pointCoreSize.value);
 
-      const coreGeo = new THREE.SphereGeometry(0.16, 16, 16);
+      const coreGeo = new THREE.SphereGeometry(coreRadius, 16, 16);
       const coreMat = new THREE.MeshBasicMaterial({ color: colorHex });
       const core = new THREE.Mesh(coreGeo, coreMat);
       group.add(core);
 
-      const ringGeo = new THREE.RingGeometry(0.24, 0.34, 24);
+      // ring: 与 core 等比例缩放（减少“点本体变了但光环不跟着变”的违和感）
+      const ringInner = coreRadius * 1.5;
+      const ringOuter = coreRadius * 2.15;
+      const ringGeo = new THREE.RingGeometry(ringInner, ringOuter, 24);
       const ringMat = new THREE.MeshBasicMaterial({
         color: colorHex,
         transparent: true,
-        opacity: 0.55,
+        opacity: Math.min(1.0, Math.max(0.0, 0.45 * pointBrightness)),
         side: THREE.DoubleSide,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       });
       const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.rotation.x = -Math.PI * 0.5;
-      group.add(ring);
+      // globeMode: 环平面必须贴合球面切平面（法线=球心外法线）
+      // 非 globeMode: 保持原来“水平环”的表现
+      if (ui.globeMode.checked) {
+        // 默认 RingGeometry 在 XY 平面（本地 +Z 为法线）
+        group.add(ring);
+        alignToSphereSurface(group, position, new THREE.Vector3(0, 0, 1));
+      } else {
+        ring.rotation.x = -Math.PI * 0.5;
+        group.add(ring);
+      }
 
-      const text = createTextSprite(label, colorHex);
-      text.position.set(0, 0.75, 0);
+      const text = createTextSprite(label, colorHex, pointBrightness);
+      if (ui.globeMode.checked) {
+        // 沿球面外法线方向偏移（局部 +Z）
+        text.position.set(0, 0, coreRadius * 4.7);
+      } else {
+        text.position.set(0, coreRadius * 4.7, 0);
+      }
       group.add(text);
 
-      group.position.copy(position);
+      if (!ui.globeMode.checked) {
+        group.position.copy(position);
+      }
       return group;
     }
 
@@ -599,7 +750,15 @@
     function createAPulseSystem(position, primaryColorHex = "#ff4d3d") {
       const group = new THREE.Group();
       group.position.copy(position);
-      group.position.y += 0.03;
+      // 非球体模式：稍微抬起；球体模式：沿球面法线推一点，避免脱离球面
+      if (ui.globeMode.checked) {
+        const n = position.clone().normalize();
+        group.position.addScaledVector(n, 0.03);
+        // LineLoop 默认在 XY 平面（本地 +Z 为法线），将 +Z 对齐到球面外法线
+        alignToSphereSurface(group, group.position, new THREE.Vector3(0, 0, 1));
+      } else {
+        group.position.y += 0.03;
+      }
 
       const pulseLayers = [];
       const layerCount = 6;
@@ -609,7 +768,6 @@
         const color = isBlue ? 0x4aa3ff : new THREE.Color(primaryColorHex).getHex();
         const ring = createTriangularRingLines(0.55, 0.36, color);
         ring.scale.setScalar(0.35);
-        ring.rotation.x = -Math.PI * 0.5;
         ring.rotation.z = i * 0.55;
         group.add(ring);
 
@@ -625,35 +783,130 @@
 
     // A点底部特效：地面网格脉冲（围绕点扩散）
     function createAGroundGridSystem(position, primaryColorHex = "#ff4d3d", count = 6, size = 2.8) {
+      // 目标：井字形状 + 外发射（向外的波前）+ 逐渐消失
+      // 做法：
+      // 1) 在该点的“局部切平面”生成井字网格的点（两组正交直线）
+      // 2) globeMode 下把每个点做“径向投影”贴到球面上
+      // 3) 根据点到中心的切平面距离分成多层，让动画形成外发射波前
       const group = new THREE.Group();
-      group.position.copy(position);
-      group.position.y -= 0.02;
+      group.position.set(0, 0, 0);
 
+      const normal = ui.globeMode.checked ? position.clone().normalize() : new THREE.Vector3(0, 1, 0);
+      const center = position.clone();
+
+      // 切平面基向量（U/V）
+      const worldUp = new THREE.Vector3(0, 1, 0);
+      let tangentU = new THREE.Vector3().crossVectors(normal, worldUp);
+      if (tangentU.lengthSq() < 1e-6) tangentU = new THREE.Vector3().crossVectors(normal, new THREE.Vector3(1, 0, 0));
+      tangentU.normalize();
+      const tangentV = new THREE.Vector3().crossVectors(normal, tangentU).normalize();
+
+      const gridLines = Math.max(2, Math.floor(count));
+      const samplesAlong = Math.max(10, gridLines * 3);
+      const span = Math.max(0.3, size);
+
+      const entries = []; // { pos: Vector3, rNorm: number }
+      const pushPoint = (posPlane, rNorm) => {
+        let p = posPlane;
+        if (ui.globeMode.checked) {
+          // 径向投影到球面：球心(0,0,0) -> 方向 * globeRadius
+          p = p.normalize().multiplyScalar(globeRadius);
+        } else {
+          // 平面模式：贴近局部“地面”，避免 z-fighting
+          p = p.clone();
+          p.y += -0.02;
+        }
+        entries.push({ pos: p, rNorm });
+      };
+
+      // 方向1：沿 tangentU 的线，沿 tangentV 做偏移（在半径 circle 内取线段）
+      for (let i = 0; i <= gridLines; i++) {
+        const offsetV = -span + (2 * span * i) / gridLines;
+        const under = Math.max(0, span * span - offsetV * offsetV);
+        const alongUMax = Math.sqrt(under);
+
+        for (let s = 0; s <= samplesAlong; s++) {
+          const alongU = -alongUMax + (2 * alongUMax * s) / samplesAlong;
+          const r = Math.sqrt(alongU * alongU + offsetV * offsetV);
+          const rNorm = r / span;
+          const posPlane = center
+            .clone()
+            .add(tangentU.clone().multiplyScalar(alongU))
+            .add(tangentV.clone().multiplyScalar(offsetV));
+          pushPoint(posPlane, rNorm);
+        }
+      }
+
+      // 方向2：沿 tangentV 的线，沿 tangentU 做偏移（在半径 circle 内取线段）
+      for (let j = 0; j <= gridLines; j++) {
+        const offsetU = -span + (2 * span * j) / gridLines;
+        const under = Math.max(0, span * span - offsetU * offsetU);
+        const alongVMax = Math.sqrt(under);
+
+        for (let s = 0; s <= samplesAlong; s++) {
+          const alongV = -alongVMax + (2 * alongVMax * s) / samplesAlong;
+          const r = Math.sqrt(offsetU * offsetU + alongV * alongV);
+          const rNorm = r / span;
+          const posPlane = center
+            .clone()
+            .add(tangentV.clone().multiplyScalar(alongV))
+            .add(tangentU.clone().multiplyScalar(offsetU));
+          pushPoint(posPlane, rNorm);
+        }
+      }
+
+      const basePointSize = Math.max(0.01, Math.min(0.12, size * 0.02));
       const gridLayers = [];
-      const layerCount = Math.max(1, Math.floor(count));
-      const baseSize = Math.max(0.3, size);
+      const layerCount = Math.max(2, Math.floor(count / 2));
+      const eps = 0.03; // 给 band 一点宽度，避免空带
 
+      // 按“切平面半径带”拆分多层，让动画从内向外出现
       for (let i = 0; i < layerCount; i++) {
-        const grid = new THREE.GridHelper(baseSize, 6, new THREE.Color(primaryColorHex), new THREE.Color(primaryColorHex));
-        grid.material.transparent = true;
-        grid.material.opacity = 0.0;
-        grid.material.depthWrite = false;
-        grid.material.blending = THREE.AdditiveBlending;
-        grid.rotation.y = i * 0.34;
-        group.add(grid);
+        const bandStart = i / layerCount;
+        const bandEnd = (i + 1) / layerCount;
 
+        const positions = [];
+        for (const e of entries) {
+          if (e.rNorm + eps >= bandStart && e.rNorm - eps < bandEnd) {
+            positions.push(e.pos.x, e.pos.y, e.pos.z);
+          }
+        }
+
+        const layerGeometry = new THREE.BufferGeometry();
+        if (positions.length > 0) {
+          layerGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(positions), 3));
+        } else {
+          // 避免空几何导致渲染异常
+          layerGeometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(new Float32Array([center.x, center.y, center.z]), 3),
+          );
+        }
+
+        const mat = new THREE.PointsMaterial({
+          color: primaryColorHex,
+          transparent: true,
+          opacity: 0.0,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          size: basePointSize,
+          sizeAttenuation: true,
+        });
+        const pts = new THREE.Points(layerGeometry, mat);
+        group.add(pts);
         gridLayers.push({
-          mesh: grid,
+          mesh: pts,
           offset: i / layerCount,
-          spin: (i % 2 === 0 ? 1 : -1) * (0.002 + i * 0.00025),
+          basePointSize,
         });
       }
 
-      return { group, gridLayers, baseSize };
+      return { group, gridLayers };
     }
 
     // 场景重建：轨迹、A/B点、A点脉冲都在这里统一创建/销毁
     function rebuildRibbons() {
+      globeMesh.visible = ui.globeMode.checked;
       for (const ribbon of ribbons) {
         ribbon.geometry.dispose();
         ribbon.material.dispose();
@@ -669,27 +922,41 @@
       }
       aPulseSystems.length = 0;
       for (const gridSystem of aGroundGridSystems) {
+        // Dispose each layer geometry/materials (Points)
+        if (gridSystem.gridLayers) {
+          for (const layer of gridSystem.gridLayers) {
+            if (layer.mesh) {
+              if (layer.mesh.material) layer.mesh.material.dispose();
+              if (layer.mesh.geometry) layer.mesh.geometry.dispose();
+            }
+          }
+        }
         scene.remove(gridSystem.group);
       }
       aGroundGridSystems.length = 0;
 
       for (const preset of basePresets) {
-        const mesh = createRibbonMesh(preset);
+        const endpoints = resolveEndpointsOnMode(preset.start, preset.end);
+        const mesh = createRibbonMesh({
+          ...preset,
+          start: endpoints.start,
+          end: endpoints.end,
+        });
         ribbons.push(mesh);
         scene.add(mesh);
 
         const markerColor = detectionTypeColors[preset.detectionType] || "#ff8844";
-        const aMarker = createEndpointMarker(preset.start, "A", markerColor);
-        const bMarker = createEndpointMarker(preset.end, "B", markerColor);
+        const aMarker = createEndpointMarker(endpoints.start, "A", markerColor);
+        const bMarker = createEndpointMarker(endpoints.end, "B", markerColor);
         endpointMarkers.push(aMarker, bMarker);
         scene.add(aMarker, bMarker);
 
-        const pulse = createAPulseSystem(preset.start, markerColor);
+        const pulse = createAPulseSystem(endpoints.start, markerColor);
         aPulseSystems.push(pulse);
         scene.add(pulse.group);
 
         const groundGrid = createAGroundGridSystem(
-          preset.start,
+          endpoints.start,
           markerColor,
           Number(ui.gridCount.value),
           Number(ui.gridSize.value),
@@ -714,12 +981,15 @@
       ui.gridSize.value = "0.8";
       ui.curveHeight.value = "4.8";
       ui.segments.value = "120";
+      ui.pointBrightness.value = "1.0";
+      ui.pointCoreSize.value = "0.16";
       onControlChange();
     }
 
-    for (const key of ["maxWidth", "brightness", "travelTime", "pulseSpeed", "pulseHeight", "pulseFrequency", "gridCount", "gridSize", "curveHeight", "segments", "color"]) {
+    for (const key of ["maxWidth", "brightness", "travelTime", "pulseSpeed", "pulseHeight", "pulseFrequency", "gridCount", "gridSize", "curveHeight", "segments", "color", "globeMode", "pointBrightness", "pointCoreSize"]) {
       ui[key].addEventListener("input", onControlChange);
     }
+    ui.globeMode.addEventListener("change", onControlChange);
     ui.applyFixedPreset.addEventListener("click", applyFixedPresetValues);
 
     onControlChange();
@@ -748,11 +1018,19 @@
         const pulseHeight = Number(ui.pulseHeight.value);
         for (const layer of pulse.pulseLayers) {
           const life = (time * pulseFrequency + layer.offset) % 1;
-          // 沿世界 Y 轴向上发射：越高光圈越大
+          // 沿发射轴推进：
+          // - globeMode: 沿“球面外法线”（局部 +Z）
+          // - 非 globeMode: 沿世界 Y 轴
           const yOffset = life * pulseHeight * pulseSpeed;
           const scale = 0.28 + yOffset * 0.85;
           const alpha = Math.pow(1.0 - life, 1.7) * 0.9;
-          layer.mesh.position.y = yOffset;
+          if (ui.globeMode.checked) {
+            layer.mesh.position.y = 0;
+            layer.mesh.position.z = yOffset;
+          } else {
+            layer.mesh.position.y = yOffset;
+            layer.mesh.position.z = 0;
+          }
           layer.mesh.scale.setScalar(scale);
           for (const mat of layer.mesh.userData.materials) {
             mat.opacity = alpha;
@@ -766,11 +1044,12 @@
         const pulseFrequency = Number(ui.pulseFrequency.value);
         for (const layer of gridSystem.gridLayers) {
           const life = (time * pulseFrequency + layer.offset) % 1;
-          const scale = 0.25 + life * 1.9;
-          const alpha = Math.pow(1.0 - life, 2.0) * 0.75;
-          layer.mesh.scale.setScalar(scale);
+          const layerFade = 1.0 - layer.offset * 0.75;
+          const alpha = Math.pow(1.0 - life, 2.0) * 0.8 * Math.max(0.0, layerFade);
           layer.mesh.material.opacity = alpha;
-          layer.mesh.rotation.y += layer.spin;
+          // 点大小轻微随生命周期变化，模拟“波前点亮”
+          const s = layer.basePointSize * (0.7 + life * 1.6);
+          layer.mesh.material.size = s;
         }
       }
 
