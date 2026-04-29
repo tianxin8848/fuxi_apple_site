@@ -77,8 +77,8 @@
       <input id="brightness" type="range" min="0.5" max="5.0" step="0.05" value="2.1" />
     </div>
     <div class="row">
-      <label for="speed">speed: <span id="speedValue"></span></label>
-      <input id="speed" type="range" min="0.2" max="3.0" step="0.05" value="1.0" />
+      <label for="travelTime">travelTime(s): <span id="travelTimeValue"></span></label>
+      <input id="travelTime" type="range" min="0.4" max="4.0" step="0.1" value="1.5" />
     </div>
     <div class="row">
       <label for="curveHeight">curveHeight: <span id="curveHeightValue"></span></label>
@@ -165,13 +165,13 @@
     const ui = {
       maxWidth: document.getElementById("maxWidth"),
       brightness: document.getElementById("brightness"),
-      speed: document.getElementById("speed"),
+      travelTime: document.getElementById("travelTime"),
       curveHeight: document.getElementById("curveHeight"),
       segments: document.getElementById("segments"),
       color: document.getElementById("color"),
       maxWidthValue: document.getElementById("maxWidthValue"),
       brightnessValue: document.getElementById("brightnessValue"),
-      speedValue: document.getElementById("speedValue"),
+      travelTimeValue: document.getElementById("travelTimeValue"),
       curveHeightValue: document.getElementById("curveHeightValue"),
       segmentsValue: document.getElementById("segmentsValue"),
     };
@@ -210,6 +210,7 @@
     ];
 
     const ribbons = [];
+    const endpointMarkers = [];
 
     const vertexShader = `
       attribute float aProgress;
@@ -250,7 +251,7 @@
     function updateLabels() {
       ui.maxWidthValue.textContent = formatValue(ui.maxWidth.value, 2);
       ui.brightnessValue.textContent = formatValue(ui.brightness.value, 2);
-      ui.speedValue.textContent = `${formatValue(ui.speed.value, 2)}x`;
+      ui.travelTimeValue.textContent = `${formatValue(ui.travelTime.value, 1)}s`;
       ui.curveHeightValue.textContent = formatValue(ui.curveHeight.value, 1);
       ui.segmentsValue.textContent = String(ui.segments.value);
     }
@@ -330,7 +331,7 @@
       return geometry;
     }
 
-    function createRibbonMesh({ start, end, sideOffset, widthScale, heightScale, speed, phase, trail }) {
+    function createRibbonMesh({ start, end, sideOffset, widthScale, heightScale, phase, trail }) {
       const segments = Number(ui.segments.value);
       const maxWidth = Number(ui.maxWidth.value) * widthScale;
       const curveHeight = Number(ui.curveHeight.value) * heightScale;
@@ -355,9 +356,62 @@
       });
 
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.userData.speed = speed ?? 0.18;
       mesh.userData.phase = phase ?? 0.0;
       return mesh;
+    }
+
+    function createTextSprite(text, color = "#ffffff") {
+      const canvas = document.createElement("canvas");
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "bold 64px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = color;
+      ctx.fillText(text, 64, 64);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.set(0.8, 0.8, 0.8);
+      return sprite;
+    }
+
+    function createEndpointMarker(position, label, colorHex) {
+      const group = new THREE.Group();
+
+      const coreGeo = new THREE.SphereGeometry(0.16, 16, 16);
+      const coreMat = new THREE.MeshBasicMaterial({ color: colorHex });
+      const core = new THREE.Mesh(coreGeo, coreMat);
+      group.add(core);
+
+      const ringGeo = new THREE.RingGeometry(0.24, 0.34, 24);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: colorHex,
+        transparent: true,
+        opacity: 0.55,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = -Math.PI * 0.5;
+      group.add(ring);
+
+      const text = createTextSprite(label, colorHex);
+      text.position.set(0, 0.75, 0);
+      group.add(text);
+
+      group.position.copy(position);
+      return group;
     }
 
     function rebuildRibbons() {
@@ -367,11 +421,20 @@
         scene.remove(ribbon);
       }
       ribbons.length = 0;
+      for (const marker of endpointMarkers) {
+        scene.remove(marker);
+      }
+      endpointMarkers.length = 0;
 
       for (const preset of basePresets) {
         const mesh = createRibbonMesh(preset);
         ribbons.push(mesh);
         scene.add(mesh);
+
+        const aMarker = createEndpointMarker(preset.start, "A", "#ff8844");
+        const bMarker = createEndpointMarker(preset.end, "B", "#ffd24a");
+        endpointMarkers.push(aMarker, bMarker);
+        scene.add(aMarker, bMarker);
       }
     }
 
@@ -380,7 +443,7 @@
       rebuildRibbons();
     }
 
-    for (const key of ["maxWidth", "brightness", "speed", "curveHeight", "segments", "color"]) {
+    for (const key of ["maxWidth", "brightness", "travelTime", "curveHeight", "segments", "color"]) {
       ui[key].addEventListener("input", onControlChange);
     }
 
@@ -391,9 +454,9 @@
       const time = performance.now() * 0.001;
 
       // 每条带子独立从 A -> B 前进，形成彗星头部+拖尾
-      const speedFactor = Number(ui.speed.value);
+      const travelTime = Math.max(0.1, Number(ui.travelTime.value));
       for (const ribbon of ribbons) {
-        const head = (time * ribbon.userData.speed * speedFactor + ribbon.userData.phase) % 1;
+        const head = ((time / travelTime) + ribbon.userData.phase) % 1;
         ribbon.material.uniforms.uHead.value = head;
         ribbon.material.uniforms.uBrightness.value = Number(ui.brightness.value) * (0.92 + 0.12 * Math.sin(time * 2.0));
       }
