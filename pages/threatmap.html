@@ -974,8 +974,8 @@ async function safeInitGlobe() {
                 uColor: { value: new window.THREE.Color(colorHex) },
                 uCenter: { value: 0.0 },
                 uBandLength: { value: 0.24 },
-                uOpacity: { value: 0.95 },
-                uBaseWidth: { value: 11.0 },
+                uOpacity: { value: 0.84 },
+                uBaseWidth: { value: 22.5 },
                 uResolution: { value: size }
             },
             vertexShader: `
@@ -996,7 +996,7 @@ async function safeInitGlobe() {
                     dist = min(dist, 1.0 - dist);
                     float halfBand = max(uBandLength * 0.5, 0.0001);
                     float mask = clamp(1.0 - dist / halfBand, 0.0, 1.0);
-                    float width = uBaseWidth * pow(mask, 0.8);
+                    float width = uBaseWidth * pow(mask, 0.65) * (0.62 + 0.38 * mask);
 
                     vec4 currClip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                     vec4 prevClip = projectionMatrix * modelViewMatrix * vec4(aPrevPosition, 1.0);
@@ -1025,11 +1025,20 @@ async function safeInitGlobe() {
                 varying float vMask;
 
                 void main() {
-                    float alpha = pow(vMask, 1.5) * uOpacity;
+                    float alpha = pow(vMask, 1.65) * uOpacity;
                     if (alpha < 0.001) {
                         discard;
                     }
-                    vec3 glowColor = uColor * (0.4 + 0.8 * pow(vMask, 0.7));
+                    vec3 gray = vec3(dot(uColor, vec3(0.299, 0.587, 0.114)));
+                    vec3 tonedColor = mix(gray, uColor, 0.62); // 整体降饱和
+
+                    float core = smoothstep(0.55, 1.0, vMask);
+                    vec3 deepCore = vec3(0.42, 0.05, 0.09);
+                    vec3 edgeColor = tonedColor * 0.72;
+                    vec3 midColor = tonedColor * 1.02;
+                    vec3 spindleColor = mix(edgeColor, midColor, pow(vMask, 0.8));
+                    vec3 glowColor = mix(spindleColor, deepCore + tonedColor * 0.55, core * 0.38);
+
                     gl_FragColor = vec4(glowColor, alpha);
                 }
             `

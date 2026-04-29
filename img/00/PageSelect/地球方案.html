@@ -371,9 +371,8 @@ function createCometArc(curve, color = "#ff2244") {
         if (d < 0.0) d += 1.0;
 
         float tail = smoothstep(uTailLength, 0.0, d);
-        float headGlow = smoothstep(0.03, 0.0, abs(d));
-        float alpha = tail * 0.85 + headGlow * 1.5;
-        vec3 finalColor = mix(uColor, vec3(1.0, 0.82, 0.82), headGlow);
+        float alpha = tail * 0.88;
+        vec3 finalColor = uColor;
 
         gl_FragColor = vec4(finalColor, alpha);
       }
@@ -411,7 +410,6 @@ const cometConfigs = [
 
 const cometCurves = [];
 const cometMaterials = [];
-const cometHeads = [];
 const cometColors = [];
 
 cometConfigs.forEach((config) => {
@@ -419,7 +417,6 @@ cometConfigs.forEach((config) => {
   cometCurves.push(curve);
   cometMaterials.push(createCometArc(curve, config.color));
   cometColors.push(config.color);
-  cometHeads.push(createCometHead(curve, config.color));
 });
 
 function latLonToVec3(lat, lon, radius) {
@@ -458,15 +455,6 @@ function animate() {
 
   cometMaterials.forEach((mat, index) => {
     mat.uniforms.uTime.value += 0.004 + index * 0.0005;
-  });
-
-  cometHeads.forEach((item, index) => {
-    item.progress += 0.004 + index * 0.0005;
-    item.progress %= 1;
-    const pos = item.curve.getPoint(item.progress);
-    item.mesh.position.copy(pos);
-    const s = 1 + Math.sin(Date.now() * 0.015 + index) * 0.25;
-    item.mesh.scale.setScalar(s);
   });
 
   controls.update();
