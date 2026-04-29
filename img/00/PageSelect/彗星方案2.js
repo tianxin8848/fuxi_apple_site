@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const app = document.getElementById("app");
 
@@ -38,9 +39,88 @@ app.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020202);
 
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 300);
-camera.position.set(0, 4, 22);
-camera.lookAt(0, 0, 0);
+// 相机：更小 FOV + 斜视初始位姿，贴近 Cybermap 低轨道视角
+const camera = new THREE.PerspectiveCamera(44, window.innerWidth / window.innerHeight, 0.1, 300);
+camera.position.set(0, 11.2, 24);
+camera.lookAt(0, 0.14, 1.05);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.14, 1.05);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.enablePan = false;
+// 缩放范围：靠近时仍保留明显球面弧度，不贴脸到失真俯视
+controls.minDistance = 18;
+controls.maxDistance = 34;
+// 先给较宽范围，真实约束在 updateConstrainedOrbitCamera() 内做 zoom-dependent clamp。
+controls.minPolarAngle = THREE.MathUtils.degToRad(40);
+controls.maxPolarAngle = THREE.MathUtils.degToRad(80);
+controls.rotateSpeed = 0.8;
+
+const orbitCenter = new THREE.Vector3(0, 0, 0);
+const orbitEquatorAnchor = new THREE.Vector3(0, 0.14, 1.05); // equator-anchored target（偏上但不过高）
+const orbitFramingHeadroomOffset = new THREE.Vector3(0, 0.12, 0.14); // off-center 构图留白
+const orbitTmpOffset = new THREE.Vector3();
+const orbitTmpSurface = new THREE.Vector3();
+const orbitTmpDesiredPos = new THREE.Vector3();
+const orbitTmpSpherical = new THREE.Spherical();
+let orbitSnapInitialized = false;
+
+// Zoom-dependent constrained orbit camera
+// - 越近：俯仰越低（更斜视，不变俯视）
+// - 越近：lookAt 更贴近可见球面（不是死盯地心）
+function updateConstrainedOrbitCamera(forceSnapNorth = false) {
+  // hemisphere snapping：初始化或强制时，把镜头限制在北半球视角
+  if (forceSnapNorth || !orbitSnapInitialized) {
+    if (camera.position.y < 0.6) camera.position.y = 0.6;
+    orbitSnapInitialized = true;
+  }
+
+  const dist = camera.position.distanceTo(controls.target);
+  const zoomT = THREE.MathUtils.clamp(
+    (controls.maxDistance - dist) / Math.max(1e-6, controls.maxDistance - controls.minDistance),
+    0,
+    1,
+  );
+
+  // horizon lock + zoom-dependent pitch:
+  // 远处 35°，近处 24°，始终 oblique，不给 top-down 机会。
+  const desiredPitchDeg = THREE.MathUtils.lerp(37, 28, zoomT);
+  const desiredPolar = THREE.MathUtils.degToRad(90 - desiredPitchDeg);
+  const polarBand = THREE.MathUtils.degToRad(1.8);
+  controls.minPolarAngle = desiredPolar - polarBand;
+  controls.maxPolarAngle = desiredPolar + polarBand;
+
+  // target 联动：以 equator anchor 为基础，缩放越近越偏向当前可见球面前缘
+  orbitTmpSurface.copy(camera.position).normalize().multiplyScalar(globeRadius * 0.92);
+  orbitTmpSurface.y = Math.max(orbitTmpSurface.y, globeRadius * 0.04); // 保持北半球观察
+  const targetBlend = THREE.MathUtils.lerp(0.24, 0.62, zoomT);
+  controls.target.copy(orbitEquatorAnchor).lerp(orbitTmpSurface, targetBlend).add(orbitFramingHeadroomOffset);
+
+  // 距离/俯仰联动约束（不是只改 distance）
+  orbitTmpOffset.copy(camera.position).sub(controls.target);
+  orbitTmpSpherical.setFromVector3(orbitTmpOffset);
+  const minDistDynamic = Math.max(controls.minDistance, globeRadius * 1.78);
+  orbitTmpSpherical.radius = THREE.MathUtils.clamp(orbitTmpSpherical.radius, minDistDynamic, controls.maxDistance);
+  orbitTmpSpherical.phi = THREE.MathUtils.clamp(orbitTmpSpherical.phi, controls.minPolarAngle, controls.maxPolarAngle);
+  orbitTmpDesiredPos.setFromSpherical(orbitTmpSpherical).add(controls.target);
+  camera.position.lerp(orbitTmpDesiredPos, 0.35);
+
+  // 二次 horizon lock + headroom 保护：防止贴地/贴顶，维持弧面与顶部留白
+  if (camera.position.y < controls.target.y + globeRadius * 0.28) {
+    camera.position.y = controls.target.y + globeRadius * 0.28;
+  }
+  camera.lookAt(controls.target);
+}
+
+renderer.domElement.addEventListener(
+  "wheel",
+  () => {
+    updateConstrainedOrbitCamera(false);
+  },
+  { passive: true },
+);
+controls.addEventListener("change", () => updateConstrainedOrbitCamera(false));
 
 const ambient = new THREE.AmbientLight(0x330000, 0.4);
 scene.add(ambient);
@@ -56,6 +136,7 @@ const globeMesh = new THREE.Mesh(
 );
 globeMesh.visible = false;
 scene.add(globeMesh);
+updateConstrainedOrbitCamera(true);
 
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -75,6 +156,7 @@ const ui = {
   gridCount: document.getElementById("gridCount"),
   gridSize: document.getElementById("gridSize"),
   cycleGridDarken: document.getElementById("cycleGridDarken"),
+  cycleTrailLength: document.getElementById("cycleTrailLength"),
   curveHeight: document.getElementById("curveHeight"),
   segments: document.getElementById("segments"),
   color: document.getElementById("color"),
@@ -90,6 +172,7 @@ const ui = {
   gridCountValue: document.getElementById("gridCountValue"),
   gridSizeValue: document.getElementById("gridSizeValue"),
   gridDarkenValue: document.getElementById("gridDarkenValue"),
+  trailLengthValue: document.getElementById("trailLengthValue"),
   curveHeightValue: document.getElementById("curveHeightValue"),
   segmentsValue: document.getElementById("segmentsValue"),
   pointBrightnessValue: document.getElementById("pointBrightnessValue"),
@@ -305,9 +388,18 @@ function formatValue(value, digits = 2) {
 // 底部 A 点井字特效：颜色加深系数（0~1 越小越深）
 let gridDarkenIndex = 2;
 const gridDarkenSteps = [1.0, 0.85, 0.7, 0.55, 0.42];
+// 固定可调参数（按你的需求：直接改数值）
+const FIXED_TRAIL_LENGTH_PERCENT = 145; // 彗星尾巴长度固定值（百分比）
+const FIXED_GLOBE_ARC_HEIGHT = 2.8; // 球面飞行离地峰值高度（世界单位）
+let trailLengthIndex = 0;
+const trailLengthSteps = [FIXED_TRAIL_LENGTH_PERCENT / 100];
 
 function getGridDarkenFactor() {
   return gridDarkenSteps[Math.max(0, Math.min(gridDarkenSteps.length - 1, gridDarkenIndex))];
+}
+
+function getTrailLengthFactor() {
+  return trailLengthSteps[Math.max(0, Math.min(trailLengthSteps.length - 1, trailLengthIndex))];
 }
 
 function multiplyHexColor(hex, factor) {
@@ -333,6 +425,7 @@ function updateLabels() {
   ui.gridCountValue.textContent = String(ui.gridCount.value);
   ui.gridSizeValue.textContent = formatValue(ui.gridSize.value, 1);
   ui.gridDarkenValue.textContent = `${Math.round(getGridDarkenFactor() * 100)}%`;
+  ui.trailLengthValue.textContent = `${Math.round(getTrailLengthFactor() * 100)}%`;
   ui.pointBrightnessValue.textContent = formatValue(ui.pointBrightness.value, 1);
   ui.pointCoreSizeValue.textContent = formatValue(ui.pointCoreSize.value, 2);
   ui.curveHeightValue.textContent = formatValue(ui.curveHeight.value, 1);
@@ -374,8 +467,9 @@ function buildCurve(start, end, height, sideOffset, segments) {
     for (let i = 0; i <= count; i++) {
       const t = i / count;
       const dir = slerpDir(aDir, bDir, t).normalize();
-      // 球面贴合模式：始终落在球面半径上，不额外抬离
-      pts.push(dir.multiplyScalar(globeRadius));
+      // 固定离地高度：中段最高，端点回落到球面（可直接改 FIXED_GLOBE_ARC_HEIGHT）
+      const arcLift = Math.sin(Math.PI * t) * FIXED_GLOBE_ARC_HEIGHT;
+      pts.push(dir.multiplyScalar(globeRadius + arcLift));
     }
     return new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.05);
   }
@@ -458,10 +552,11 @@ function createRibbonGeometry(curve, segments, maxWidth) {
     let left = p.clone().addScaledVector(side, width);
     let right = p.clone().addScaledVector(side, -width);
 
-    // 球面贴合：把带状两侧顶点投影回球面，避免出现“切片插进去”的观感
+    // 球面模式：投影回“当前轨迹半径层”（而不是固定 globeRadius），保持离地高度
     if (ui.globeMode.checked) {
-      left.normalize().multiplyScalar(globeRadius);
-      right.normalize().multiplyScalar(globeRadius);
+      const radiusAtPoint = p.length();
+      left.normalize().multiplyScalar(radiusAtPoint);
+      right.normalize().multiplyScalar(radiusAtPoint);
     }
 
     const li = i * 2;
@@ -509,7 +604,7 @@ function createRibbonMesh({ start, end, sideOffset, widthScale, heightScale, pha
       uColor: { value: color },
       uBrightness: { value: brightness },
       uHead: { value: 0.0 },
-      uTrail: { value: trail ?? 0.22 },
+      uTrail: { value: (trail ?? 0.22) * getTrailLengthFactor() },
       uAlphaMul: { value: 1.0 },
     },
     vertexShader,
@@ -1019,6 +1114,11 @@ ui.cycleGridDarken.addEventListener("click", () => {
   ui.cycleGridDarken.textContent = `调色深度(${Math.round(getGridDarkenFactor() * 100)}%)`;
   onControlChange();
 });
+ui.cycleTrailLength.addEventListener("click", () => {
+  trailLengthIndex = (trailLengthIndex + 1) % trailLengthSteps.length;
+  ui.cycleTrailLength.textContent = `调尾巴长度(${Math.round(getTrailLengthFactor() * 100)}%)`;
+  onControlChange();
+});
 
 let pulseDisplayMode = "random"; // "all" | "random"
 
@@ -1067,6 +1167,19 @@ function getAHideDurations(travelTime) {
     pulse: Math.max(0.12, travelTime * 0.18), // 先淡出辐射光圈
     point: Math.max(0.12, travelTime * 0.18), // 再淡出 A 点本体
     grid: Math.max(0.18, travelTime * 0.25), // 最后淡出底部网格
+  };
+}
+
+function getBHideDurations(travelTime) {
+  const d = getAHideDurations(travelTime);
+  const total = d.pulse + d.point + d.grid;
+  const minTotal = 1.5; // B 点分层消失至少 1.5 秒
+  if (total >= minTotal) return d;
+  const k = minTotal / Math.max(1e-6, total);
+  return {
+    pulse: d.pulse * k,
+    point: d.point * k,
+    grid: d.grid * k,
   };
 }
 
@@ -1175,18 +1288,20 @@ function setupEventTimelineOnPreset(particle, presetIndex, travelTime) {
   state.travelDuration = travelDuration;
   const travelEndAge = state.travelStartAge + travelDuration;
 
-  const { pulse, point, grid } = getAHideDurations(travelTime);
-  const hideTotal = pulse + point + grid;
+  const aDur = getAHideDurations(travelTime);
+  const bDur = getBHideDurations(travelTime);
+  const aHideTotal = aDur.pulse + aDur.point + aDur.grid;
+  const bHideTotal = bDur.pulse + bDur.point + bDur.grid;
   state.travelLifetime = travelEndAge;
   state.aHideStartAge = state.travelStartAge + travelDuration * 0.5;
-  state.aHidePulseDuration = pulse;
-  state.aHidePointDuration = point;
-  state.aHideGridDuration = grid;
+  state.aHidePulseDuration = aDur.pulse;
+  state.aHidePointDuration = aDur.point;
+  state.aHideGridDuration = aDur.grid;
   state.bHideStartAge = travelEndAge;
-  state.bHidePulseDuration = pulse;
-  state.bHidePointDuration = point;
-  state.bHideGridDuration = grid;
-  state.totalLifetime = Math.max(state.aHideStartAge + hideTotal, state.bHideStartAge + hideTotal);
+  state.bHidePulseDuration = bDur.pulse;
+  state.bHidePointDuration = bDur.point;
+  state.bHideGridDuration = bDur.grid;
+  state.totalLifetime = Math.max(state.aHideStartAge + aHideTotal, state.bHideStartAge + bHideTotal);
   state.opacity = 1.0;
 }
 
@@ -1374,6 +1489,7 @@ ui.togglePulseMode.addEventListener("click", () => {
 
 ui.togglePulseMode.textContent = "显示模式：随机闪现";
 ui.cycleGridDarken.textContent = `调色深度(${Math.round(getGridDarkenFactor() * 100)}%)`;
+ui.cycleTrailLength.textContent = `调尾巴长度(${Math.round(getTrailLengthFactor() * 100)}%)`;
 
 restartParticles();
 onControlChange();
@@ -1381,6 +1497,10 @@ onControlChange();
 let lastFrameTime = performance.now() * 0.001;
 function animate() {
   requestAnimationFrame(animate);
+  updateConstrainedOrbitCamera();
+  controls.update();
+  // 再次约束，防止阻尼累计把镜头带向俯视
+  updateConstrainedOrbitCamera();
   const time = performance.now() * 0.001;
   let dt = time - lastFrameTime;
   lastFrameTime = time;
