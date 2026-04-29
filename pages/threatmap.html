@@ -519,6 +519,7 @@
 </main>
 
 <!-- Globe.GL 依赖 -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script src="https://unpkg.com/globe.gl@2.41.4/dist/globe.gl.min.js"></script>
 <script>
 (function () {
@@ -616,6 +617,29 @@
     const viewStatus = document.getElementById("view-status");
 
     let globeInstance = null;
+    const attackTrails = [];
+    let trailAnimationHandle = 0;
+    let lastTrailTick = 0;
+
+    function enableDefaultArcTrails() {
+        if (!globeInstance) {
+            return;
+        }
+
+        globeInstance
+            .arcsData(attacks)
+            .arcStartLat(d => d.startLat)
+            .arcStartLng(d => d.startLng)
+            .arcEndLat(d => d.endLat)
+            .arcEndLng(d => d.endLng)
+            .arcColor(d => [d.color, "#ffd4d8"])
+            .arcAltitude(0.28)
+            .arcStroke(0.8)
+            .arcDashLength(0.42)
+            .arcDashGap(1.2)
+            .arcDashInitialGap(() => Math.random())
+            .arcDashAnimateTime(2200);
+    }
 
     function showStatus(text) {
         viewStatus.textContent = text;
@@ -766,22 +790,6 @@ async function safeInitGlobe() {
             .atmosphereAltitude(0.16)
 
             /*
-             * 攻击线
-             */
-            .arcsData(attacks)
-            .arcStartLat(d => d.startLat)
-            .arcStartLng(d => d.startLng)
-            .arcEndLat(d => d.endLat)
-            .arcEndLng(d => d.endLng)
-            .arcColor(d => [d.color, "#ffd4d8"])
-            .arcAltitude(0.28)
-            .arcStroke(0.8)
-            .arcDashLength(0.42)
-            .arcDashGap(1.2)
-            .arcDashInitialGap(() => Math.random())
-            .arcDashAnimateTime(2200)
-
-            /*
              * 国家点
              */
             .pointsData(countries)
@@ -829,9 +837,18 @@ async function safeInitGlobe() {
          */
         const scene = globeInstance.scene();
         if (window.THREE && scene) {
-            const directionalLight = new window.THREE.DirectionalLight(0xffffff, 1.4);
-            directionalLight.position.set(1, 1, 1);
-            scene.add(directionalLight);
+            try {
+                const directionalLight = new window.THREE.DirectionalLight(0xffffff, 1.4);
+                directionalLight.position.set(1, 1, 1);
+                scene.add(directionalLight);
+                setupAttackTrails(scene);
+                startTrailAnimationLoop();
+            } catch (trailErr) {
+                console.error("Custom ribbon trails init failed, fallback to default arcs:", trailErr);
+                enableDefaultArcTrails();
+            }
+        } else {
+            enableDefaultArcTrails();
         }
 
         window.addEventListener("resize", () => {
@@ -841,7 +858,231 @@ async function safeInitGlobe() {
             globeInstance
                 .width(nextWidth)
                 .height(nextHeight);
+
+            if (window.THREE) {
+                const renderer = globeInstance.renderer && globeInstance.renderer();
+                if (renderer) {
+                    const size = renderer.getSize(new window.THREE.Vector2());
+                    attackTrails.forEach((trail) => {
+                        trail.material.uniforms.uResolution.value.set(size.x, size.y);
+                    });
+                }
+            }
         });
+    }
+
+    function latLngToUnitVec3(lat, lng) {
+        const latRad = window.THREE.MathUtils.degToRad(lat);
+        const lngRad = window.THREE.MathUtils.degToRad(lng);
+        return new window.THREE.Vector3(
+            Math.cos(latRad) * Math.sin(lngRad),
+            Math.sin(latRad),
+            Math.cos(latRad) * Math.cos(lngRad)
+        ).normalize();
+    }
+
+    function sampleArcPoints(attack, sampleCount, globeRadius, altitude) {
+        const startDir = latLngToUnitVec3(attack.startLat, attack.startLng);
+        const endDir = latLngToUnitVec3(attack.endLat, attack.endLng);
+        const points = [];
+
+        for (let i = 0; i < sampleCount; i += 1) {
+            const t = i / (sampleCount - 1);
+            const pointDir = new window.THREE.Vector3().slerpVectors(startDir, endDir, t).normalize();
+            const lift = Math.sin(Math.PI * t) * altitude;
+            points.push({
+                position: pointDir.multiplyScalar(globeRadius + lift),
+                progress: t
+            });
+        }
+
+        return points;
+    }
+
+    function buildTrailGeometry(sampledPoints) {
+        const sampleCount = sampledPoints.length;
+        const vertexCount = sampleCount * 2;
+
+        const positions = new Float32Array(vertexCount * 3);
+        const prevPositions = new Float32Array(vertexCount * 3);
+        const nextPositions = new Float32Array(vertexCount * 3);
+        const aProgress = new Float32Array(vertexCount);
+        const aSide = new Float32Array(vertexCount);
+        const indices = [];
+
+        for (let i = 0; i < sampleCount; i += 1) {
+            const current = sampledPoints[i].position;
+            const prev = sampledPoints[Math.max(i - 1, 0)].position;
+            const next = sampledPoints[Math.min(i + 1, sampleCount - 1)].position;
+            const progress = sampledPoints[i].progress;
+
+            for (let sideIndex = 0; sideIndex < 2; sideIndex += 1) {
+                const vertexIndex = i * 2 + sideIndex;
+                const ptr = vertexIndex * 3;
+                const side = sideIndex === 0 ? -1 : 1;
+
+                positions[ptr] = current.x;
+                positions[ptr + 1] = current.y;
+                positions[ptr + 2] = current.z;
+
+                prevPositions[ptr] = prev.x;
+                prevPositions[ptr + 1] = prev.y;
+                prevPositions[ptr + 2] = prev.z;
+
+                nextPositions[ptr] = next.x;
+                nextPositions[ptr + 1] = next.y;
+                nextPositions[ptr + 2] = next.z;
+
+                aProgress[vertexIndex] = progress;
+                aSide[vertexIndex] = side;
+            }
+        }
+
+        for (let i = 0; i < sampleCount - 1; i += 1) {
+            const left0 = i * 2;
+            const right0 = left0 + 1;
+            const left1 = left0 + 2;
+            const right1 = left0 + 3;
+
+            indices.push(left0, right0, left1);
+            indices.push(right0, right1, left1);
+        }
+
+        const geometry = new window.THREE.BufferGeometry();
+        geometry.setAttribute("position", new window.THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("aPrevPosition", new window.THREE.BufferAttribute(prevPositions, 3));
+        geometry.setAttribute("aNextPosition", new window.THREE.BufferAttribute(nextPositions, 3));
+        geometry.setAttribute("aProgress", new window.THREE.BufferAttribute(aProgress, 1));
+        geometry.setAttribute("aSide", new window.THREE.BufferAttribute(aSide, 1));
+        geometry.setIndex(indices);
+
+        return geometry;
+    }
+
+    function buildTrailMaterial(colorHex) {
+        const renderer = typeof globeInstance.renderer === "function" ? globeInstance.renderer() : null;
+        const size = renderer
+            ? renderer.getSize(new window.THREE.Vector2())
+            : new window.THREE.Vector2(window.innerWidth, window.innerHeight);
+
+        return new window.THREE.ShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            blending: window.THREE.AdditiveBlending,
+            side: window.THREE.DoubleSide,
+            uniforms: {
+                uColor: { value: new window.THREE.Color(colorHex) },
+                uCenter: { value: 0.0 },
+                uBandLength: { value: 0.24 },
+                uOpacity: { value: 0.95 },
+                uBaseWidth: { value: 11.0 },
+                uResolution: { value: size }
+            },
+            vertexShader: `
+                attribute vec3 aPrevPosition;
+                attribute vec3 aNextPosition;
+                attribute float aProgress;
+                attribute float aSide;
+
+                uniform float uCenter;
+                uniform float uBandLength;
+                uniform float uBaseWidth;
+                uniform vec2 uResolution;
+
+                varying float vMask;
+
+                void main() {
+                    float dist = abs(aProgress - uCenter);
+                    dist = min(dist, 1.0 - dist);
+                    float halfBand = max(uBandLength * 0.5, 0.0001);
+                    float mask = clamp(1.0 - dist / halfBand, 0.0, 1.0);
+                    float width = uBaseWidth * pow(mask, 0.8);
+
+                    vec4 currClip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    vec4 prevClip = projectionMatrix * modelViewMatrix * vec4(aPrevPosition, 1.0);
+                    vec4 nextClip = projectionMatrix * modelViewMatrix * vec4(aNextPosition, 1.0);
+
+                    vec2 currNdc = currClip.xy / currClip.w;
+                    vec2 prevNdc = prevClip.xy / prevClip.w;
+                    vec2 nextNdc = nextClip.xy / nextClip.w;
+                    vec2 dir = normalize(nextNdc - prevNdc);
+                    if (length(dir) < 0.0001) {
+                        dir = vec2(1.0, 0.0);
+                    }
+                    vec2 normal = vec2(-dir.y, dir.x);
+
+                    vec2 pixelOffset = normal * aSide * width;
+                    vec2 ndcOffset = pixelOffset * 2.0 / uResolution;
+                    currClip.xy += ndcOffset * currClip.w;
+
+                    vMask = mask;
+                    gl_Position = currClip;
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 uColor;
+                uniform float uOpacity;
+                varying float vMask;
+
+                void main() {
+                    float alpha = pow(vMask, 1.5) * uOpacity;
+                    if (alpha < 0.001) {
+                        discard;
+                    }
+                    vec3 glowColor = uColor * (0.4 + 0.8 * pow(vMask, 0.7));
+                    gl_FragColor = vec4(glowColor, alpha);
+                }
+            `
+        });
+    }
+
+    function setupAttackTrails(scene) {
+        const globeRadius = typeof globeInstance.getGlobeRadius === "function"
+            ? globeInstance.getGlobeRadius()
+            : 100;
+        const trailGroup = new window.THREE.Group();
+        trailGroup.name = "attack-trails";
+        scene.add(trailGroup);
+
+        attacks.forEach((attack) => {
+            const sampledPoints = sampleArcPoints(attack, 72, globeRadius * 1.005, globeRadius * 0.28);
+            const geometry = buildTrailGeometry(sampledPoints);
+            const material = buildTrailMaterial(attack.color);
+            const mesh = new window.THREE.Mesh(geometry, material);
+            trailGroup.add(mesh);
+
+            attackTrails.push({
+                mesh,
+                material,
+                center: Math.random(),
+                speed: 0.14 + Math.random() * 0.12
+            });
+        });
+    }
+
+    function startTrailAnimationLoop() {
+        if (trailAnimationHandle) {
+            window.cancelAnimationFrame(trailAnimationHandle);
+            trailAnimationHandle = 0;
+        }
+
+        const tick = (time) => {
+            const dt = lastTrailTick ? Math.min((time - lastTrailTick) / 1000, 0.06) : 0.016;
+            lastTrailTick = time;
+
+            for (let i = 0; i < attackTrails.length; i += 1) {
+                const trail = attackTrails[i];
+                trail.center += trail.speed * dt;
+                if (trail.center > 1) {
+                    trail.center -= 1;
+                }
+                trail.material.uniforms.uCenter.value = trail.center;
+            }
+
+            trailAnimationHandle = window.requestAnimationFrame(tick);
+        };
+
+        trailAnimationHandle = window.requestAnimationFrame(tick);
     }
 
     /*
