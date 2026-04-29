@@ -211,6 +211,7 @@
 
     const ribbons = [];
     const endpointMarkers = [];
+    const aPulseSystems = [];
 
     const vertexShader = `
       attribute float aProgress;
@@ -414,6 +415,68 @@
       return group;
     }
 
+    function createTriangularRingGeometry(outerRadius = 0.55, innerRadius = 0.36) {
+      const shape = new THREE.Shape();
+      const steps = 3;
+      for (let i = 0; i < steps; i++) {
+        const a = (i / steps) * Math.PI * 2 - Math.PI / 2;
+        const x = Math.cos(a) * outerRadius;
+        const y = Math.sin(a) * outerRadius;
+        if (i === 0) shape.moveTo(x, y);
+        else shape.lineTo(x, y);
+      }
+      shape.closePath();
+
+      const hole = new THREE.Path();
+      for (let i = steps - 1; i >= 0; i--) {
+        const a = (i / steps) * Math.PI * 2 - Math.PI / 2;
+        const x = Math.cos(a) * innerRadius;
+        const y = Math.sin(a) * innerRadius;
+        if (i === steps - 1) hole.moveTo(x, y);
+        else hole.lineTo(x, y);
+      }
+      hole.closePath();
+      shape.holes.push(hole);
+
+      return new THREE.ShapeGeometry(shape);
+    }
+
+    function createAPulseSystem(position) {
+      const group = new THREE.Group();
+      group.position.copy(position);
+      group.position.y += 0.03;
+
+      const pulseLayers = [];
+      const layerCount = 6;
+      const baseGeometry = createTriangularRingGeometry(0.55, 0.36);
+
+      for (let i = 0; i < layerCount; i++) {
+        const isBlue = i % 2 === 1;
+        const color = isBlue ? 0x4aa3ff : 0xff4d3d;
+        const mat = new THREE.MeshBasicMaterial({
+          color,
+          transparent: true,
+          opacity: 0.0,
+          depthWrite: false,
+          side: THREE.DoubleSide,
+          blending: THREE.AdditiveBlending,
+        });
+        const ring = new THREE.Mesh(baseGeometry, mat);
+        ring.scale.setScalar(0.35);
+        ring.rotation.x = -Math.PI * 0.5;
+        ring.rotation.z = i * 0.55;
+        group.add(ring);
+
+        pulseLayers.push({
+          mesh: ring,
+          offset: i / layerCount,
+          spin: (isBlue ? -1 : 1) * (0.35 + i * 0.05),
+        });
+      }
+
+      return { group, pulseLayers };
+    }
+
     function rebuildRibbons() {
       for (const ribbon of ribbons) {
         ribbon.geometry.dispose();
@@ -425,6 +488,10 @@
         scene.remove(marker);
       }
       endpointMarkers.length = 0;
+      for (const pulseSystem of aPulseSystems) {
+        scene.remove(pulseSystem.group);
+      }
+      aPulseSystems.length = 0;
 
       for (const preset of basePresets) {
         const mesh = createRibbonMesh(preset);
@@ -435,6 +502,10 @@
         const bMarker = createEndpointMarker(preset.end, "B", "#ffd24a");
         endpointMarkers.push(aMarker, bMarker);
         scene.add(aMarker, bMarker);
+
+        const pulse = createAPulseSystem(preset.start);
+        aPulseSystems.push(pulse);
+        scene.add(pulse.group);
       }
     }
 
@@ -459,6 +530,20 @@
         const head = ((time / travelTime) + ribbon.userData.phase) % 1;
         ribbon.material.uniforms.uHead.value = head;
         ribbon.material.uniforms.uBrightness.value = Number(ui.brightness.value) * (0.92 + 0.12 * Math.sin(time * 2.0));
+      }
+
+      for (const pulse of aPulseSystems) {
+        for (const layer of pulse.pulseLayers) {
+          const life = (time * 0.9 + layer.offset) % 1;
+          // 沿世界 Y 轴向上发射：越高光圈越大
+          const yOffset = life * 3.2;
+          const scale = 0.28 + yOffset * 0.85;
+          const alpha = Math.pow(1.0 - life, 1.7) * 0.9;
+          layer.mesh.position.y = yOffset;
+          layer.mesh.scale.setScalar(scale);
+          layer.mesh.material.opacity = alpha;
+          layer.mesh.rotation.z += 0.004 * layer.spin;
+        }
       }
 
       composer.render();
