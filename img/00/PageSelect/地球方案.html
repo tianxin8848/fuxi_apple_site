@@ -194,93 +194,6 @@ scene.add(globeGroup);
 
 const R = 2.15;
 
-/* 地球主体 */
-const globeGeo = new THREE.SphereGeometry(R, 128, 128);
-const globeMat = new THREE.MeshPhongMaterial({
-  color: 0x170000,
-  emissive: 0x250000,
-  emissiveIntensity: 0.9,
-  transparent: true,
-  opacity: 0.96,
-  shininess: 18
-});
-const globe = new THREE.Mesh(globeGeo, globeMat);
-globeGroup.add(globe);
-
-/* 外层暗红透明光晕 */
-const haloGeo = new THREE.SphereGeometry(R * 1.015, 128, 128);
-const haloMat = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
-  transparent: true,
-  opacity: 0.06,
-  wireframe: true
-});
-const halo = new THREE.Mesh(haloGeo, haloMat);
-globeGroup.add(halo);
-
-/* 经纬线 */
-const gridMat = new THREE.LineBasicMaterial({
-  color: 0x7a0000,
-  transparent: true,
-  opacity: 0.32
-});
-
-for (let lat = -75; lat <= 75; lat += 15) {
-  const points = [];
-  for (let lon = -180; lon <= 180; lon += 3) {
-    points.push(latLonToVec3(lat, lon, R * 1.004));
-  }
-  globeGroup.add(new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(points),
-    gridMat
-  ));
-}
-
-for (let lon = -180; lon < 180; lon += 15) {
-  const points = [];
-  for (let lat = -85; lat <= 85; lat += 3) {
-    points.push(latLonToVec3(lat, lon, R * 1.004));
-  }
-  globeGroup.add(new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(points),
-    gridMat
-  ));
-}
-
-/* 粗略大陆红色粒子，模拟 Kaspersky 那种密集数据感 */
-const landDots = new THREE.Group();
-globeGroup.add(landDots);
-
-const landRegions = [
-  [35, 105, 900], [23, 78, 520], [36, 138, 320], [50, 10, 600],
-  [40, -100, 620], [-15, -55, 360], [0, 20, 420], [-25, 135, 260],
-  [55, 90, 420], [30, 45, 260]
-];
-
-const dotGeo = new THREE.BufferGeometry();
-const dotPositions = [];
-
-for (const [clat, clon, count] of landRegions) {
-  for (let i = 0; i < count; i++) {
-    const lat = clat + rand(-14, 14);
-    const lon = clon + rand(-22, 22);
-    const v = latLonToVec3(lat, lon, R * 1.018);
-    dotPositions.push(v.x, v.y, v.z);
-  }
-}
-
-dotGeo.setAttribute("position", new THREE.Float32BufferAttribute(dotPositions, 3));
-const dotMat = new THREE.PointsMaterial({
-  color: 0xff2b2b,
-  size: 0.012,
-  transparent: true,
-  opacity: 0.8,
-  blending: THREE.AdditiveBlending,
-  depthWrite: false
-});
-const dots = new THREE.Points(dotGeo, dotMat);
-landDots.add(dots);
-
 /* 星空 */
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
@@ -450,8 +363,6 @@ function animate() {
   requestAnimationFrame(animate);
 
   globeGroup.rotation.y += 0.0008;
-  halo.rotation.y -= 0.0015;
-  dots.rotation.y += 0.0004;
 
   cometMaterials.forEach((mat, index) => {
     mat.uniforms.uTime.value += 0.004 + index * 0.0005;
