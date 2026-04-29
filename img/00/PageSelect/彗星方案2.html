@@ -161,6 +161,9 @@
     <div class="row">
       <button id="applyFixedPreset" class="preset-btn" type="button">应用固定参数预设</button>
     </div>
+    <div class="row">
+      <button id="togglePulseMode" class="preset-btn" type="button">显示模式：同时显示</button>
+    </div>
     <div class="tips">
       说明：线宽和透明度都按 sin(PI*t) 分布，保证两端尖细透明、中段更宽更亮。<br />
       你可以边调参数边看是否接近 CyberMap 风格。
@@ -172,6 +175,8 @@
       <div class="legend-item"><span class="swatch" style="color:#0087f4;background:#0087f4;"></span>WAV</div>
       <div class="legend-item"><span class="swatch" style="color:#ec008c;background:#ec008c;"></span>IDS</div>
       <div class="legend-item"><span class="swatch" style="color:#fbf267;background:#fbf267;"></span>VUL</div>
+      <div class="legend-item"><span class="swatch" style="color:#855ff4;background:#855ff4;"></span>KAS</div>
+      <div class="legend-item"><span class="swatch" style="color:#0000ff;background:#0000ff;"></span>RMW</div>
     </div>
   </div>
 
@@ -279,6 +284,7 @@
       pointBrightnessValue: document.getElementById("pointBrightnessValue"),
       pointCoreSizeValue: document.getElementById("pointCoreSizeValue"),
       applyFixedPreset: document.getElementById("applyFixedPreset"),
+      togglePulseMode: document.getElementById("togglePulseMode"),
     };
 
     const detectionTypeColors = {
@@ -288,6 +294,8 @@
       4: "#0087f4", // WAV
       5: "#ec008c", // IDS
       6: "#fbf267", // VUL
+      7: "#855ff4", // KAS
+      9: "#0000ff", // RMW
     };
 
     const basePresets = [
@@ -351,6 +359,26 @@
         phase: 0.78,
         trail: 0.19,
       },
+      {
+        detectionType: 7,
+        start: new THREE.Vector3(-9.4, -2.9, 2.4),
+        end: new THREE.Vector3(9.1, 2.9, -1.0),
+        sideOffset: new THREE.Vector3(0, 0, -1.2),
+        widthScale: 0.95,
+        heightScale: 1.05,
+        phase: 0.25,
+        trail: 0.22,
+      },
+      {
+        detectionType: 9,
+        start: new THREE.Vector3(-10.2, 1.7, -2.8),
+        end: new THREE.Vector3(7.6, -3.1, 2.3),
+        sideOffset: new THREE.Vector3(0, 0, 1.4),
+        widthScale: 0.8,
+        heightScale: 0.9,
+        phase: 0.58,
+        trail: 0.26,
+      },
     ];
 
     const ribbons = [];
@@ -386,6 +414,7 @@
       uniform float uBrightness;
       uniform float uHead;
       uniform float uTrail;
+      uniform float uAlphaMul;
       varying float vProgress;
       varying float vAlpha;
       void main() {
@@ -397,7 +426,7 @@
         float headGlow = exp(-trailDist * 24.0);
         float alpha = alphaProfile * max(trailMask, headGlow * 0.95);
         vec3 color = uColor * (0.35 + uBrightness * (centerBoost * trailMask + headGlow));
-        gl_FragColor = vec4(color, alpha);
+        gl_FragColor = vec4(color, alpha * uAlphaMul);
       }
     `;
 
@@ -590,6 +619,7 @@
           uBrightness: { value: brightness },
           uHead: { value: 0.0 },
           uTrail: { value: trail ?? 0.22 },
+          uAlphaMul: { value: 1.0 },
         },
         vertexShader,
         fragmentShader,
@@ -673,7 +703,11 @@
       const coreRadius = Number(ui.pointCoreSize.value);
 
       const coreGeo = new THREE.SphereGeometry(coreRadius, 16, 16);
-      const coreMat = new THREE.MeshBasicMaterial({ color: colorHex });
+      const coreMat = new THREE.MeshBasicMaterial({
+        color: colorHex,
+        transparent: true,
+        opacity: 1.0,
+      });
       const core = new THREE.Mesh(coreGeo, coreMat);
       group.add(core);
 
@@ -713,21 +747,40 @@
       if (!ui.globeMode.checked) {
         group.position.copy(position);
       }
+      // 随机点亮模式需要“从出现到最大辐射再淡出消失”，这里缓存基础透明度与材质引用
+      group.userData.markerMats = { core: coreMat, ring: ringMat, sprite: text.material };
+      group.userData.markerBaseOpacity = {
+        core: 1.0,
+        ring: ringMat.opacity,
+        sprite: text.material.opacity,
+      };
       return group;
     }
 
-    // A点“分层三角光圈”几何：细线轮廓（外三角 + 内三角），不是面光带
-    function createTriangleLoopGeometry(radius = 0.55) {
+    // A点“分层轮廓光圈”几何：用于三角/多边形/星形等线框
+    function createPolygonLoopGeometry(radius = 0.55, sides = 3) {
       const points = [];
-      const steps = 3;
-      for (let i = 0; i < steps; i++) {
-        const a = (i / steps) * Math.PI * 2 - Math.PI / 2;
+      const stepCount = Math.max(3, Math.floor(sides));
+      for (let i = 0; i < stepCount; i++) {
+        const a = (i / stepCount) * Math.PI * 2 - Math.PI / 2;
         points.push(new THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, 0));
       }
       return new THREE.BufferGeometry().setFromPoints(points);
     }
 
-    function createTriangularRingLines(outerRadius, innerRadius, colorHex) {
+    function createStarLoopGeometry(outerRadius = 0.55, innerRadius = 0.3, points = 5) {
+      const pts = [];
+      const p = Math.max(2, Math.floor(points));
+      const total = p * 2;
+      for (let i = 0; i < total; i++) {
+        const r = i % 2 === 0 ? outerRadius : innerRadius;
+        const a = (i / total) * Math.PI * 2 - Math.PI / 2;
+        pts.push(new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r, 0));
+      }
+      return new THREE.BufferGeometry().setFromPoints(pts);
+    }
+
+    function createRegularPolygonRingLines(outerRadius, innerRadius, sides, colorHex) {
       const lineMat = new THREE.LineBasicMaterial({
         color: colorHex,
         transparent: true,
@@ -737,8 +790,8 @@
       });
       const innerMat = lineMat.clone();
 
-      const outerLine = new THREE.LineLoop(createTriangleLoopGeometry(outerRadius), lineMat);
-      const innerLine = new THREE.LineLoop(createTriangleLoopGeometry(innerRadius), innerMat);
+      const outerLine = new THREE.LineLoop(createPolygonLoopGeometry(outerRadius, sides), lineMat);
+      const innerLine = new THREE.LineLoop(createPolygonLoopGeometry(innerRadius, sides), innerMat);
 
       const ringGroup = new THREE.Group();
       ringGroup.add(outerLine, innerLine);
@@ -746,8 +799,54 @@
       return ringGroup;
     }
 
-    // A点特效实现：向上(Y轴)喷射的分层三角脉冲系统
-    function createAPulseSystem(position, primaryColorHex = "#ff4d3d") {
+    function createStarRingLines(outerRadius, innerRadius, points, colorHex) {
+      const lineMat = new THREE.LineBasicMaterial({
+        color: colorHex,
+        transparent: true,
+        opacity: 0.0,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const innerMat = lineMat.clone();
+
+      const outerLine = new THREE.LineLoop(createStarLoopGeometry(outerRadius, innerRadius, points), lineMat);
+      const innerLine = new THREE.LineLoop(
+        createStarLoopGeometry(innerRadius, innerRadius * 0.6, points),
+        innerMat,
+      );
+
+      const ringGroup = new THREE.Group();
+      ringGroup.add(outerLine, innerLine);
+      ringGroup.userData.materials = [lineMat, innerMat];
+      return ringGroup;
+    }
+
+    function createDetectionTypeRingLines(detectionType, outerRadius, innerRadius, colorHex) {
+      // 按检测类型：颜色 + 不同形状轮廓
+      switch (Number(detectionType)) {
+        case 1: // OAS：三角
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 3, colorHex);
+        case 2: // ODS：正方形
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 4, colorHex);
+        case 3: // MAV：五边形
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 5, colorHex);
+        case 4: // WAV：圆形近似（多边形）
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 18, colorHex);
+        case 5: // IDS：五角星
+          return createStarRingLines(outerRadius, innerRadius, 5, colorHex);
+        case 6: // VUL：六边形
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 6, colorHex);
+        case 7: // KAS：八边形
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 8, colorHex);
+        case 9: // RMW：七边形
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 7, colorHex);
+        default:
+          return createRegularPolygonRingLines(outerRadius, innerRadius, 3, colorHex);
+      }
+    }
+
+    // A点特效实现：向上(Y轴)喷射的分层轮廓脉冲系统
+    function createAPulseSystem(position, detectionType, primaryColorHex = "#ff4d3d") {
       const group = new THREE.Group();
       group.position.copy(position);
       // 非球体模式：稍微抬起；球体模式：沿球面法线推一点，避免脱离球面
@@ -762,11 +861,10 @@
 
       const pulseLayers = [];
       const layerCount = 6;
+      const colorHex = new THREE.Color(primaryColorHex).getHex();
 
       for (let i = 0; i < layerCount; i++) {
-        const isBlue = i % 2 === 1;
-        const color = isBlue ? 0x4aa3ff : new THREE.Color(primaryColorHex).getHex();
-        const ring = createTriangularRingLines(0.55, 0.36, color);
+        const ring = createDetectionTypeRingLines(detectionType, 0.55, 0.36, colorHex);
         ring.scale.setScalar(0.35);
         ring.rotation.z = i * 0.55;
         group.add(ring);
@@ -774,15 +872,15 @@
         pulseLayers.push({
           mesh: ring,
           offset: i / layerCount,
-          spin: (isBlue ? -1 : 1) * (0.35 + i * 0.05),
+          spin: (i % 2 === 0 ? 1 : -1) * (0.35 + i * 0.05),
         });
       }
 
-      return { group, pulseLayers };
+      return { group, pulseLayers, detectionType: Number(detectionType) };
     }
 
     // A点底部特效：地面网格脉冲（围绕点扩散）
-    function createAGroundGridSystem(position, primaryColorHex = "#ff4d3d", count = 6, size = 2.8) {
+    function createAGroundGridSystem(position, detectionType, primaryColorHex = "#ff4d3d", count = 6, size = 2.8) {
       // 目标：井字形状 + 外发射（向外的波前）+ 逐渐消失
       // 做法：
       // 1) 在该点的“局部切平面”生成井字网格的点（两组正交直线）
@@ -901,7 +999,7 @@
         });
       }
 
-      return { group, gridLayers };
+      return { group, gridLayers, detectionType: Number(detectionType) };
     }
 
     // 场景重建：轨迹、A/B点、A点脉冲都在这里统一创建/销毁
@@ -951,12 +1049,16 @@
         endpointMarkers.push(aMarker, bMarker);
         scene.add(aMarker, bMarker);
 
-        const pulse = createAPulseSystem(endpoints.start, markerColor);
+        aMarker.userData.detectionType = preset.detectionType;
+        bMarker.userData.detectionType = preset.detectionType;
+
+        const pulse = createAPulseSystem(endpoints.start, preset.detectionType, markerColor);
         aPulseSystems.push(pulse);
         scene.add(pulse.group);
 
         const groundGrid = createAGroundGridSystem(
           endpoints.start,
+          preset.detectionType,
           markerColor,
           Number(ui.gridCount.value),
           Number(ui.gridSize.value),
@@ -992,6 +1094,24 @@
     ui.globeMode.addEventListener("change", onControlChange);
     ui.applyFixedPreset.addEventListener("click", applyFixedPresetValues);
 
+    let pulseDisplayMode = "all"; // "all" | "random"
+    const twinkleMaxSimultaneous = 3; // 同时点亮的“光点/形状”数量（你说的“几个”）
+    const twinkleSpawnInterval = 0.25; // 秒：尝试生成新 burst 的间隔
+    const allDetectionTypes = Object.keys(detectionTypeColors).map(Number);
+    const activeTwinkleStates = new Map(); // detectionType -> burstStartTime
+    let lastTwinkleSpawn = -Infinity;
+
+    function resetTwinkleStates() {
+      activeTwinkleStates.clear();
+      lastTwinkleSpawn = -Infinity;
+    }
+
+    ui.togglePulseMode.addEventListener("click", () => {
+      pulseDisplayMode = pulseDisplayMode === "all" ? "random" : "all";
+      resetTwinkleStates();
+      ui.togglePulseMode.textContent = pulseDisplayMode === "all" ? "显示模式：同时显示" : "显示模式：随机点亮";
+    });
+
     onControlChange();
 
     function animate() {
@@ -1002,28 +1122,118 @@
       // 彗星运动实现（A -> B）
       // 通过更新 uHead，让“亮头 + 拖尾”沿轨迹前进
       // =========================
+      const pulseFrequency = Number(ui.pulseFrequency.value);
+      const burstDuration = 1 / Math.max(0.05, pulseFrequency); // 随机 burst 生命周期：出现 -> 最大辐射 -> 淡出消失
+
+      // 随机点亮：同一时刻生成多个 detectionType 的 burst，并让每个 burst 只跑一轮
+      if (pulseDisplayMode === "random") {
+        for (const [type, startTime] of activeTwinkleStates.entries()) {
+          if (time - startTime >= burstDuration) {
+            activeTwinkleStates.delete(type);
+          }
+        }
+
+        const need = twinkleMaxSimultaneous - activeTwinkleStates.size;
+        const shouldSpawn =
+          activeTwinkleStates.size === 0 || (need > 0 && time - lastTwinkleSpawn >= twinkleSpawnInterval);
+
+        if (shouldSpawn) {
+          const candidates = allDetectionTypes.filter((t) => !activeTwinkleStates.has(t));
+          const spawnCount = activeTwinkleStates.size === 0 ? Math.min(twinkleMaxSimultaneous, candidates.length) : Math.min(2, need, candidates.length);
+          for (let i = 0; i < spawnCount; i++) {
+            const idx = Math.floor(Math.random() * candidates.length);
+            const chosen = candidates.splice(idx, 1)[0];
+            activeTwinkleStates.set(chosen, time);
+          }
+          lastTwinkleSpawn = time;
+        }
+      }
+
       const travelTime = Math.max(0.1, Number(ui.travelTime.value));
       for (const ribbon of ribbons) {
         const head = ((time / travelTime) + ribbon.userData.phase) % 1;
         ribbon.material.uniforms.uHead.value = head;
         ribbon.material.uniforms.uBrightness.value = Number(ui.brightness.value) * (0.92 + 0.12 * Math.sin(time * 2.0));
+
+        if (pulseDisplayMode === "random") {
+          const startTime = activeTwinkleStates.get(ribbon.userData.detectionType);
+          let alphaMul = 0.0;
+          if (startTime !== undefined) {
+            const baseLife = (time - startTime) / burstDuration;
+            const t = Math.min(1, Math.max(0, baseLife));
+            alphaMul = Math.pow(Math.max(0, 1 - t), 1.25);
+          }
+          ribbon.material.uniforms.uAlphaMul.value = alphaMul;
+          ribbon.visible = alphaMul > 0.001;
+        } else {
+          ribbon.material.uniforms.uAlphaMul.value = 1.0;
+          ribbon.visible = true;
+        }
+      }
+
+      for (const marker of endpointMarkers) {
+        const startTime = activeTwinkleStates.get(marker.userData.detectionType);
+        let alphaMul = pulseDisplayMode === "all" ? 1.0 : 0.0;
+        if (pulseDisplayMode === "random") {
+          if (startTime !== undefined) {
+            const baseLife = (time - startTime) / burstDuration;
+            const t = Math.min(1, Math.max(0, baseLife));
+            alphaMul = Math.pow(Math.max(0, 1 - t), 1.4);
+          }
+        }
+
+        const mats = marker.userData.markerMats;
+        const base = marker.userData.markerBaseOpacity;
+        if (mats && base) {
+          mats.core.opacity = base.core * alphaMul;
+          mats.ring.opacity = base.ring * alphaMul;
+          mats.sprite.opacity = base.sprite * alphaMul;
+        }
+        marker.visible = alphaMul > 0.001;
       }
 
       // =========================
       // A点脉冲动画（沿Y轴上升，越高越大）
       // =========================
+      const pulseSpeed = Number(ui.pulseSpeed.value);
+      const pulseHeight = Number(ui.pulseHeight.value);
       for (const pulse of aPulseSystems) {
-        const pulseFrequency = Number(ui.pulseFrequency.value);
-        const pulseSpeed = Number(ui.pulseSpeed.value);
-        const pulseHeight = Number(ui.pulseHeight.value);
+        let pulseActive = false;
+        let baseLife = 0.0;
+        if (pulseDisplayMode === "random") {
+          const startTime = activeTwinkleStates.get(pulse.detectionType);
+          if (startTime !== undefined) {
+            pulseActive = true;
+            baseLife = (time - startTime) / burstDuration;
+            baseLife = Math.min(1, Math.max(0, baseLife));
+          }
+        }
+
         for (const layer of pulse.pulseLayers) {
-          const life = (time * pulseFrequency + layer.offset) % 1;
-          // 沿发射轴推进：
-          // - globeMode: 沿“球面外法线”（局部 +Z）
-          // - 非 globeMode: 沿世界 Y 轴
-          const yOffset = life * pulseHeight * pulseSpeed;
+          if (pulseDisplayMode === "all") {
+            const life = (time * pulseFrequency + layer.offset) % 1;
+            const yOffset = life * pulseHeight * pulseSpeed;
+            const scale = 0.28 + yOffset * 0.85;
+            const alpha = Math.pow(1.0 - life, 1.7) * 0.9;
+            if (ui.globeMode.checked) {
+              layer.mesh.position.y = 0;
+              layer.mesh.position.z = yOffset;
+            } else {
+              layer.mesh.position.y = yOffset;
+              layer.mesh.position.z = 0;
+            }
+            layer.mesh.scale.setScalar(scale);
+            for (const mat of layer.mesh.userData.materials) mat.opacity = alpha;
+            layer.mesh.rotation.z += 0.004 * layer.spin;
+            continue;
+          }
+
+          // random：burst 生命周期内逐渐放大并淡出；inactive 时 alpha=0 不再“重亮”
+          const life = pulseActive ? baseLife : 1.0;
+          const yOffset = pulseActive ? life * pulseHeight * pulseSpeed : 0.0;
           const scale = 0.28 + yOffset * 0.85;
-          const alpha = Math.pow(1.0 - life, 1.7) * 0.9;
+          const alpha = pulseActive ? Math.pow(1.0 - life, 1.7) * 0.9 : 0.0;
+
           if (ui.globeMode.checked) {
             layer.mesh.position.y = 0;
             layer.mesh.position.z = yOffset;
@@ -1032,24 +1242,43 @@
             layer.mesh.position.z = 0;
           }
           layer.mesh.scale.setScalar(scale);
-          for (const mat of layer.mesh.userData.materials) {
-            mat.opacity = alpha;
-          }
+          for (const mat of layer.mesh.userData.materials) mat.opacity = alpha;
           layer.mesh.rotation.z += 0.004 * layer.spin;
         }
       }
 
       // A点底部网格脉冲动画：向外扩张并逐步衰减
       for (const gridSystem of aGroundGridSystems) {
-        const pulseFrequency = Number(ui.pulseFrequency.value);
+        let gridActive = false;
+        let gridLife = 0;
+        if (pulseDisplayMode === "random") {
+          const startTime = activeTwinkleStates.get(gridSystem.detectionType);
+          if (startTime !== undefined) {
+            gridActive = true;
+            gridLife = Math.min(1, Math.max(0, (time - startTime) / burstDuration));
+          }
+        }
         for (const layer of gridSystem.gridLayers) {
-          const life = (time * pulseFrequency + layer.offset) % 1;
           const layerFade = 1.0 - layer.offset * 0.75;
-          const alpha = Math.pow(1.0 - life, 2.0) * 0.8 * Math.max(0.0, layerFade);
-          layer.mesh.material.opacity = alpha;
-          // 点大小轻微随生命周期变化，模拟“波前点亮”
-          const s = layer.basePointSize * (0.7 + life * 1.6);
-          layer.mesh.material.size = s;
+          if (pulseDisplayMode === "all") {
+            const life = (time * pulseFrequency + layer.offset) % 1;
+            const alpha = Math.pow(1.0 - life, 2.0) * 0.8 * Math.max(0.0, layerFade);
+            layer.mesh.material.opacity = alpha;
+            // 点大小轻微随生命周期变化，模拟“波前点亮”
+            const s = layer.basePointSize * (0.7 + life * 1.6);
+            layer.mesh.material.size = s;
+          } else {
+            if (!gridActive) {
+              layer.mesh.material.opacity = 0.0;
+              layer.mesh.material.size = layer.basePointSize * 0.7;
+            } else {
+              const life = gridLife;
+              const alpha = Math.pow(1.0 - life, 2.0) * 0.8 * Math.max(0.0, layerFade);
+              layer.mesh.material.opacity = alpha;
+              const s = layer.basePointSize * (0.7 + life * 1.6);
+              layer.mesh.material.size = s;
+            }
+          }
         }
       }
 
