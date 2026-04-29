@@ -380,10 +380,10 @@
                                     </linearGradient>
                                 </defs>
 
-                                <!-- 平面地球白天贴图 -->
+                                <!-- 平面地球夜间贴图 -->
                                 <image
                                     id="plane-earth-texture"
-                                    href="https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+                                    href="https://unpkg.com/three-globe/example/img/earth-night.jpg"
                                     x="0"
                                     y="0"
                                     width="1000"
@@ -547,68 +547,108 @@
         { name: "South Korea", lat: 35.9078, lng: 127.7669 }
     ];
 
-    const attacks = [
-        {
-            from: "China",
-            to: "United States",
-            type: "DDoS",
-            startLat: 35.8617,
-            startLng: 104.1954,
-            endLat: 37.0902,
-            endLng: -95.7129,
-            color: "#ff1f2d"
-        },
-        {
-            from: "Russia",
-            to: "Germany",
-            type: "Malware",
-            startLat: 61.5240,
-            startLng: 105.3188,
-            endLat: 51.1657,
-            endLng: 10.4515,
-            color: "#ff4b55"
-        },
-        {
-            from: "Brazil",
-            to: "Japan",
-            type: "Phishing",
-            startLat: -14.2350,
-            startLng: -51.9253,
-            endLat: 36.2048,
-            endLng: 138.2529,
-            color: "#ff7580"
-        },
-        {
-            from: "India",
-            to: "Singapore",
-            type: "Exploit",
-            startLat: 20.5937,
-            startLng: 78.9629,
-            endLat: 1.3521,
-            endLng: 103.8198,
-            color: "#ff1f2d"
-        },
-        {
-            from: "United Kingdom",
-            to: "France",
-            type: "Botnet",
-            startLat: 55.3781,
-            startLng: -3.4360,
-            endLat: 46.2276,
-            endLng: 2.2137,
-            color: "#ff4b55"
-        },
-        {
-            from: "Australia",
-            to: "South Korea",
-            type: "Recon",
-            startLat: -25.2744,
-            startLng: 133.7751,
-            endLat: 35.9078,
-            endLng: 127.7669,
-            color: "#ff7580"
-        }
+    const detectionTypeColors = {
+        1: "#ff2638",
+        2: "#ed1c24",
+        3: "#ff4b55",
+        4: "#0087f4",
+        5: "#1aa7ff",
+        6: "#ff2638",
+        7: "#006dff",
+        9: "#0000ff"
+    };
+
+    const attackTypeToDetectionType = {
+        DDoS: 2,
+        Malware: 3,
+        Phishing: 5,
+        Exploit: 6,
+        Botnet: 7,
+        Recon: 4,
+        Scan: 4
+    };
+
+    /*
+     * 【攻击/彗星线条的位置数据入口】
+     * 每一条彗星线的起点和终点都在 rawAttacks 里控制：
+     * - startLat / startLng：攻击起点纬度/经度
+     * - endLat / endLng：攻击终点纬度/经度
+     * - from / to：只是展示文本，不影响真实位置
+     * - type：影响颜色映射和端点图形类型
+     * - color：会被 detectionTypeColors 覆盖为最终线条颜色
+     *
+     * 想改某条线从哪里飞到哪里，优先改这里的 startLat/startLng/endLat/endLng。
+     */
+    const ATTACK_LINE_COUNT = 1000;
+    const attackTypes = ["DDoS", "Malware", "Exploit", "Botnet", "Recon", "Scan"];
+    const attackSourceHubs = [
+        { name: "Beijing", lat: 39.9042, lng: 116.4074, weight: 0.28 },
+        { name: "Moscow", lat: 55.7558, lng: 37.6173, weight: 0.2 },
+        { name: "Dubai", lat: 25.2048, lng: 55.2708, weight: 0.17 },
+        { name: "London", lat: 51.5072, lng: -0.1276, weight: 0.18 },
+        { name: "New York", lat: 40.7128, lng: -74.0060, weight: 0.17 }
     ];
+    const worldAttackLocations = [
+        { name: "Beijing", lat: 39.9042, lng: 116.4074 },
+        { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
+        { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
+        { name: "Seoul", lat: 37.5665, lng: 126.9780 },
+        { name: "Singapore", lat: 1.3521, lng: 103.8198 },
+        { name: "New York", lat: 40.7128, lng: -74.0060 },
+        { name: "Los Angeles", lat: 34.0522, lng: -118.2437 },
+        { name: "London", lat: 51.5072, lng: -0.1276 },
+        { name: "Paris", lat: 48.8566, lng: 2.3522 },
+        { name: "Berlin", lat: 52.52, lng: 13.405 },
+        { name: "Moscow", lat: 55.7558, lng: 37.6173 },
+        { name: "Dubai", lat: 25.2048, lng: 55.2708 },
+        { name: "Mumbai", lat: 19.076, lng: 72.8777 },
+        { name: "Sydney", lat: -33.8688, lng: 151.2093 },
+        { name: "Sao Paulo", lat: -23.5558, lng: -46.6396 }
+    ];
+
+    function pickWeightedSourceHub() {
+        const totalWeight = attackSourceHubs.reduce((sum, hub) => sum + hub.weight, 0);
+        let r = Math.random() * totalWeight;
+        for (let i = 0; i < attackSourceHubs.length; i += 1) {
+            r -= attackSourceHubs[i].weight;
+            if (r <= 0) {
+                return attackSourceHubs[i];
+            }
+        }
+        return attackSourceHubs[attackSourceHubs.length - 1];
+    }
+
+    function generateAttackLines(count) {
+        const lines = [];
+        for (let i = 0; i < count; i += 1) {
+            const source = pickWeightedSourceHub();
+            let target = worldAttackLocations[Math.floor(Math.random() * worldAttackLocations.length)];
+            while (target.name === source.name) {
+                target = worldAttackLocations[Math.floor(Math.random() * worldAttackLocations.length)];
+            }
+            const type = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+            lines.push({
+                from: source.name,
+                to: target.name,
+                type,
+                startLat: source.lat,
+                startLng: source.lng,
+                endLat: target.lat,
+                endLng: target.lng,
+                color: Math.random() > 0.5 ? "#ed1c24" : "#0087f4"
+            });
+        }
+        return lines;
+    }
+    const rawAttacks = generateAttackLines(ATTACK_LINE_COUNT);
+    const attacks = rawAttacks.map((attack) => {
+        const detectionType = attackTypeToDetectionType[attack.type] || 2;
+        return {
+            ...attack,
+            detectionType,
+            color: detectionTypeColors[detectionType] || "#ed1c24"
+        };
+    });
 
     const globeStage = document.getElementById("globe-stage");
     const planeStage = document.getElementById("plane-stage");
@@ -618,6 +658,7 @@
 
     let globeInstance = null;
     const attackTrails = [];
+    const attackEffects = [];
     let trailAnimationHandle = 0;
     let lastTrailTick = 0;
 
@@ -625,20 +666,9 @@
         if (!globeInstance) {
             return;
         }
-
-        globeInstance
-            .arcsData(attacks)
-            .arcStartLat(d => d.startLat)
-            .arcStartLng(d => d.startLng)
-            .arcEndLat(d => d.endLat)
-            .arcEndLng(d => d.endLng)
-            .arcColor(d => [d.color, "#ffd4d8"])
-            .arcAltitude(0.28)
-            .arcStroke(0.8)
-            .arcDashLength(0.42)
-            .arcDashGap(1.2)
-            .arcDashInitialGap(() => Math.random())
-            .arcDashAnimateTime(2200);
+        // 明确禁用原生 arc 轨迹，避免和自定义彗星轨迹叠加。
+        globeInstance.arcsData([]);
+        console.info("[ThreatMap] Built-in arcs disabled.");
     }
 
     function showStatus(text) {
@@ -779,11 +809,16 @@ async function safeInitGlobe() {
         const width = globeContainer.clientWidth || wrap.clientWidth;
         const height = wrap.clientHeight;
 
+        /*
+         * 【Globe.GL 球体初始化】
+         * 这里控制球体本身：尺寸、贴图、气氛层、国家点、国家标签。
+         * 注意：这里还不是彗星线条，彗星线条是在 setupAttackTrails(scene) 里额外创建的 Three.js Mesh。
+         */
         globeInstance = Globe()
             .width(width)
             .height(height)
             .backgroundColor("rgba(0,0,0,0)")
-            .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
+            .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
             .bumpImageUrl("https://unpkg.com/three-globe/example/img/earth-topology.png")
             .showAtmosphere(true)
             .atmosphereColor("#ff1f2d")
@@ -815,7 +850,12 @@ async function safeInitGlobe() {
             (globeContainer);
 
         /*
-         * 初始视角，面向亚洲和太平洋区域
+         * 【初始球体视角】
+         * lat：镜头默认看向的纬度，越大越偏北半球
+         * lng：镜头默认看向的经度
+         * altitude：镜头距离，越小越近，越大越远
+         *
+         * 如果你想第一次打开时更像“北半球视角”，优先调这里的 lat 和 altitude。
          */
         globeInstance.pointOfView({
             lat: 24,
@@ -824,7 +864,11 @@ async function safeInitGlobe() {
         }, 1000);
 
         /*
-         * 自动旋转
+         * 【鼠标/滚轮控制器】
+         * controls 来自 Globe.GL 内部的 OrbitControls。
+         * 这里控制：自动旋转、阻尼、滚轮缩放、拖拽旋转。
+         * 如果你要做类似卡巴斯基那种“滚轮放大后固定视角”，需要继续改这里的 controls，
+         * 或者使用 globeInstance.pointOfView(...) 在滚轮事件里强制修正视角。
          */
         const controls = globeInstance.controls();
         controls.autoRotate = true;
@@ -860,17 +904,21 @@ async function safeInitGlobe() {
                 .height(nextHeight);
 
             if (window.THREE) {
-                const renderer = globeInstance.renderer && globeInstance.renderer();
-                if (renderer) {
-                    const size = renderer.getSize(new window.THREE.Vector2());
-                    attackTrails.forEach((trail) => {
-                        trail.material.uniforms.uResolution.value.set(size.x, size.y);
-                    });
-                }
+                // 彗星材质使用世界空间带状几何，不依赖屏幕分辨率 uniform。
             }
         });
     }
 
+    /*
+     * 【经纬度转 Three.js 球面坐标】
+     * 彗星线、端点光圈、国家点的真实空间位置都依赖这个换算。
+     * 输入：lat/lng 经纬度
+     * 输出：单位球面上的 Vector3 方向
+     *
+     * 如果线条位置不对，通常先检查：
+     * 1. rawAttacks 里的经纬度是否正确
+     * 2. 这里的经纬度转三维公式是否和 Globe.GL 坐标系一致
+     */
     function latLngToUnitVec3(lat, lng) {
         const latRad = window.THREE.MathUtils.degToRad(lat);
         const lngRad = window.THREE.MathUtils.degToRad(lng);
@@ -881,14 +929,139 @@ async function safeInitGlobe() {
         ).normalize();
     }
 
+    function multiplyHexColor(hex, factor) {
+        const f = Math.max(0, Math.min(1, Number(factor)));
+        const c = new window.THREE.Color(hex);
+        const hsl = { h: 0, s: 0, l: 0 };
+        c.getHSL(hsl);
+        const darkStrength = 1 - f;
+        hsl.l = Math.max(0.04, hsl.l * (1 - darkStrength * 0.78));
+        hsl.s = Math.min(1, hsl.s + darkStrength * 0.18);
+        c.setHSL(hsl.h, hsl.s, hsl.l);
+        return c;
+    }
+
+    function buildLoopPoints(radius = 1, sides = 12) {
+        const points = [];
+        const count = Math.max(3, Math.floor(sides));
+        for (let i = 0; i < count; i += 1) {
+            const a = (i / count) * Math.PI * 2;
+            points.push(new window.THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, 0));
+        }
+        return points;
+    }
+
+    /*
+     * 【攻击起点/终点的闪光特效】
+     * 这里控制每条彗星线两端的点亮、扩散圆环、几何图形扩散。
+     *
+     * 关键参数：
+     * - anchor = normal * globeRadius * 1.003：端点贴在球面外一点点
+     * - SphereGeometry(globeRadius * 0.0105)：中心亮点大小
+     * - RingGeometry(globeRadius * 0.012, globeRadius * 0.016)：扩散圆环大小
+     * - radius = globeRadius * (0.022 + i * 0.014)：外层几何线框大小
+     *
+     * 想改 A/B 点闪光大小、扩散范围、端点是否贴球面，主要改这里。
+     */
+    function createEndpointRadiation(position, colorHex, globeRadius, detectionType) {
+        const group = new window.THREE.Group();
+        const normal = position.clone().normalize();
+        const anchor = normal.clone().multiplyScalar(globeRadius * 1.003);
+        group.position.copy(anchor);
+        group.quaternion.setFromUnitVectors(new window.THREE.Vector3(0, 0, 1), normal);
+
+        const core = new window.THREE.Mesh(
+            new window.THREE.SphereGeometry(globeRadius * 0.0105, 14, 14),
+            new window.THREE.MeshBasicMaterial({
+                color: colorHex,
+                transparent: true,
+                opacity: 0.95,
+                blending: window.THREE.AdditiveBlending,
+                depthWrite: false
+            })
+        );
+        core.position.z = globeRadius * 0.006;
+        group.add(core);
+
+        const pulseRings = [];
+        for (let i = 0; i < 3; i += 1) {
+            const ring = new window.THREE.Mesh(
+                new window.THREE.RingGeometry(globeRadius * 0.012, globeRadius * 0.016, 40),
+                new window.THREE.MeshBasicMaterial({
+                    color: colorHex,
+                    transparent: true,
+                    opacity: 0.0,
+                    side: window.THREE.DoubleSide,
+                    depthWrite: false,
+                    blending: window.THREE.AdditiveBlending
+                })
+            );
+            ring.userData.phase = i / 3;
+            ring.position.z = globeRadius * 0.0035;
+            group.add(ring);
+            pulseRings.push(ring);
+        }
+
+        const gridRings = [];
+        const gridColor = multiplyHexColor(colorHex, 0.55);
+        const sidesByType = { 1: 3, 2: 4, 3: 5, 4: 18, 5: 10, 6: 6, 7: 8, 9: 7 };
+        const polygonSides = sidesByType[Number(detectionType)] || 6;
+        for (let i = 0; i < 3; i += 1) {
+            const radius = globeRadius * (0.022 + i * 0.014);
+            const geometry = new window.THREE.BufferGeometry().setFromPoints(buildLoopPoints(radius, polygonSides));
+            const line = new window.THREE.LineLoop(
+                geometry,
+                new window.THREE.LineBasicMaterial({
+                    color: gridColor,
+                    transparent: true,
+                    opacity: 0.0,
+                    depthWrite: false,
+                    blending: window.THREE.AdditiveBlending
+                })
+            );
+            line.userData.phase = i * 0.22;
+            group.add(line);
+            gridRings.push(line);
+        }
+
+        return { group, core, pulseRings, gridRings };
+    }
+
+    /*
+     * 【彗星弧线轨迹采样】
+     * 这是控制“线从哪里飞到哪里、飞得多高、弧度多大”的核心函数。
+     *
+     * 参数说明：
+     * - attack：单条攻击数据，里面有 startLat/startLng/endLat/endLng
+     * - sampleCount：轨迹采样点数量，越大线越平滑
+     * - globeRadius：球体半径
+     * - altitude：弧线离球面的最高高度，越大弧线越高
+     *
+     * 关键逻辑：
+     * - startDir/endDir：起点/终点三维方向
+     * - slerp 球面插值：让线沿球面大圆方向飞行
+     * - lift = sin(PI * t) * altitude：中间最高，两端贴近球面
+     *
+     * 想改“彗星线条贴球面还是飞得高”，主要改调用处传入的 altitude。
+     */
     function sampleArcPoints(attack, sampleCount, globeRadius, altitude) {
         const startDir = latLngToUnitVec3(attack.startLat, attack.startLng);
         const endDir = latLngToUnitVec3(attack.endLat, attack.endLng);
         const points = [];
+        const dot = Math.max(-1, Math.min(1, startDir.dot(endDir)));
+        const omega = Math.acos(dot);
+        const sinOmega = Math.sin(omega);
 
         for (let i = 0; i < sampleCount; i += 1) {
             const t = i / (sampleCount - 1);
-            const pointDir = new window.THREE.Vector3().slerpVectors(startDir, endDir, t).normalize();
+            let pointDir;
+            if (omega < 1e-5 || sinOmega < 1e-5) {
+                pointDir = startDir.clone().lerp(endDir, t).normalize();
+            } else {
+                const s1 = Math.sin((1 - t) * omega) / sinOmega;
+                const s2 = Math.sin(t * omega) / sinOmega;
+                pointDir = startDir.clone().multiplyScalar(s1).add(endDir.clone().multiplyScalar(s2)).normalize();
+            }
             const lift = Math.sin(Math.PI * t) * altitude;
             points.push({
                 position: pointDir.multiplyScalar(globeRadius + lift),
@@ -899,152 +1072,167 @@ async function safeInitGlobe() {
         return points;
     }
 
-    function buildTrailGeometry(sampledPoints) {
+    /*
+     * 【彗星线条带状几何】
+     * 这里把一条普通曲线变成“有宽度的光带”。
+     *
+     * 关键参数：
+     * - maxWidth：线条最大宽度
+     * - width = maxWidth * sin(PI * t) * 0.32：两端细，中间宽
+     * - left/right：每个采样点左右扩展两个顶点，最终拼成带状 Mesh
+     *
+     * 想改“中间宽、两头尖”的效果，主要改 width 这一行。
+     */
+    function buildTrailGeometry(sampledPoints, maxWidth = 0.95) {
         const sampleCount = sampledPoints.length;
         const vertexCount = sampleCount * 2;
-
         const positions = new Float32Array(vertexCount * 3);
-        const prevPositions = new Float32Array(vertexCount * 3);
-        const nextPositions = new Float32Array(vertexCount * 3);
         const aProgress = new Float32Array(vertexCount);
-        const aSide = new Float32Array(vertexCount);
         const indices = [];
+        const fallback = new window.THREE.Vector3(0, 0, 1);
 
         for (let i = 0; i < sampleCount; i += 1) {
             const current = sampledPoints[i].position;
             const prev = sampledPoints[Math.max(i - 1, 0)].position;
             const next = sampledPoints[Math.min(i + 1, sampleCount - 1)].position;
-            const progress = sampledPoints[i].progress;
+            const t = sampledPoints[i].progress;
 
-            for (let sideIndex = 0; sideIndex < 2; sideIndex += 1) {
-                const vertexIndex = i * 2 + sideIndex;
-                const ptr = vertexIndex * 3;
-                const side = sideIndex === 0 ? -1 : 1;
+            let tangent = next.clone().sub(prev);
+            const normal = current.clone().normalize();
+            tangent.sub(normal.clone().multiplyScalar(tangent.dot(normal))).normalize();
 
-                positions[ptr] = current.x;
-                positions[ptr + 1] = current.y;
-                positions[ptr + 2] = current.z;
-
-                prevPositions[ptr] = prev.x;
-                prevPositions[ptr + 1] = prev.y;
-                prevPositions[ptr + 2] = prev.z;
-
-                nextPositions[ptr] = next.x;
-                nextPositions[ptr + 1] = next.y;
-                nextPositions[ptr + 2] = next.z;
-
-                aProgress[vertexIndex] = progress;
-                aSide[vertexIndex] = side;
+            let side = new window.THREE.Vector3().crossVectors(normal, tangent).normalize();
+            if (side.lengthSq() < 1e-6) {
+                side = new window.THREE.Vector3().crossVectors(fallback, tangent).normalize();
             }
-        }
 
-        for (let i = 0; i < sampleCount - 1; i += 1) {
-            const left0 = i * 2;
-            const right0 = left0 + 1;
-            const left1 = left0 + 2;
-            const right1 = left0 + 3;
+            const width = maxWidth * Math.sin(Math.PI * t) * 0.32;
+            const radiusAtPoint = current.length();
+            const left = current.clone().addScaledVector(side, width).normalize().multiplyScalar(radiusAtPoint);
+            const right = current.clone().addScaledVector(side, -width).normalize().multiplyScalar(radiusAtPoint);
 
-            indices.push(left0, right0, left1);
-            indices.push(right0, right1, left1);
+            const li = i * 2;
+            const ri = li + 1;
+            positions[li * 3] = left.x;
+            positions[li * 3 + 1] = left.y;
+            positions[li * 3 + 2] = left.z;
+            positions[ri * 3] = right.x;
+            positions[ri * 3 + 1] = right.y;
+            positions[ri * 3 + 2] = right.z;
+            aProgress[li] = t;
+            aProgress[ri] = t;
+
+            if (i < sampleCount - 1) {
+                const nli = (i + 1) * 2;
+                const nri = nli + 1;
+                indices.push(li, ri, nli);
+                indices.push(ri, nri, nli);
+            }
         }
 
         const geometry = new window.THREE.BufferGeometry();
         geometry.setAttribute("position", new window.THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute("aPrevPosition", new window.THREE.BufferAttribute(prevPositions, 3));
-        geometry.setAttribute("aNextPosition", new window.THREE.BufferAttribute(nextPositions, 3));
         geometry.setAttribute("aProgress", new window.THREE.BufferAttribute(aProgress, 1));
-        geometry.setAttribute("aSide", new window.THREE.BufferAttribute(aSide, 1));
         geometry.setIndex(indices);
-
+        geometry.computeBoundingSphere();
         return geometry;
     }
 
+    /*
+     * 【彗星线条材质/透明度/尾巴动画】
+     * 这里控制光带颜色、亮度、透明度、尾巴长度、头部移动效果。
+     *
+     * uniforms 关键参数：
+     * - uColor：线条颜色
+     * - uHead：彗星头部当前位置，动画循环更新
+     * - uTrail：尾巴长度，越大拖尾越长
+     * - uBrightness：亮度
+     * - uAlphaMul：整体透明度
+     *
+     * fragmentShader 里：
+     * - trailDist：当前片元距离彗星头部的距离
+     * - trailMask：尾巴渐隐
+     * - headGlow：头部发光
+     * - alpha：最终透明度
+     *
+     * 想改“彗星尾巴长短、亮度、是否中间更亮”，主要改这里。
+     */
     function buildTrailMaterial(colorHex) {
-        const renderer = typeof globeInstance.renderer === "function" ? globeInstance.renderer() : null;
-        const size = renderer
-            ? renderer.getSize(new window.THREE.Vector2())
-            : new window.THREE.Vector2(window.innerWidth, window.innerHeight);
-
         return new window.THREE.ShaderMaterial({
             transparent: true,
             depthWrite: false,
+            depthTest: true,
             blending: window.THREE.AdditiveBlending,
             side: window.THREE.DoubleSide,
             uniforms: {
                 uColor: { value: new window.THREE.Color(colorHex) },
-                uCenter: { value: 0.0 },
-                uBandLength: { value: 0.24 },
-                uOpacity: { value: 0.84 },
-                uBaseWidth: { value: 22.5 },
-                uResolution: { value: size }
+                uHead: { value: 0.0 },
+                uTrail: { value: 0.22 },
+                uBrightness: { value: 2.1 },
+                uAlphaMul: { value: 0.96 }
             },
             vertexShader: `
-                attribute vec3 aPrevPosition;
-                attribute vec3 aNextPosition;
                 attribute float aProgress;
-                attribute float aSide;
 
-                uniform float uCenter;
-                uniform float uBandLength;
-                uniform float uBaseWidth;
-                uniform vec2 uResolution;
-
-                varying float vMask;
+                varying float vProgress;
+                varying float vAlpha;
 
                 void main() {
-                    float dist = abs(aProgress - uCenter);
-                    dist = min(dist, 1.0 - dist);
-                    float halfBand = max(uBandLength * 0.5, 0.0001);
-                    float mask = clamp(1.0 - dist / halfBand, 0.0, 1.0);
-                    float width = uBaseWidth * pow(mask, 0.65) * (0.62 + 0.38 * mask);
-
-                    vec4 currClip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    vec4 prevClip = projectionMatrix * modelViewMatrix * vec4(aPrevPosition, 1.0);
-                    vec4 nextClip = projectionMatrix * modelViewMatrix * vec4(aNextPosition, 1.0);
-
-                    vec2 currNdc = currClip.xy / currClip.w;
-                    vec2 prevNdc = prevClip.xy / prevClip.w;
-                    vec2 nextNdc = nextClip.xy / nextClip.w;
-                    vec2 dir = normalize(nextNdc - prevNdc);
-                    if (length(dir) < 0.0001) {
-                        dir = vec2(1.0, 0.0);
-                    }
-                    vec2 normal = vec2(-dir.y, dir.x);
-
-                    vec2 pixelOffset = normal * aSide * width;
-                    vec2 ndcOffset = pixelOffset * 2.0 / uResolution;
-                    currClip.xy += ndcOffset * currClip.w;
-
-                    vMask = mask;
-                    gl_Position = currClip;
+                    vProgress = aProgress;
+                    vAlpha = sin(3.14159265 * aProgress);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }
             `,
             fragmentShader: `
                 uniform vec3 uColor;
-                uniform float uOpacity;
-                varying float vMask;
+                uniform float uHead;
+                uniform float uTrail;
+                uniform float uBrightness;
+                uniform float uAlphaMul;
+                varying float vProgress;
+                varying float vAlpha;
 
                 void main() {
-                    float alpha = pow(vMask, 1.65) * uOpacity;
+                    float centerBoost = pow(sin(3.14159265 * vProgress), 1.45);
+                    float alphaProfile = clamp(vAlpha, 0.0, 1.0);
+                    float trailDist = uHead - vProgress;
+                    if (trailDist < 0.0) {
+                        trailDist += 1.0;
+                    }
+                    float trailMask = 1.0 - smoothstep(0.0, uTrail, trailDist);
+                    float headGlow = exp(-trailDist * 24.0);
+                    float alpha = alphaProfile * max(trailMask, headGlow * 0.95) * uAlphaMul;
                     if (alpha < 0.001) {
                         discard;
                     }
-                    vec3 gray = vec3(dot(uColor, vec3(0.299, 0.587, 0.114)));
-                    vec3 tonedColor = mix(gray, uColor, 0.62); // 整体降饱和
-
-                    float core = smoothstep(0.55, 1.0, vMask);
-                    vec3 deepCore = vec3(0.42, 0.05, 0.09);
-                    vec3 edgeColor = tonedColor * 0.72;
-                    vec3 midColor = tonedColor * 1.02;
-                    vec3 spindleColor = mix(edgeColor, midColor, pow(vMask, 0.8));
-                    vec3 glowColor = mix(spindleColor, deepCore + tonedColor * 0.55, core * 0.38);
-
-                    gl_FragColor = vec4(glowColor, alpha);
+                    vec3 color = uColor * (0.35 + uBrightness * (centerBoost * trailMask + headGlow));
+                    gl_FragColor = vec4(color, alpha);
                 }
             `
         });
     }
 
+    /*
+     * 【创建所有彗星线条和端点特效】
+     * 这是整套自定义攻击轨迹的入口。
+     *
+     * 这里做了几件事：
+     * 1. 获取 Globe.GL 的真实球体半径 globeRadius
+     * 2. 遍历 attacks，为每条攻击创建一条彗星光带
+     * 3. sampleArcPoints(...) 生成弧线轨迹点
+     * 4. buildTrailGeometry(...) 生成带状线条几何
+     * 5. buildTrailMaterial(...) 生成发光材质
+     * 6. createEndpointRadiation(...) 创建起点/终点扩散特效
+     *
+     * 最重要的控制点在这里：
+     * - sampleArcPoints(attack, 72, globeRadius * 1.005, globeRadius * 0.28)
+     *   72：线条平滑度
+     *   globeRadius * 1.005：线条基础半径，越大越浮在球外
+     *   globeRadius * 0.28：线条弧线高度，越大飞得越高
+     *
+     * - buildTrailGeometry(sampledPoints, globeRadius * 0.0105)
+     *   globeRadius * 0.0105：光带宽度
+     */
     function setupAttackTrails(scene) {
         const globeRadius = typeof globeInstance.getGlobeRadius === "function"
             ? globeInstance.getGlobeRadius()
@@ -1052,28 +1240,87 @@ async function safeInitGlobe() {
         const trailGroup = new window.THREE.Group();
         trailGroup.name = "attack-trails";
         scene.add(trailGroup);
+        attackTrails.length = 0;
+        attackEffects.forEach((effect) => {
+            scene.remove(effect.start.group);
+            scene.remove(effect.end.group);
+        });
+        attackEffects.length = 0;
+        console.info("[ThreatMap] Trail setup start:", {
+            attackCount: attacks.length,
+            globeRadius
+        });
 
         attacks.forEach((attack) => {
-            const sampledPoints = sampleArcPoints(attack, 72, globeRadius * 1.005, globeRadius * 0.28);
-            const geometry = buildTrailGeometry(sampledPoints);
+            // 【彗星线条位置/弧度核心控制】
+            // 72：采样点数量，越大越平滑
+            // globeRadius * 1.005：轨迹基础半径，略大于球体半径，避免线条被地球表面遮住
+            // globeRadius * 0.28：轨迹最高弧度，越大线飞得越高，越小越贴球面
+            const sampledPoints = sampleArcPoints(attack, 42, globeRadius * 1.004, globeRadius * 0.045);
+
+            // 【彗星线条宽度控制】
+            // globeRadius * 0.0105：光带最大宽度基础值，越大线越粗
+            const geometry = buildTrailGeometry(sampledPoints, globeRadius * 0.0065);
             const material = buildTrailMaterial(attack.color);
             const mesh = new window.THREE.Mesh(geometry, material);
+            mesh.renderOrder = 9;
             trailGroup.add(mesh);
+
+            const startPos = sampledPoints[0].position;
+            const endPos = sampledPoints[sampledPoints.length - 1].position;
+            if (attackEffects.length < 80) {
+                const startEffect = createEndpointRadiation(startPos, attack.color, globeRadius, attack.detectionType);
+                const endEffect = createEndpointRadiation(endPos, attack.color, globeRadius, attack.detectionType);
+                startEffect.group.renderOrder = 10;
+                endEffect.group.renderOrder = 10;
+                scene.add(startEffect.group);
+                scene.add(endEffect.group);
+                attackEffects.push({
+                    start: startEffect,
+                    end: endEffect,
+                    speed: 0.85 + Math.random() * 0.25
+                });
+            }
 
             attackTrails.push({
                 mesh,
                 material,
+                // 【彗星头部初始位置】随机值可以让多条线不同步出现
                 center: Math.random(),
-                speed: 0.14 + Math.random() * 0.12
+                // 【彗星移动速度】数值越大，光带跑得越快
+                speed: 0.055 + Math.random() * 0.07,
+                // 【彗星尾巴长度】数值越大，尾巴越长
+                trailLength: 0.13 + Math.random() * 0.1,
+                activityOffset: Math.random(),
+                activitySpeed: 0.045 + Math.random() * 0.03,
+                activityDuty: 0.18 + Math.random() * 0.14
             });
+        });
+        console.info("[ThreatMap] Trail setup done:", {
+            builtTrailCount: attackTrails.length,
+            builtRadiationCount: attackEffects.length * 2
         });
     }
 
+    /*
+     * 【彗星动画循环】
+     * 这里每一帧更新彗星头部位置和端点扩散动画。
+     *
+     * 线条动画关键逻辑：
+     * - trail.center += trail.speed * dt：彗星沿轨迹前进
+     * - uHead.value = trail.center：把头部位置传给 shader
+     * - uTrail.value = trail.trailLength：把尾巴长度传给 shader
+     *
+     * 端点动画关键逻辑：
+     * - ring.scale.setScalar(...)：扩散圆环变大
+     * - ring.material.opacity = ...：扩散圆环渐隐
+     */
     function startTrailAnimationLoop() {
         if (trailAnimationHandle) {
             window.cancelAnimationFrame(trailAnimationHandle);
             trailAnimationHandle = 0;
         }
+        console.info("[ThreatMap] Trail animation loop start.");
 
         const tick = (time) => {
             const dt = lastTrailTick ? Math.min((time - lastTrailTick) / 1000, 0.06) : 0.016;
@@ -1081,11 +1328,36 @@ async function safeInitGlobe() {
 
             for (let i = 0; i < attackTrails.length; i += 1) {
                 const trail = attackTrails[i];
+                const activityPhase = (time * 0.001 * trail.activitySpeed + trail.activityOffset) % 1;
+                const activeMask = activityPhase < trail.activityDuty ? 1.0 : 0.0;
+                // 【彗星运动控制】center 是彗星头部在整条轨迹上的进度，范围 0~1
                 trail.center += trail.speed * dt;
                 if (trail.center > 1) {
                     trail.center -= 1;
                 }
-                trail.material.uniforms.uCenter.value = trail.center;
+                // 【把动画参数传给 shader】uHead 控制头部位置，uTrail 控制尾巴长度
+                trail.material.uniforms.uHead.value = trail.center;
+                trail.material.uniforms.uTrail.value = trail.trailLength;
+                trail.material.uniforms.uAlphaMul.value = 0.92 * activeMask;
+            }
+
+            for (let i = 0; i < attackEffects.length; i += 1) {
+                const effect = attackEffects[i];
+                const pulseTime = time * 0.001 * effect.speed;
+                [effect.start, effect.end].forEach((endpoint) => {
+                    endpoint.pulseRings.forEach((ring) => {
+                        const p = (pulseTime + ring.userData.phase) % 1;
+                        const ease = 1 - p;
+                        ring.scale.setScalar(0.35 + p * 2.6);
+                        ring.material.opacity = Math.pow(ease, 1.25) * 0.72;
+                    });
+
+                    endpoint.gridRings.forEach((line, idx) => {
+                        const p = (pulseTime * 0.65 + line.userData.phase) % 1;
+                        line.material.opacity = (0.22 + (1 - p) * 0.32) * (1 - idx * 0.2);
+                        line.rotation.z += 0.002 + idx * 0.0008;
+                    });
+                });
             }
 
             trailAnimationHandle = window.requestAnimationFrame(tick);

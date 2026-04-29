@@ -40,39 +40,41 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020202);
 
 // 相机：更小 FOV + 斜视初始位姿，贴近 Cybermap 低轨道视角
-const camera = new THREE.PerspectiveCamera(44, window.innerWidth / window.innerHeight, 0.1, 300);
-camera.position.set(0, 11.2, 24);
-camera.lookAt(0, 0.14, 1.05);
+const camera = new THREE.PerspectiveCamera(46, window.innerWidth / window.innerHeight, 0.1, 300);
+camera.position.set(0, 23.5, 25.5);
+camera.lookAt(0, 7.4, 0.08);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0.14, 1.05);
+controls.target.set(0, 7.4, 0.08);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-controls.enablePan = false;
-// 缩放范围：靠近时仍保留明显球面弧度，不贴脸到失真俯视
-controls.minDistance = 18;
-controls.maxDistance = 34;
-// 先给较宽范围，真实约束在 updateConstrainedOrbitCamera() 内做 zoom-dependent clamp。
-controls.minPolarAngle = THREE.MathUtils.degToRad(40);
-controls.maxPolarAngle = THREE.MathUtils.degToRad(80);
-controls.rotateSpeed = 0.8;
+// 需要允许有限平移，否则 OrbitControls 只能绕固定 target 旋转，无法把北半球顶部圆心拉到画面中。
+controls.enablePan = true;
+controls.screenSpacePanning = false;
+controls.panSpeed = 0.38;
+controls.minDistance = 16.5;
+controls.maxDistance = 40;
+// 放宽上仰角：phi 越小越靠近北极方向，允许真正看向北半球顶部圆心。
+controls.minPolarAngle = THREE.MathUtils.degToRad(6);
+controls.maxPolarAngle = THREE.MathUtils.degToRad(78);
+controls.rotateSpeed = 0.62;
 
 const orbitCenter = new THREE.Vector3(0, 0, 0);
-const orbitEquatorAnchor = new THREE.Vector3(0, 0.14, 1.05); // equator-anchored target（偏上但不过高）
-const orbitFramingHeadroomOffset = new THREE.Vector3(0, 0.12, 0.14); // off-center 构图留白
+const orbitEquatorAnchor = new THREE.Vector3(0, 7.4, 0.08); // target 接近北半球顶部圆心，避免只锁在赤道/中纬度
+const orbitFramingHeadroomOffset = new THREE.Vector3(0, 0.0, 0.0); // 不再把 target 往下拉，避免顶部被推出画面
 const orbitTmpOffset = new THREE.Vector3();
 const orbitTmpSurface = new THREE.Vector3();
 const orbitTmpDesiredPos = new THREE.Vector3();
 const orbitTmpSpherical = new THREE.Spherical();
 let orbitSnapInitialized = false;
 
-// Zoom-dependent constrained orbit camera
-// - 越近：俯仰越低（更斜视，不变俯视）
-// - 越近：lookAt 更贴近可见球面（不是死盯地心）
 function updateConstrainedOrbitCamera(forceSnapNorth = false) {
-  // hemisphere snapping：初始化或强制时，把镜头限制在北半球视角
+  // 关键修正：这里只做“初始对准 + 越界保护”，不要每帧强行重写 controls.target。
+  // 否则用户永远拖不到北半球顶部圆心点。
   if (forceSnapNorth || !orbitSnapInitialized) {
-    if (camera.position.y < 0.6) camera.position.y = 0.6;
+    controls.target.copy(orbitEquatorAnchor).add(orbitFramingHeadroomOffset);
+    camera.position.set(0, 23.5, 25.5);
+    camera.lookAt(controls.target);
     orbitSnapInitialized = true;
   }
 
@@ -83,33 +85,30 @@ function updateConstrainedOrbitCamera(forceSnapNorth = false) {
     1,
   );
 
-  // horizon lock + zoom-dependent pitch:
-  // 远处 35°，近处 24°，始终 oblique，不给 top-down 机会。
-  const desiredPitchDeg = THREE.MathUtils.lerp(37, 28, zoomT);
-  const desiredPolar = THREE.MathUtils.degToRad(90 - desiredPitchDeg);
-  const polarBand = THREE.MathUtils.degToRad(1.8);
-  controls.minPolarAngle = desiredPolar - polarBand;
-  controls.maxPolarAngle = desiredPolar + polarBand;
+  // 近距离时也允许上看北半球顶部，但避免完全翻到俯视平面。
+  controls.minPolarAngle = THREE.MathUtils.degToRad(THREE.MathUtils.lerp(6, 10, zoomT));
+  controls.maxPolarAngle = THREE.MathUtils.degToRad(THREE.MathUtils.lerp(78, 68, zoomT));
 
-  // target 联动：以 equator anchor 为基础，缩放越近越偏向当前可见球面前缘
-  orbitTmpSurface.copy(camera.position).normalize().multiplyScalar(globeRadius * 0.92);
-  orbitTmpSurface.y = Math.max(orbitTmpSurface.y, globeRadius * 0.04); // 保持北半球观察
-  const targetBlend = THREE.MathUtils.lerp(0.24, 0.62, zoomT);
-  controls.target.copy(orbitEquatorAnchor).lerp(orbitTmpSurface, targetBlend).add(orbitFramingHeadroomOffset);
+  // 允许有限 pan，但把 target 限制在球体附近，防止拖飞。
+  // 关键：y 上限必须接近 globeRadius，否则永远无法把 target 拉到北半球顶部圆心。
+  controls.target.x = THREE.MathUtils.clamp(controls.target.x, -globeRadius * 0.48, globeRadius * 0.48);
+  controls.target.y = THREE.MathUtils.clamp(controls.target.y, -globeRadius * 0.18, globeRadius * 1.04);
+  controls.target.z = THREE.MathUtils.clamp(controls.target.z, -globeRadius * 0.42, globeRadius * 0.58);
 
-  // 距离/俯仰联动约束（不是只改 distance）
+  // 只在距离/角度越界时修正相机位置，不改变用户当前 target。
   orbitTmpOffset.copy(camera.position).sub(controls.target);
   orbitTmpSpherical.setFromVector3(orbitTmpOffset);
-  const minDistDynamic = Math.max(controls.minDistance, globeRadius * 1.78);
-  orbitTmpSpherical.radius = THREE.MathUtils.clamp(orbitTmpSpherical.radius, minDistDynamic, controls.maxDistance);
+  orbitTmpSpherical.radius = THREE.MathUtils.clamp(orbitTmpSpherical.radius, controls.minDistance, controls.maxDistance);
   orbitTmpSpherical.phi = THREE.MathUtils.clamp(orbitTmpSpherical.phi, controls.minPolarAngle, controls.maxPolarAngle);
   orbitTmpDesiredPos.setFromSpherical(orbitTmpSpherical).add(controls.target);
-  camera.position.lerp(orbitTmpDesiredPos, 0.35);
+  camera.position.lerp(orbitTmpDesiredPos, 0.16);
 
-  // 二次 horizon lock + headroom 保护：防止贴地/贴顶，维持弧面与顶部留白
-  if (camera.position.y < controls.target.y + globeRadius * 0.28) {
-    camera.position.y = controls.target.y + globeRadius * 0.28;
+  // 北半球顶部可见保护：相机必须比 target 更高，避免继续贴地平线。
+  const minCameraY = controls.target.y + globeRadius * THREE.MathUtils.lerp(0.62, 0.78, zoomT);
+  if (camera.position.y < minCameraY) {
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, minCameraY, 0.18);
   }
+
   camera.lookAt(controls.target);
 }
 
@@ -1497,9 +1496,8 @@ onControlChange();
 let lastFrameTime = performance.now() * 0.001;
 function animate() {
   requestAnimationFrame(animate);
-  updateConstrainedOrbitCamera();
   controls.update();
-  // 再次约束，防止阻尼累计把镜头带向俯视
+  // 只在 OrbitControls 更新后做一次越界保护，不再前后两次抢控制权。
   updateConstrainedOrbitCamera();
   const time = performance.now() * 0.001;
   let dt = time - lastFrameTime;
