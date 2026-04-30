@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuxi Tech | ThreatMap</title>
-    <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
-    <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
-    <link rel="apple-touch-icon" href="/img/logimg/image.png">
-    <link rel="stylesheet" href="../css/vendor/tailwind.css">
-    <link rel="stylesheet" href="../css/vendor/inter-local.css">
-    <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
-    <link rel="stylesheet" href="../css/nav-baseline.css">
-    <link rel="stylesheet" href="../css/site-nav.css">
+    <title>Raised xxxFlat World Map 平面凸起地图</title>
     <style>
         html, body {
             margin: 0;
@@ -153,39 +145,8 @@
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
-        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
-            </a>
-            <div class="hidden md:flex items-center space-x-7">
-                <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
-                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
-                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
-                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
-                <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
-                <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
-
-            </div>
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
-                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
-                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
-                    <span>Menu</span>
-                </button>
-            </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
-            <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
-            <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
-            <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
-            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
-            <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
-            <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
-            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
-        </div>
-    </nav>
     <div id="globeViz"></div>
+    <div class="mode-title">FLAT RAISED WORLD MAP</div>
     <li id="viewToggleBtn" class="view-toggle-btn" data-element-id="map-controls-view-toggle">
         <svg class="map_control_button" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
@@ -278,7 +239,6 @@
         const beamTailMeshes = [];
         const EMITTER_FADE_SECONDS = 1.0;
         let isDragging = false;
-        let isSphereUserInteracting = false;
         let lastPointerX = 0;
         let lastPointerY = 0;
         let panX = 0;
@@ -298,7 +258,7 @@
         let savedFlatTilt = 0;
         let savedFlatTargetTilt = 0;
         let viewMode = 'flat';
-        let morphProgress = 0;
+        let morphProgress = 0; // 0=平面 1=球体
         let targetMorph = 0;
         let morphStart = 0;
         let morphEnd = 0;
@@ -339,24 +299,11 @@
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 5000);
         camera.position.set(0, 0, 620);
 
-<<<<<<< HEAD
-                                <!-- 平面地球夜间贴图 -->
-                                <image
-                                    id="plane-earth-texture"
-                                    href="https://unpkg.com/three-globe/example/img/earth-night.jpg"
-                                    x="0"
-                                    y="0"
-                                    width="1000"
-                                    height="520"
-                                    preserveAspectRatio="xMidYMid slice">
-                                </image>
-=======
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.sortObjects = true;
         globeContainer.appendChild(renderer.domElement);
->>>>>>> dev-彗星效果图
 
         const ambient = new THREE.AmbientLight(0xffffff, 0.85);
         scene.add(ambient);
@@ -366,7 +313,7 @@
         scene.add(sideLight);
 
         const MAP_WIDTH = 900;
-        const MAP_HEIGHT = 500;
+        const MAP_HEIGHT = 450;
         const BASE_Z = 0;
         const RAISED_Z = 8;
         const MIN_ZOOM = 0.75;
@@ -380,12 +327,15 @@
         const FLAT_FIXED_CAMERA_Z = 620;
         const SPHERE_EFFECT_SURFACE_OFFSET = 0.18;
         const SPHERE_EFFECT_WAVE_OFFSET = 0.22;
+        // 球体模式下：彗星从第二层外表发射，并保持最小离地净空，避免穿入凸起陆地。
         const BEAM_SPHERE_SURFACE_EMIT_OFFSET = 2.6;
         const BEAM_SPHERE_SURFACE_CLEARANCE = 1.1;
         const POINT_A = {
             name: 'A',
             lon: 104.19,
             lat: 35.86,
+            // A 点不是悬浮点，而是贴着第二层陆地面片。
+            // 这里只保留很小的表面偏移，避免和陆地面片 z-fighting。
             surfaceOffset: 1.2
         };
         const POINT_B = {
@@ -431,6 +381,7 @@
             { from: 'AU', to: 'BR', type: 'WAV', phase: 0.93 }
         ];
         const SPHERE_RADIUS = 130;
+        // 参考稿的固定弧面构图参数（按当前半径比例换算）
         const SPHERE_FIXED_Y = -0.78 * SPHERE_RADIUS;
         const SPHERE_LOOK_AT_Y_OFFSET = 0.58 * SPHERE_RADIUS;
         const SPHERE_MIN_CAMERA_Z = 1.18 * SPHERE_RADIUS;
@@ -443,318 +394,7 @@
         const sphereRotationVelocity = new THREE.Vector2(0, 0);
         const sphereRotationLerp = 0.16;
         const sphereRotationDamping = 0.92;
-        const sphereAutoRotateSpeed = 0.0032;
 
-<<<<<<< HEAD
-                                <!-- 国家点位和名称 -->
-                                <g id="plane-labels"></g>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div id="view-status">Globe View</div>
-                </div>
-            </div>
-
-            <!-- 右侧威胁信息 -->
-            <aside class="space-y-5">
-                <div class="glass-card p-5">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-bold">Threat Metrics</h3>
-                        <span class="chip">LIVE</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 mt-5">
-                        <div class="metric-box">
-                            <p class="text-xs text-muted-text">Active Attacks</p>
-                            <p id="metric-attacks" class="text-2xl font-extrabold text-white">1,284</p>
-                        </div>
-
-                        <div class="metric-box">
-                            <p class="text-xs text-muted-text">Blocked</p>
-                            <p id="metric-blocked" class="text-2xl font-extrabold text-white">986</p>
-                        </div>
-
-                        <div class="metric-box">
-                            <p class="text-xs text-muted-text">Countries</p>
-                            <p class="text-2xl font-extrabold text-white">12</p>
-                        </div>
-
-                        <div class="metric-box">
-                            <p class="text-xs text-muted-text">Severity</p>
-                            <p class="text-2xl font-extrabold text-cyber-red">High</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card p-5">
-                    <h3 class="text-lg font-bold">Live Attack Feed</h3>
-
-                    <div class="space-y-3 mt-4">
-                        <div class="threat-item">
-                            <div class="flex justify-between gap-3">
-                                <strong>China → United States</strong>
-                                <span class="chip">DDoS</span>
-                            </div>
-                            <p class="text-xs text-muted-text mt-1">Large-scale TCP flood traffic detected.</p>
-                        </div>
-
-                        <div class="threat-item">
-                            <div class="flex justify-between gap-3">
-                                <strong>Russia → Germany</strong>
-                                <span class="chip">Malware</span>
-                            </div>
-                            <p class="text-xs text-muted-text mt-1">Malicious payload delivery attempt blocked.</p>
-                        </div>
-
-                        <div class="threat-item">
-                            <div class="flex justify-between gap-3">
-                                <strong>Brazil → Japan</strong>
-                                <span class="chip">Phishing</span>
-                            </div>
-                            <p class="text-xs text-muted-text mt-1">Credential phishing infrastructure observed.</p>
-                        </div>
-
-                        <div class="threat-item">
-                            <div class="flex justify-between gap-3">
-                                <strong>India → Singapore</strong>
-                                <span class="chip">Exploit</span>
-                            </div>
-                            <p class="text-xs text-muted-text mt-1">Web exploit probing against public services.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-card p-5">
-                    <h3 class="text-lg font-bold">Top Target Regions</h3>
-
-                    <div class="mt-4 space-y-3 text-sm">
-                        <div>
-                            <div class="flex justify-between">
-                                <span class="text-muted-text">United States</span>
-                                <span class="text-white">38%</span>
-                            </div>
-                            <div class="h-2 bg-white/5 rounded-full mt-1 overflow-hidden">
-                                <div class="h-full bg-cyber-red rounded-full" style="width:38%"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between">
-                                <span class="text-muted-text">Japan</span>
-                                <span class="text-white">24%</span>
-                            </div>
-                            <div class="h-2 bg-white/5 rounded-full mt-1 overflow-hidden">
-                                <div class="h-full bg-cyber-red rounded-full" style="width:24%"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between">
-                                <span class="text-muted-text">Germany</span>
-                                <span class="text-white">19%</span>
-                            </div>
-                            <div class="h-2 bg-white/5 rounded-full mt-1 overflow-hidden">
-                                <div class="h-full bg-cyber-red rounded-full" style="width:19%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </section>
-</main>
-
-<!-- Globe.GL 依赖 -->
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script src="https://unpkg.com/globe.gl@2.41.4/dist/globe.gl.min.js"></script>
-<script>
-(function () {
-    /*
-     * 坐标说明：
-     * lat = 纬度，北纬为正，南纬为负
-     * lng = 经度，东经为正，西经为负
-     *
-     * 球体 Globe.GL 和平面地图都使用同一套 lat/lng，
-     * 所以国家点位不会出现两套坐标不一致的问题。
-     */
-
-    const countries = [
-        { name: "China", lat: 35.8617, lng: 104.1954 },
-        { name: "United States", lat: 37.0902, lng: -95.7129 },
-        { name: "Russia", lat: 61.5240, lng: 105.3188 },
-        { name: "Germany", lat: 51.1657, lng: 10.4515 },
-        { name: "Brazil", lat: -14.2350, lng: -51.9253 },
-        { name: "Japan", lat: 36.2048, lng: 138.2529 },
-        { name: "India", lat: 20.5937, lng: 78.9629 },
-        { name: "Singapore", lat: 1.3521, lng: 103.8198 },
-        { name: "United Kingdom", lat: 55.3781, lng: -3.4360 },
-        { name: "France", lat: 46.2276, lng: 2.2137 },
-        { name: "Australia", lat: -25.2744, lng: 133.7751 },
-        { name: "South Korea", lat: 35.9078, lng: 127.7669 }
-    ];
-
-    const detectionTypeColors = {
-        1: "#ff2638",
-        2: "#ed1c24",
-        3: "#ff4b55",
-        4: "#0087f4",
-        5: "#1aa7ff",
-        6: "#ff2638",
-        7: "#006dff",
-        9: "#0000ff"
-    };
-
-    const attackTypeToDetectionType = {
-        DDoS: 2,
-        Malware: 3,
-        Phishing: 5,
-        Exploit: 6,
-        Botnet: 7,
-        Recon: 4,
-        Scan: 4
-    };
-
-    /*
-     * 【攻击/彗星线条的位置数据入口】
-     * 每一条彗星线的起点和终点都在 rawAttacks 里控制：
-     * - startLat / startLng：攻击起点纬度/经度
-     * - endLat / endLng：攻击终点纬度/经度
-     * - from / to：只是展示文本，不影响真实位置
-     * - type：影响颜色映射和端点图形类型
-     * - color：会被 detectionTypeColors 覆盖为最终线条颜色
-     *
-     * 想改某条线从哪里飞到哪里，优先改这里的 startLat/startLng/endLat/endLng。
-     */
-    const ATTACK_LINE_COUNT = 1000;
-    const attackTypes = ["DDoS", "Malware", "Exploit", "Botnet", "Recon", "Scan"];
-    const attackSourceHubs = [
-        { name: "Beijing", lat: 39.9042, lng: 116.4074, weight: 0.28 },
-        { name: "Moscow", lat: 55.7558, lng: 37.6173, weight: 0.2 },
-        { name: "Dubai", lat: 25.2048, lng: 55.2708, weight: 0.17 },
-        { name: "London", lat: 51.5072, lng: -0.1276, weight: 0.18 },
-        { name: "New York", lat: 40.7128, lng: -74.0060, weight: 0.17 }
-    ];
-    const worldAttackLocations = [
-        { name: "Beijing", lat: 39.9042, lng: 116.4074 },
-        { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
-        { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
-        { name: "Seoul", lat: 37.5665, lng: 126.9780 },
-        { name: "Singapore", lat: 1.3521, lng: 103.8198 },
-        { name: "New York", lat: 40.7128, lng: -74.0060 },
-        { name: "Los Angeles", lat: 34.0522, lng: -118.2437 },
-        { name: "London", lat: 51.5072, lng: -0.1276 },
-        { name: "Paris", lat: 48.8566, lng: 2.3522 },
-        { name: "Berlin", lat: 52.52, lng: 13.405 },
-        { name: "Moscow", lat: 55.7558, lng: 37.6173 },
-        { name: "Dubai", lat: 25.2048, lng: 55.2708 },
-        { name: "Mumbai", lat: 19.076, lng: 72.8777 },
-        { name: "Sydney", lat: -33.8688, lng: 151.2093 },
-        { name: "Sao Paulo", lat: -23.5558, lng: -46.6396 }
-    ];
-
-    function pickWeightedSourceHub() {
-        const totalWeight = attackSourceHubs.reduce((sum, hub) => sum + hub.weight, 0);
-        let r = Math.random() * totalWeight;
-        for (let i = 0; i < attackSourceHubs.length; i += 1) {
-            r -= attackSourceHubs[i].weight;
-            if (r <= 0) {
-                return attackSourceHubs[i];
-            }
-        }
-        return attackSourceHubs[attackSourceHubs.length - 1];
-    }
-
-    function generateAttackLines(count) {
-        const lines = [];
-        for (let i = 0; i < count; i += 1) {
-            const source = pickWeightedSourceHub();
-            let target = worldAttackLocations[Math.floor(Math.random() * worldAttackLocations.length)];
-            while (target.name === source.name) {
-                target = worldAttackLocations[Math.floor(Math.random() * worldAttackLocations.length)];
-            }
-            const type = attackTypes[Math.floor(Math.random() * attackTypes.length)];
-            lines.push({
-                from: source.name,
-                to: target.name,
-                type,
-                startLat: source.lat,
-                startLng: source.lng,
-                endLat: target.lat,
-                endLng: target.lng,
-                color: Math.random() > 0.5 ? "#ed1c24" : "#0087f4"
-            });
-        }
-        return lines;
-    }
-    const rawAttacks = generateAttackLines(ATTACK_LINE_COUNT);
-    const attacks = rawAttacks.map((attack) => {
-        const detectionType = attackTypeToDetectionType[attack.type] || 2;
-        return {
-            ...attack,
-            detectionType,
-            color: detectionTypeColors[detectionType] || "#ed1c24"
-        };
-    });
-
-    const globeStage = document.getElementById("globe-stage");
-    const planeStage = document.getElementById("plane-stage");
-    const btnGlobe = document.getElementById("btn-globe");
-    const btnPlane = document.getElementById("btn-plane");
-    const viewStatus = document.getElementById("view-status");
-
-    let globeInstance = null;
-    const attackTrails = [];
-    const attackEffects = [];
-    let trailAnimationHandle = 0;
-    let lastTrailTick = 0;
-
-    function enableDefaultArcTrails() {
-        if (!globeInstance) {
-            return;
-        }
-        // 明确禁用原生 arc 轨迹，避免和自定义彗星轨迹叠加。
-        globeInstance.arcsData([]);
-        console.info("[ThreatMap] Built-in arcs disabled.");
-    }
-
-    function showStatus(text) {
-        viewStatus.textContent = text;
-        viewStatus.classList.add("show");
-
-        window.setTimeout(() => {
-            viewStatus.classList.remove("show");
-        }, 900);
-    }
-    
-//
-function isWebGLAvailable() {
-    try {
-        const canvas = document.createElement("canvas");
-        const contextNames = ["webgl2", "webgl", "experimental-webgl"];
-        const hasWebGLApi = !!(window.WebGLRenderingContext || window.WebGL2RenderingContext);
-        const context = contextNames.reduce((result, name) => result || canvas.getContext(name), null);
-
-        return hasWebGLApi && !!context;
-    } catch (e) {
-        return false;
-    }
-}
-
-function ensureGlobeLibrary() {
-    if (typeof window.Globe === "function") {
-        return Promise.resolve();
-    }
-
-    const fallbacks = [
-        "https://cdn.jsdelivr.net/npm/globe.gl@2.41.4/dist/globe.gl.min.js",
-        "https://fastly.jsdelivr.net/npm/globe.gl@2.41.4/dist/globe.gl.min.js"
-    ];
-
-    const loadByIndex = (index) => {
-        if (index >= fallbacks.length) {
-            return Promise.reject(new Error("Globe.GL script failed to load from all fallback CDNs."));
-=======
         function showBootError(message, error) {
             console.error(message, error || '');
             const panel = document.createElement('div');
@@ -774,7 +414,6 @@ function ensureGlobeLibrary() {
 
         if (!window.THREE) {
             showBootError('Three.js 没有加载成功，请检查 CDN 或网络访问', new Error('window.THREE is missing'));
->>>>>>> dev-彗星效果图
         }
 
         function normalizeLon(lon) {
@@ -883,6 +522,7 @@ function ensureGlobeLibrary() {
             }
 
             if (oceanSphereMesh && oceanSphereMesh.material) {
+                // 球体外壳保持不透明，作为遮挡层，避免看到另一面。
                 oceanSphereMesh.visible = morphProgress > 0.01;
             }
         }
@@ -1007,6 +647,7 @@ function ensureGlobeLibrary() {
             return registerMorphTarget(mesh);
         }
 
+        // 红色轮廓必须直接复用 GeoJSON 原始 ring 的直线边，不能用 CatmullRomCurve3 平滑，否则会和 earcut 填充边缘不重合。
         function makeOutlineTube(ring, z, radius, color, opacity = 1) {
             const clean = cleanRing(ring);
             if (clean.length < 2) return [];
@@ -1126,6 +767,9 @@ function ensureGlobeLibrary() {
             outlineGroup = new THREE.Group();
             labelGroup = new THREE.Group();
 
+            // 不再创建平面 oceanPlane。
+            // 原因：oceanPlane 不参与 Morph Target，平面切换到球体时会残留在球体中间形成一条横线并遮挡内容。
+            // 平面背景直接使用 CSS/scene.background；球体底壳用透明度随 morphProgress 渐入。
             oceanSphereMesh = new THREE.Mesh(
                 new THREE.SphereGeometry(SPHERE_RADIUS - 1.5, 96, 48),
                 new THREE.MeshBasicMaterial({
@@ -1308,6 +952,7 @@ function ensureGlobeLibrary() {
                 size * 0.5,
                 size * 0.5
             );
+            // 底部静态光晕：中心空心，环形区域有柔和亮度，再向外渐隐。
             gradient.addColorStop(0, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.22, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.36, 'rgba(140, 255, 210, 0.62)');
@@ -1333,6 +978,7 @@ function ensureGlobeLibrary() {
                 material
             );
             disk.frustumCulled = false;
+            // 几乎贴着第二层陆地，避免明显缝隙
             disk.position.set(0, 0, pointAGlowOffset);
             return disk;
         }
@@ -1351,6 +997,7 @@ function ensureGlobeLibrary() {
                 size * 0.5,
                 size * 0.5
             );
+            // 动态扩散波：中心空心，仅保留一圈更亮的波前。
             gradient.addColorStop(0, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.4, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.58, 'rgba(170, 255, 220, 0.8)');
@@ -1391,10 +1038,12 @@ function ensureGlobeLibrary() {
                 blending: THREE.AdditiveBlending
             });
             const ring = new THREE.Mesh(
+                // 环本体做大一点，避免视觉上“看不到向上发射”
                 new THREE.RingGeometry(1.8, 2.15, 64),
                 material
             );
             ring.frustumCulled = false;
+            // RingGeometry 默认在本地 XY 平面；沿本地 z 推进即可与陆地法线保持一致。
             ring.position.set(0, 0, 0);
             return ring;
         }
@@ -1402,7 +1051,10 @@ function ensureGlobeLibrary() {
         function addPointA() {
             pointAGroup = new THREE.Group();
 
+            // 平面模式：贴第二层陆地高度；球体模式：点位必须站在第二层陆地表面之上，而不是只用 surfaceOffset，否则会被凸起陆地遮挡。
             const flatAltitude = landHeight + POINT_A.surfaceOffset;
+            // 球体模式下第二层陆地面片本身也被抬到了 landHeight。
+            // 点位必须站在第二层陆地表面之上，而不是只用 surfaceOffset，否则会被凸起陆地遮挡。
             const sphereAltitude = landHeight + POINT_A.surfaceOffset;
             const flat = lonLatToPlane(POINT_A.lon, POINT_A.lat, flatAltitude);
             const sphere = lonLatToSphere(POINT_A.lon, POINT_A.lat, sphereAltitude);
@@ -1431,6 +1083,9 @@ function ensureGlobeLibrary() {
             core.renderOrder = 420;
             pointAGroup.add(core);
 
+            // A 点光晕分两层：
+            // 1) glow-base: 静态空心底光
+            // 2) glow-wave: 仅向外扩散的动态波，不做回缩闪烁
             const glowBase = makePointGlowDisk();
             glowBase.name = 'pointA-glow-base';
             glowBase.scale.setScalar(pointAGlowScale);
@@ -1457,6 +1112,8 @@ function ensureGlobeLibrary() {
             label.renderOrder = 430;
             pointAGroup.add(label);
 
+            // 平面模式下圆环本来就在 XY 平面上；球体模式下后续如果要严格贴切面，
+            // 应继续用 surface normal 构建局部坐标系。当前先确保 A 点位置贴在陆地面片高度上。
             pointAGroup.renderOrder = 430;
             mapGroup.add(pointAGroup);
         }
@@ -1464,6 +1121,7 @@ function ensureGlobeLibrary() {
         function addPointB() {
             pointBGroup = new THREE.Group();
             const flatAltitude = landHeight + POINT_B.surfaceOffset;
+            // B 点同样必须高于球体模式的第二层陆地表面。
             const sphereAltitude = landHeight + POINT_B.surfaceOffset;
             const flat = lonLatToPlane(POINT_B.lon, POINT_B.lat, flatAltitude);
             const sphere = lonLatToSphere(POINT_B.lon, POINT_B.lat, sphereAltitude);
@@ -1498,6 +1156,7 @@ function ensureGlobeLibrary() {
             pointCGroup = new THREE.Group();
 
             const flatAltitude = landHeight + POINT_C.surfaceOffset;
+            // C 点同样必须高于球体模式的第二层陆地表面。
             const sphereAltitude = landHeight + POINT_C.surfaceOffset;
             const flat = lonLatToPlane(POINT_C.lon, POINT_C.lat, flatAltitude);
             const sphere = lonLatToSphere(POINT_C.lon, POINT_C.lat, sphereAltitude);
@@ -1769,344 +1428,6 @@ function ensureGlobeLibrary() {
                 });
             });
 
-<<<<<<< HEAD
-    btnGlobe.classList.remove("is-active");
-    btnPlane.classList.add("is-active");
-
-    btnGlobe.disabled = true;
-    btnGlobe.style.opacity = "0.45";
-    btnGlobe.style.cursor = "not-allowed";
-    btnGlobe.title = titleText;
-
-    showStatus(statusText);
-
-    const wrap = document.getElementById("globe-wrap");
-    const existing = wrap.querySelector(".webgl-fallback-tip");
-    if (existing) {
-        existing.remove();
-    }
-
-    const fallbackTip = document.createElement("div");
-    fallbackTip.className = "webgl-fallback-tip";
-    fallbackTip.innerHTML = `
-        <strong>${tipTitle}</strong>
-        <span>${tipDesc}</span>
-    `;
-    wrap.appendChild(fallbackTip);
-}
-
-function resolveGlobeInitFailure(error) {
-    const message = String((error && error.message) || error || "");
-    const sandboxedWebGLDisabled =
-        /GL_VENDOR\s*=\s*Disabled/i.test(message) ||
-        /GL_RENDERER\s*=\s*Disabled/i.test(message) ||
-        /Sandboxed\s*=\s*yes/i.test(message) ||
-        /BindToCurrentSequence failed/i.test(message) ||
-        /Error creating WebGL context/i.test(message);
-
-    if (sandboxedWebGLDisabled) {
-        return {
-            title: "当前运行环境禁用了 WebGL（沙箱/GPU 受限）",
-            status: "WebGL Blocked By Runtime Environment",
-            tipTitle: "WebGL blocked by runtime",
-            tipDesc: "检测到当前页面运行在 GPU/WebGL 被禁用的环境中（常见于沙箱预览或受限容器）。请在系统浏览器中通过本地站点地址访问页面，并确认浏览器开启硬件加速。"
-        };
-    }
-
-    return {
-        title: "Globe.GL 初始化失败，已自动切换到平面地图",
-        status: "Globe Init Failed, Flat Map Enabled",
-        tipTitle: "Globe init failed",
-        tipDesc: "球体组件加载或初始化失败，已自动切换到平面威胁地图。"
-    };
-}
-
-async function safeInitGlobe() {
-    if (!isWebGLAvailable()) {
-        console.warn("WebGL pre-check failed, but initialization will still be attempted.");
-    }
-
-    try {
-        await ensureGlobeLibrary();
-        initGlobe();
-    } catch (e) {
-        console.error("Globe.GL init failed:", e);
-        const failure = resolveGlobeInitFailure(e);
-        activateFlatFallback(
-            failure.title,
-            failure.status,
-            failure.tipTitle,
-            failure.tipDesc
-        );
-    }
-}
-    function initGlobe() {
-        const globeContainer = document.getElementById("globe-viz");
-        const wrap = document.getElementById("globe-wrap");
-
-        const width = globeContainer.clientWidth || wrap.clientWidth;
-        const height = wrap.clientHeight;
-
-        /*
-         * 【Globe.GL 球体初始化】
-         * 这里控制球体本身：尺寸、贴图、气氛层、国家点、国家标签。
-         * 注意：这里还不是彗星线条，彗星线条是在 setupAttackTrails(scene) 里额外创建的 Three.js Mesh。
-         */
-        globeInstance = Globe()
-            .width(width)
-            .height(height)
-            .backgroundColor("rgba(0,0,0,0)")
-            .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
-            .bumpImageUrl("https://unpkg.com/three-globe/example/img/earth-topology.png")
-            .showAtmosphere(true)
-            .atmosphereColor("#ff1f2d")
-            .atmosphereAltitude(0.16)
-
-            /*
-             * 国家点
-             */
-            .pointsData(countries)
-            .pointLat(d => d.lat)
-            .pointLng(d => d.lng)
-            .pointColor(() => "#ff1f2d")
-            .pointAltitude(0.025)
-            .pointRadius(0.45)
-            .pointResolution(16)
-
-            /*
-             * 国家名称
-             */
-            .labelsData(countries)
-            .labelLat(d => d.lat)
-            .labelLng(d => d.lng)
-            .labelText(d => d.name)
-            .labelSize(0.85)
-            .labelDotRadius(0.18)
-            .labelAltitude(0.035)
-            .labelColor(() => "rgba(255,255,255,0.95)")
-            .labelResolution(2)
-            (globeContainer);
-
-        /*
-         * 【初始球体视角】
-         * lat：镜头默认看向的纬度，越大越偏北半球
-         * lng：镜头默认看向的经度
-         * altitude：镜头距离，越小越近，越大越远
-         *
-         * 如果你想第一次打开时更像“北半球视角”，优先调这里的 lat 和 altitude。
-         */
-        globeInstance.pointOfView({
-            lat: 24,
-            lng: 105,
-            altitude: 2.05
-        }, 1000);
-
-        /*
-         * 【鼠标/滚轮控制器】
-         * controls 来自 Globe.GL 内部的 OrbitControls。
-         * 这里控制：自动旋转、阻尼、滚轮缩放、拖拽旋转。
-         * 如果你要做类似卡巴斯基那种“滚轮放大后固定视角”，需要继续改这里的 controls，
-         * 或者使用 globeInstance.pointOfView(...) 在滚轮事件里强制修正视角。
-         */
-        const controls = globeInstance.controls();
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.55;
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-
-        /*
-         * 光照增强，让白天贴图更亮
-         */
-        const scene = globeInstance.scene();
-        if (window.THREE && scene) {
-            try {
-                const directionalLight = new window.THREE.DirectionalLight(0xffffff, 1.4);
-                directionalLight.position.set(1, 1, 1);
-                scene.add(directionalLight);
-                setupAttackTrails(scene);
-                startTrailAnimationLoop();
-            } catch (trailErr) {
-                console.error("Custom ribbon trails init failed, fallback to default arcs:", trailErr);
-                enableDefaultArcTrails();
-            }
-        } else {
-            enableDefaultArcTrails();
-        }
-
-        window.addEventListener("resize", () => {
-            const nextWidth = globeContainer.clientWidth || wrap.clientWidth;
-            const nextHeight = wrap.clientHeight;
-
-            globeInstance
-                .width(nextWidth)
-                .height(nextHeight);
-
-            if (window.THREE) {
-                // 彗星材质使用世界空间带状几何，不依赖屏幕分辨率 uniform。
-            }
-        });
-    }
-
-    /*
-     * 【经纬度转 Three.js 球面坐标】
-     * 彗星线、端点光圈、国家点的真实空间位置都依赖这个换算。
-     * 输入：lat/lng 经纬度
-     * 输出：单位球面上的 Vector3 方向
-     *
-     * 如果线条位置不对，通常先检查：
-     * 1. rawAttacks 里的经纬度是否正确
-     * 2. 这里的经纬度转三维公式是否和 Globe.GL 坐标系一致
-     */
-    function latLngToUnitVec3(lat, lng) {
-        const latRad = window.THREE.MathUtils.degToRad(lat);
-        const lngRad = window.THREE.MathUtils.degToRad(lng);
-        return new window.THREE.Vector3(
-            Math.cos(latRad) * Math.sin(lngRad),
-            Math.sin(latRad),
-            Math.cos(latRad) * Math.cos(lngRad)
-        ).normalize();
-    }
-
-    function multiplyHexColor(hex, factor) {
-        const f = Math.max(0, Math.min(1, Number(factor)));
-        const c = new window.THREE.Color(hex);
-        const hsl = { h: 0, s: 0, l: 0 };
-        c.getHSL(hsl);
-        const darkStrength = 1 - f;
-        hsl.l = Math.max(0.04, hsl.l * (1 - darkStrength * 0.78));
-        hsl.s = Math.min(1, hsl.s + darkStrength * 0.18);
-        c.setHSL(hsl.h, hsl.s, hsl.l);
-        return c;
-    }
-
-    function buildLoopPoints(radius = 1, sides = 12) {
-        const points = [];
-        const count = Math.max(3, Math.floor(sides));
-        for (let i = 0; i < count; i += 1) {
-            const a = (i / count) * Math.PI * 2;
-            points.push(new window.THREE.Vector3(Math.cos(a) * radius, Math.sin(a) * radius, 0));
-        }
-        return points;
-    }
-
-    /*
-     * 【攻击起点/终点的闪光特效】
-     * 这里控制每条彗星线两端的点亮、扩散圆环、几何图形扩散。
-     *
-     * 关键参数：
-     * - anchor = normal * globeRadius * 1.003：端点贴在球面外一点点
-     * - SphereGeometry(globeRadius * 0.0105)：中心亮点大小
-     * - RingGeometry(globeRadius * 0.012, globeRadius * 0.016)：扩散圆环大小
-     * - radius = globeRadius * (0.022 + i * 0.014)：外层几何线框大小
-     *
-     * 想改 A/B 点闪光大小、扩散范围、端点是否贴球面，主要改这里。
-     */
-    function createEndpointRadiation(position, colorHex, globeRadius, detectionType) {
-        const group = new window.THREE.Group();
-        const normal = position.clone().normalize();
-        const anchor = normal.clone().multiplyScalar(globeRadius * 1.003);
-        group.position.copy(anchor);
-        group.quaternion.setFromUnitVectors(new window.THREE.Vector3(0, 0, 1), normal);
-
-        const core = new window.THREE.Mesh(
-            new window.THREE.SphereGeometry(globeRadius * 0.0105, 14, 14),
-            new window.THREE.MeshBasicMaterial({
-                color: colorHex,
-                transparent: true,
-                opacity: 0.95,
-                blending: window.THREE.AdditiveBlending,
-                depthWrite: false
-            })
-        );
-        core.position.z = globeRadius * 0.006;
-        group.add(core);
-
-        const pulseRings = [];
-        for (let i = 0; i < 3; i += 1) {
-            const ring = new window.THREE.Mesh(
-                new window.THREE.RingGeometry(globeRadius * 0.012, globeRadius * 0.016, 40),
-                new window.THREE.MeshBasicMaterial({
-                    color: colorHex,
-                    transparent: true,
-                    opacity: 0.0,
-                    side: window.THREE.DoubleSide,
-                    depthWrite: false,
-                    blending: window.THREE.AdditiveBlending
-                })
-            );
-            ring.userData.phase = i / 3;
-            ring.position.z = globeRadius * 0.0035;
-            group.add(ring);
-            pulseRings.push(ring);
-        }
-
-        const gridRings = [];
-        const gridColor = multiplyHexColor(colorHex, 0.55);
-        const sidesByType = { 1: 3, 2: 4, 3: 5, 4: 18, 5: 10, 6: 6, 7: 8, 9: 7 };
-        const polygonSides = sidesByType[Number(detectionType)] || 6;
-        for (let i = 0; i < 3; i += 1) {
-            const radius = globeRadius * (0.022 + i * 0.014);
-            const geometry = new window.THREE.BufferGeometry().setFromPoints(buildLoopPoints(radius, polygonSides));
-            const line = new window.THREE.LineLoop(
-                geometry,
-                new window.THREE.LineBasicMaterial({
-                    color: gridColor,
-                    transparent: true,
-                    opacity: 0.0,
-                    depthWrite: false,
-                    blending: window.THREE.AdditiveBlending
-                })
-            );
-            line.userData.phase = i * 0.22;
-            group.add(line);
-            gridRings.push(line);
-        }
-
-        return { group, core, pulseRings, gridRings };
-    }
-
-    /*
-     * 【彗星弧线轨迹采样】
-     * 这是控制“线从哪里飞到哪里、飞得多高、弧度多大”的核心函数。
-     *
-     * 参数说明：
-     * - attack：单条攻击数据，里面有 startLat/startLng/endLat/endLng
-     * - sampleCount：轨迹采样点数量，越大线越平滑
-     * - globeRadius：球体半径
-     * - altitude：弧线离球面的最高高度，越大弧线越高
-     *
-     * 关键逻辑：
-     * - startDir/endDir：起点/终点三维方向
-     * - slerp 球面插值：让线沿球面大圆方向飞行
-     * - lift = sin(PI * t) * altitude：中间最高，两端贴近球面
-     *
-     * 想改“彗星线条贴球面还是飞得高”，主要改调用处传入的 altitude。
-     */
-    function sampleArcPoints(attack, sampleCount, globeRadius, altitude) {
-        const startDir = latLngToUnitVec3(attack.startLat, attack.startLng);
-        const endDir = latLngToUnitVec3(attack.endLat, attack.endLng);
-        const points = [];
-        const dot = Math.max(-1, Math.min(1, startDir.dot(endDir)));
-        const omega = Math.acos(dot);
-        const sinOmega = Math.sin(omega);
-
-        // aProgress 略缩到 [0, 1-ε)，与彗星方案2.js 一致地配合 uHead∈[0,1)：避免开放弧上 vProgress=1 时 trailDist 被错误环绕
-        const progressScale = sampleCount > 1 ? 1.0 - 1e-4 : 1.0;
-        for (let i = 0; i < sampleCount; i += 1) {
-            const t = i / (sampleCount - 1);
-            let pointDir;
-            if (omega < 1e-5 || sinOmega < 1e-5) {
-                pointDir = startDir.clone().lerp(endDir, t).normalize();
-            } else {
-                const s1 = Math.sin((1 - t) * omega) / sinOmega;
-                const s2 = Math.sin(t * omega) / sinOmega;
-                pointDir = startDir.clone().multiplyScalar(s1).add(endDir.clone().multiplyScalar(s2)).normalize();
-            }
-            const lift = Math.sin(Math.PI * t) * altitude;
-            points.push({
-                position: pointDir.multiplyScalar(globeRadius + lift),
-                progress: t * progressScale
-=======
             mapGroup.add(beamGroup);
         }
 
@@ -2128,53 +1449,17 @@ async function safeInitGlobe() {
             if (samplePointGroup) samplePointGroup.traverse(applyDepthFlag);
             beamRibbons.forEach((beam) => {
                 if (beam && beam.mesh) applyDepthFlag(beam.mesh);
->>>>>>> dev-彗星效果图
             });
         }
 
         function updatePointGroupEffects(group, pointKey, frontVisible) {
             if (!group) return;
             const useSphereOcclusion = morphProgress > 0.35;
-            const hideDynamicEffects = viewMode === 'sphere' && isSphereUserInteracting;
             const core = group.getObjectByName(`${pointKey}-core`);
             const glowBase = group.getObjectByName(`${pointKey}-glow-base`);
             const glowWave = group.getObjectByName(`${pointKey}-glow-wave`);
             const label = group.getObjectByName(`${pointKey}-label`);
 
-<<<<<<< HEAD
-    /*
-     * 【彗星线条带状几何】
-     * 这里把一条普通曲线变成“有宽度的光带”。
-     *
-     * 关键参数：
-     * - maxWidth：线条最大宽度
-     * - width = maxWidth * sin(PI * t) * 0.32：两端细，中间宽
-     * - left/right：每个采样点左右扩展两个顶点，最终拼成带状 Mesh
-     *
-     * 想改“中间宽、两头尖”的效果，主要改 width 这一行。
-     */
-    function buildTrailGeometry(sampledPoints, maxWidth = 0.95) {
-        const sampleCount = sampledPoints.length;
-        const vertexCount = sampleCount * 2;
-        const positions = new Float32Array(vertexCount * 3);
-        const aProgress = new Float32Array(vertexCount);
-        const indices = [];
-        const fallback = new window.THREE.Vector3(0, 0, 1);
-
-        for (let i = 0; i < sampleCount; i += 1) {
-            const current = sampledPoints[i].position;
-            const prev = sampledPoints[Math.max(i - 1, 0)].position;
-            const next = sampledPoints[Math.min(i + 1, sampleCount - 1)].position;
-            const t = sampledPoints[i].progress;
-
-            let tangent = next.clone().sub(prev);
-            const normal = current.clone().normalize();
-            tangent.sub(normal.clone().multiplyScalar(tangent.dot(normal))).normalize();
-
-            let side = new window.THREE.Vector3().crossVectors(normal, tangent).normalize();
-            if (side.lengthSq() < 1e-6) {
-                side = new window.THREE.Vector3().crossVectors(fallback, tangent).normalize();
-=======
             if (core) {
                 core.visible = pointASizeScale > 0 && frontVisible;
                 core.scale.setScalar(pointASizeScale);
@@ -2184,14 +1469,14 @@ async function safeInitGlobe() {
                 label.scale.set(20 * pointASizeScale, 13 * pointASizeScale, 1);
             }
             if (glowBase) {
-                glowBase.visible = pointAGlowScale > 0 && frontVisible && !hideDynamicEffects;
+                glowBase.visible = pointAGlowScale > 0 && frontVisible;
                 glowBase.scale.setScalar(pointAGlowScale);
                 glowBase.position.z = useSphereOcclusion
                     ? SPHERE_EFFECT_SURFACE_OFFSET
                     : pointAGlowOffset;
             }
             if (glowWave) {
-                glowWave.visible = pointAGlowScale > 0 && frontVisible && !hideDynamicEffects;
+                glowWave.visible = pointAGlowScale > 0 && frontVisible;
                 const waveT = (performance.now() * 0.0007) % 1;
                 const waveScale = pointAGlowScale * (0.72 + waveT * 1.08);
                 glowWave.scale.setScalar(waveScale);
@@ -2203,7 +1488,7 @@ async function safeInitGlobe() {
                 }
             }
 
-            const ringVisible = pointAGlowScale > 0 && frontVisible && !hideDynamicEffects;
+            const ringVisible = pointAGlowScale > 0 && frontVisible;
             for (let i = 0; i < POINT_A_RING_LAYER_COUNT; i += 1) {
                 const ring = group.getObjectByName(`${pointKey}-vring-${i}`);
                 if (!ring) continue;
@@ -2219,216 +1504,9 @@ async function safeInitGlobe() {
                 if (ring.material) {
                     ring.material.opacity = Math.pow(1 - t, 1.1) * 0.92;
                 }
->>>>>>> dev-彗星效果图
-            }
-
-<<<<<<< HEAD
-            const width = maxWidth * Math.sin(Math.PI * t) * 0.3;
-            const radiusAtPoint = current.length();
-            const left = current.clone().addScaledVector(side, width).normalize().multiplyScalar(radiusAtPoint);
-            const right = current.clone().addScaledVector(side, -width).normalize().multiplyScalar(radiusAtPoint);
-
-            const li = i * 2;
-            const ri = li + 1;
-            positions[li * 3] = left.x;
-            positions[li * 3 + 1] = left.y;
-            positions[li * 3 + 2] = left.z;
-            positions[ri * 3] = right.x;
-            positions[ri * 3 + 1] = right.y;
-            positions[ri * 3 + 2] = right.z;
-            aProgress[li] = t;
-            aProgress[ri] = t;
-
-            if (i < sampleCount - 1) {
-                const nli = (i + 1) * 2;
-                const nri = nli + 1;
-                indices.push(li, ri, nli);
-                indices.push(ri, nri, nli);
             }
         }
 
-        const geometry = new window.THREE.BufferGeometry();
-        geometry.setAttribute("position", new window.THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute("aProgress", new window.THREE.BufferAttribute(aProgress, 1));
-        geometry.setIndex(indices);
-        geometry.computeBoundingSphere();
-        return geometry;
-    }
-
-    /*
-     * 【彗星线条材质/透明度/尾巴动画】
-     * 这里控制光带颜色、亮度、透明度、尾巴长度、头部移动效果。
-     *
-     * uniforms 关键参数：
-     * - uColor：线条颜色
-     * - uHead：彗星头部当前位置，动画循环更新
-     * - uTrail：尾巴长度，越大拖尾越长
-     * - uBrightness：亮度
-     * - uAlphaMul：整体透明度
-     *
-     * fragmentShader 里：
-     * - trailDist：当前片元距离彗星头部的距离
-     * - trailMask：尾巴渐隐
-     * - headGlow：头部发光
-     * - alpha：最终透明度
-     *
-     * 想改“彗星尾巴长短、亮度、是否中间更亮”，主要改这里。
-     */
-    function buildTrailMaterial(colorHex) {
-        return new window.THREE.ShaderMaterial({
-            transparent: true,
-            depthWrite: false,
-            depthTest: true,
-            blending: window.THREE.AdditiveBlending,
-            side: window.THREE.DoubleSide,
-            uniforms: {
-                uColor: { value: new window.THREE.Color(colorHex) },
-                uHead: { value: 0.0 },
-                uTrail: { value: 0.22 },
-                uBrightness: { value: 2.1 },
-                uAlphaMul: { value: 0.96 }
-            },
-            vertexShader: `
-                attribute float aProgress;
-                varying float vProgress;
-                varying float vAlpha;
-                void main() {
-                    vProgress = aProgress;
-                    vAlpha = sin(3.14159265 * aProgress);
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 uColor;
-                uniform float uBrightness;
-                uniform float uHead;
-                uniform float uTrail;
-                uniform float uAlphaMul;
-                varying float vProgress;
-                varying float vAlpha;
-                void main() {
-                    float centerBoost = pow(sin(3.14159265 * vProgress), 1.45);
-                    float alphaProfile = clamp(vAlpha, 0.0, 1.0);
-                    float trailDist = uHead - vProgress;
-                    // Open arc A->B: do not wrap (negative means ahead of head).
-                    if (trailDist < 0.0) {
-                        trailDist = 1.0;
-                    }
-                    float trailMask = 1.0 - smoothstep(0.0, uTrail, trailDist);
-                    float headGlow = exp(-trailDist * 24.0);
-                    float alpha = alphaProfile * max(trailMask, headGlow * 0.95);
-                    vec3 color = uColor * (0.35 + uBrightness * (centerBoost * trailMask + headGlow));
-                    gl_FragColor = vec4(color, alpha * uAlphaMul);
-                }
-            `
-        });
-    }
-
-    /*
-     * 【创建所有彗星线条和端点特效】
-     * 这是整套自定义攻击轨迹的入口。
-     *
-     * 这里做了几件事：
-     * 1. 获取 Globe.GL 的真实球体半径 globeRadius
-     * 2. 遍历 attacks，为每条攻击创建一条彗星光带
-     * 3. sampleArcPoints(...) 生成弧线轨迹点
-     * 4. buildTrailGeometry(...) 生成带状线条几何
-     * 5. buildTrailMaterial(...) 生成发光材质
-     * 6. createEndpointRadiation(...) 创建起点/终点扩散特效
-     *
-     * 与 img/00/PageSelect/彗星方案2.js 对齐的主要参数：
-     * - 弧高 globeRadius*(2.8/9) 对应 FIXED_GLOBE_ARC_HEIGHT；带宽 globeRadius*(0.45/9) 与 maxWidth=0.45 比例一致；sin(pi*t)*0.3
-     * - attacks 可达上千条：每条彗尾都是独立 Shader 几何，全量会撑爆 WebGL/显存导致整页空白且无 JS 报错，故仅对前 MAX_GLOBE_RIBBON_TRAILS 条建球面彗尾（平面地图仍用全量 attacks）
-     */
-    function setupAttackTrails(scene) {
-        const globeRadius = typeof globeInstance.getGlobeRadius === "function"
-            ? globeInstance.getGlobeRadius()
-            : 100;
-        const MAX_GLOBE_RIBBON_TRAILS = 160;
-        const RIBBON_ARC_SEGMENTS = 80;
-        const ribbonAttacks = attacks.slice(0, MAX_GLOBE_RIBBON_TRAILS);
-        const trailGroup = new window.THREE.Group();
-        trailGroup.name = "attack-trails";
-        scene.add(trailGroup);
-        attackTrails.length = 0;
-        attackEffects.forEach((effect) => {
-            scene.remove(effect.start.group);
-            scene.remove(effect.end.group);
-        });
-        attackEffects.length = 0;
-        console.info("[ThreatMap] Trail setup start:", {
-            attackCount: attacks.length,
-            ribbonTrailCount: ribbonAttacks.length,
-            globeRadius
-        });
-
-        ribbonAttacks.forEach((attack) => {
-            // 与彗星方案2.js 球面模式：弧顶 2.8@R=9、轨迹层 1.004R；细分取 80 在效果与 WebGL 负载间折中（方案 UI 默认 120）
-            const arcHeightWorld = globeRadius * (2.8 / 9.0);
-            const sampledPoints = sampleArcPoints(attack, RIBBON_ARC_SEGMENTS, globeRadius * 1.004, arcHeightWorld);
-
-            // maxWidth 与方案中 ui.maxWidth=0.45 相对 globeRadius=9 的比例一致
-            const geometry = buildTrailGeometry(sampledPoints, globeRadius * (0.45 / 9.0));
-            const material = buildTrailMaterial(attack.color);
-            const mesh = new window.THREE.Mesh(geometry, material);
-            mesh.renderOrder = 9;
-            trailGroup.add(mesh);
-
-            const startPos = sampledPoints[0].position;
-            const endPos = sampledPoints[sampledPoints.length - 1].position;
-            if (attackEffects.length < 80) {
-                const startEffect = createEndpointRadiation(startPos, attack.color, globeRadius, attack.detectionType);
-                const endEffect = createEndpointRadiation(endPos, attack.color, globeRadius, attack.detectionType);
-                startEffect.group.renderOrder = 10;
-                endEffect.group.renderOrder = 10;
-                scene.add(startEffect.group);
-                scene.add(endEffect.group);
-                attackEffects.push({
-                    start: startEffect,
-                    end: endEffect,
-                    speed: 0.85 + Math.random() * 0.25
-                });
-            }
-
-            attackTrails.push({
-                mesh,
-                material,
-                // 【彗星头部初始位置】随机值可以让多条线不同步出现
-                center: Math.random(),
-                // 【彗星移动速度】数值越大，光带跑得越快
-                speed: 0.055 + Math.random() * 0.07,
-                // 与方案预设 trail≈0.18~0.28 及 FIXED_TRAIL_LENGTH_PERCENT=145（×1.45）一致
-                trailLength: (0.18 + Math.random() * 0.1) * 1.45,
-                activityOffset: Math.random(),
-                activitySpeed: 0.045 + Math.random() * 0.03,
-                activityDuty: 0.18 + Math.random() * 0.14
-            });
-        });
-        console.info("[ThreatMap] Trail setup done:", {
-            builtTrailCount: attackTrails.length,
-            builtRadiationCount: attackEffects.length * 2
-        });
-    }
-
-    /*
-     * 【彗星动画循环】
-     * 这里每一帧更新彗星头部位置和端点扩散动画。
-     *
-     * 线条动画关键逻辑：
-     * - trail.center += trail.speed * dt：彗星沿轨迹前进
-     * - uHead.value = trail.center：把头部位置传给 shader
-     * - uTrail.value = trail.trailLength：把尾巴长度传给 shader
-     *
-     * 端点动画关键逻辑：
-     * - ring.scale.setScalar(...)：扩散圆环变大
-     * - ring.material.opacity = ...：扩散圆环渐隐
-     */
-    function startTrailAnimationLoop() {
-        if (trailAnimationHandle) {
-            window.cancelAnimationFrame(trailAnimationHandle);
-            trailAnimationHandle = 0;
-=======
         function isGroupOnCameraFacingHemisphere(group) {
             if (!group || !mapGroup) return true;
             if (morphProgress < 0.35) return true;
@@ -2474,52 +1552,17 @@ async function safeInitGlobe() {
             sprite.scale.set(7, 7, 1);
             sprite.visible = false;
             return sprite;
->>>>>>> dev-彗星效果图
         }
-        console.info("[ThreatMap] Trail animation loop start.");
 
         function addSampleEmitterPoints() {
             samplePointGroup = new THREE.Group();
             samplePointGroup.name = 'sample-emitter-points';
             sampleEmitters.length = 0;
 
-<<<<<<< HEAD
-            for (let i = 0; i < attackTrails.length; i += 1) {
-                const trail = attackTrails[i];
-                const activityPhase = (time * 0.001 * trail.activitySpeed + trail.activityOffset) % 1;
-                const activeMask = activityPhase < trail.activityDuty ? 1.0 : 0.0;
-                // 【彗星运动控制】center 是彗星头部在整条轨迹上的进度，范围 0~1
-                trail.center += trail.speed * dt;
-                if (trail.center > 1) {
-                    trail.center -= 1;
-                }
-                // 【把动画参数传给 shader】uHead 控制头部位置，uTrail 控制尾巴长度
-                trail.material.uniforms.uHead.value = trail.center;
-                trail.material.uniforms.uTrail.value = trail.trailLength;
-                trail.material.uniforms.uAlphaMul.value = 0.92 * activeMask;
-            }
-
-            for (let i = 0; i < attackEffects.length; i += 1) {
-                const effect = attackEffects[i];
-                const pulseTime = time * 0.001 * effect.speed;
-                [effect.start, effect.end].forEach((endpoint) => {
-                    endpoint.pulseRings.forEach((ring) => {
-                        const p = (pulseTime + ring.userData.phase) % 1;
-                        const ease = 1 - p;
-                        ring.scale.setScalar(0.35 + p * 2.6);
-                        ring.material.opacity = Math.pow(ease, 1.25) * 0.72;
-                    });
-
-                    endpoint.gridRings.forEach((line, idx) => {
-                        const p = (pulseTime * 0.65 + line.userData.phase) % 1;
-                        line.material.opacity = (0.22 + (1 - p) * 0.32) * (1 - idx * 0.2);
-                        line.rotation.z += 0.002 + idx * 0.0008;
-                    });
-                });
-=======
             SAMPLE_COUNTRY_POINTS.forEach((item) => {
                 const group = new THREE.Group();
                 const flatAltitude = landHeight + 2.6;
+                // 示例发射点也必须位于第二层陆地凸起表面之上，否则球体模式会被 raisedLandGroup 深度遮挡。
                 const sphereAltitude = landHeight + 2.6;
                 const flatPos = lonLatToPlane(item.lon, item.lat, flatAltitude);
                 const spherePos = lonLatToSphere(item.lon, item.lat, sphereAltitude);
@@ -2535,6 +1578,7 @@ async function safeInitGlobe() {
                 group.position.copy(flatPos.clone().lerp(spherePos, morphProgress));
                 group.quaternion.copy(flatQ).slerp(sphereQ, morphProgress);
 
+                // 与 A 点保持一致：仅保留空心底光 + 扩散波，不使用中心实心亮点。
                 const glowBase = makePointGlowDisk();
                 glowBase.name = 'emitter-glow-base';
                 glowBase.visible = false;
@@ -2642,13 +1686,13 @@ async function safeInitGlobe() {
             const nextTargetMorph = nextMode === 'sphere' ? 1 : 0;
             if (Math.abs(nextTargetMorph - morphProgress) < 0.001) return;
             viewMode = nextMode;
-            isSphereUserInteracting = false;
             targetMorph = nextTargetMorph;
             morphStart = nextTargetMorph;
             morphEnd = nextTargetMorph;
             morphProgress = nextTargetMorph;
             morphStartTime = performance.now();
             if (viewMode === 'sphere') {
+                // 进入球体前保存当前平面位置和缩放，保证从球体切回平面时能恢复原位置。
                 savedFlatPanX = panX;
                 savedFlatPanY = panY;
                 savedFlatTargetPanX = targetPanX;
@@ -2672,6 +1716,7 @@ async function safeInitGlobe() {
                 modeTitle.textContent = 'FLAT RAISED WORLD MAP';
                 setOptionalText(viewToggleLabel, '');
 
+                // 从球体回到平面时恢复切换前的平移和缩放状态。
                 panX = savedFlatPanX;
                 panY = savedFlatPanY;
                 targetPanX = savedFlatTargetPanX;
@@ -2684,6 +1729,7 @@ async function safeInitGlobe() {
                 camera.position.set(0, 0, FLAT_FIXED_CAMERA_Z);
                 camera.lookAt(0, 0, 0);
             }
+            // 不再直接调用 refreshMap()，动画中处理
         }
 
         function updateTransitionMask() {
@@ -2823,6 +1869,8 @@ async function safeInitGlobe() {
                 FLAT_MIN_TILT
             );
 
+            // 平面滚轮仍以视角切换为主，同时带一点轻微放大效果。
+            // 向下滚：低角度 + 轻微放大；向上滚：回正面 + 恢复原始大小。
             const zoomDelta = event.deltaY > 0 ? FLAT_ZOOM_STEP : -FLAT_ZOOM_STEP;
             targetZoom += zoomDelta;
         }, { passive: false });
@@ -2831,9 +1879,6 @@ async function safeInitGlobe() {
             isDragging = true;
             lastPointerX = event.clientX;
             lastPointerY = event.clientY;
-            if (viewMode === 'sphere') {
-                isSphereUserInteracting = true;
-            }
             globeContainer.setPointerCapture(event.pointerId);
         });
 
@@ -2845,10 +1890,10 @@ async function safeInitGlobe() {
             lastPointerY = event.clientY;
 
             if (viewMode === 'sphere') {
+                // 不直接改旋转角，拖动只改变目标角速度，形成阻尼惯性手感
                 sphereRotationTarget.y += deltaX * sphereDragSensitivity.x;
                 sphereRotationTarget.x += deltaY * sphereDragSensitivity.y;
                 return;
->>>>>>> dev-彗星效果图
             }
 
             targetPanX += deltaX / zoom;
@@ -2857,7 +1902,6 @@ async function safeInitGlobe() {
 
         globeContainer.addEventListener('pointerup', (event) => {
             isDragging = false;
-            isSphereUserInteracting = false;
             if (globeContainer.hasPointerCapture(event.pointerId)) {
                 globeContainer.releasePointerCapture(event.pointerId);
             }
@@ -2865,12 +1909,6 @@ async function safeInitGlobe() {
 
         globeContainer.addEventListener('pointerleave', () => {
             isDragging = false;
-            isSphereUserInteracting = false;
-        });
-
-        globeContainer.addEventListener('pointercancel', () => {
-            isDragging = false;
-            isSphereUserInteracting = false;
         });
 
         window.addEventListener('resize', () => {
@@ -2892,7 +1930,7 @@ async function safeInitGlobe() {
 
         function updateFlatBeamEffect() {
             if (!beamGroup || !beamRibbons.length) return;
-            const visible = beamEnabled && !(viewMode === 'sphere' && isSphereUserInteracting);
+            const visible = beamEnabled;
             beamGroup.visible = visible;
             if (!visible) {
                 sampleEmitters.forEach((emitter) => {
@@ -2936,6 +1974,7 @@ async function safeInitGlobe() {
                     return;
                 }
                 const dist = start.distanceTo(end);
+                // 同一个国家/非常近距离不显示长光带，避免短线在点位附近乱跳。
                 if (dist < 20) {
                     mesh.visible = false;
                     return;
@@ -3014,9 +2053,6 @@ async function safeInitGlobe() {
             panY += (targetPanY - panY) * 0.16;
             sphereCameraZ += (sphereTargetCameraZ - sphereCameraZ) * 0.14;
             sphereRotationVelocity.lerp(sphereRotationTarget, sphereRotationLerp);
-            if (viewMode === 'sphere' && !isSphereUserInteracting) {
-                sphereRotationY += sphereAutoRotateSpeed;
-            }
             sphereRotationY += sphereRotationVelocity.y;
             sphereRotationX += sphereRotationVelocity.x;
             sphereRotationX = THREE.MathUtils.clamp(sphereRotationX, -Math.PI, Math.PI);
@@ -3065,61 +2101,5 @@ async function safeInitGlobe() {
 
         animate();
     </script>
-
-    <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
-        <div class="container mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-2">
-                        <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
-                    </div>
-                    <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
-                    <div class="flex space-x-4 mt-5">
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Products</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/products" class="hover:text-cyber-red">Fuxi SIEM</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Endpoint Security</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Network Security</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Cloud Security</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Solutions</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/solutions" class="hover:text-cyber-red">Ransomware Defense</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">Zero Trust</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">SOC Modernization</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">Compliance</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Company</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/company" class="hover:text-cyber-red">About Us</a></li>
-                        <li><a href="/company" class="hover:text-cyber-red">Careers</a></li>
-                        <li><a href="/blog" class="hover:text-cyber-red">News</a></li>
-                        <li><a href="/contact" class="hover:text-cyber-red">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-8 border-red-900/30">
-            <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
-                <p>© 2026 Fuxi Technology. All rights reserved.</p>
-                <div class="flex gap-6 mt-3 md:mt-0">
-                    <a href="/" class="hover:text-cyber-red">Privacy Policy</a>
-                    <a href="/" class="hover:text-cyber-red">Terms of Service</a>
-                    <a href="/" class="hover:text-cyber-red">Cookie Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
 </body>
 </html>
