@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuxi Tech | ThreatMap</title>
-    <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
-    <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
-    <link rel="apple-touch-icon" href="/img/logimg/image.png">
-    <link rel="stylesheet" href="../css/vendor/tailwind.css">
-    <link rel="stylesheet" href="../css/vendor/inter-local.css">
-    <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
-    <link rel="stylesheet" href="../css/nav-baseline.css">
-    <link rel="stylesheet" href="../css/site-nav.css">
+    <title>Raised xxxFlat World Map 平面凸起地图</title>
     <style>
         html, body {
             margin: 0;
@@ -153,39 +145,8 @@
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
-        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
-            </a>
-            <div class="hidden md:flex items-center space-x-7">
-                <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
-                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
-                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
-                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
-                <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
-                <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
-
-            </div>
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
-                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
-                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
-                    <span>Menu</span>
-                </button>
-            </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
-            <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
-            <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
-            <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
-            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
-            <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
-            <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
-            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
-        </div>
-    </nav>
     <div id="globeViz"></div>
+    <div class="mode-title">FLAT RAISED WORLD MAP</div>
     <li id="viewToggleBtn" class="view-toggle-btn" data-element-id="map-controls-view-toggle">
         <svg class="map_control_button" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
@@ -278,7 +239,6 @@
         const beamTailMeshes = [];
         const EMITTER_FADE_SECONDS = 1.0;
         let isDragging = false;
-        let isSphereUserInteracting = false;
         let lastPointerX = 0;
         let lastPointerY = 0;
         let panX = 0;
@@ -298,7 +258,7 @@
         let savedFlatTilt = 0;
         let savedFlatTargetTilt = 0;
         let viewMode = 'flat';
-        let morphProgress = 0;
+        let morphProgress = 0; // 0=平面 1=球体
         let targetMorph = 0;
         let morphStart = 0;
         let morphEnd = 0;
@@ -353,7 +313,7 @@
         scene.add(sideLight);
 
         const MAP_WIDTH = 900;
-        const MAP_HEIGHT = 500;
+        const MAP_HEIGHT = 450;
         const BASE_Z = 0;
         const RAISED_Z = 8;
         const MIN_ZOOM = 0.75;
@@ -367,12 +327,15 @@
         const FLAT_FIXED_CAMERA_Z = 620;
         const SPHERE_EFFECT_SURFACE_OFFSET = 0.18;
         const SPHERE_EFFECT_WAVE_OFFSET = 0.22;
+        // 球体模式下：彗星从第二层外表发射，并保持最小离地净空，避免穿入凸起陆地。
         const BEAM_SPHERE_SURFACE_EMIT_OFFSET = 2.6;
         const BEAM_SPHERE_SURFACE_CLEARANCE = 1.1;
         const POINT_A = {
             name: 'A',
             lon: 104.19,
             lat: 35.86,
+            // A 点不是悬浮点，而是贴着第二层陆地面片。
+            // 这里只保留很小的表面偏移，避免和陆地面片 z-fighting。
             surfaceOffset: 1.2
         };
         const POINT_B = {
@@ -418,6 +381,7 @@
             { from: 'AU', to: 'BR', type: 'WAV', phase: 0.93 }
         ];
         const SPHERE_RADIUS = 130;
+        // 参考稿的固定弧面构图参数（按当前半径比例换算）
         const SPHERE_FIXED_Y = -0.78 * SPHERE_RADIUS;
         const SPHERE_LOOK_AT_Y_OFFSET = 0.58 * SPHERE_RADIUS;
         const SPHERE_MIN_CAMERA_Z = 1.18 * SPHERE_RADIUS;
@@ -430,7 +394,6 @@
         const sphereRotationVelocity = new THREE.Vector2(0, 0);
         const sphereRotationLerp = 0.16;
         const sphereRotationDamping = 0.92;
-        const sphereAutoRotateSpeed = 0.0032;
 
         function showBootError(message, error) {
             console.error(message, error || '');
@@ -559,6 +522,7 @@
             }
 
             if (oceanSphereMesh && oceanSphereMesh.material) {
+                // 球体外壳保持不透明，作为遮挡层，避免看到另一面。
                 oceanSphereMesh.visible = morphProgress > 0.01;
             }
         }
@@ -683,6 +647,7 @@
             return registerMorphTarget(mesh);
         }
 
+        // 红色轮廓必须直接复用 GeoJSON 原始 ring 的直线边，不能用 CatmullRomCurve3 平滑，否则会和 earcut 填充边缘不重合。
         function makeOutlineTube(ring, z, radius, color, opacity = 1) {
             const clean = cleanRing(ring);
             if (clean.length < 2) return [];
@@ -802,6 +767,9 @@
             outlineGroup = new THREE.Group();
             labelGroup = new THREE.Group();
 
+            // 不再创建平面 oceanPlane。
+            // 原因：oceanPlane 不参与 Morph Target，平面切换到球体时会残留在球体中间形成一条横线并遮挡内容。
+            // 平面背景直接使用 CSS/scene.background；球体底壳用透明度随 morphProgress 渐入。
             oceanSphereMesh = new THREE.Mesh(
                 new THREE.SphereGeometry(SPHERE_RADIUS - 1.5, 96, 48),
                 new THREE.MeshBasicMaterial({
@@ -984,6 +952,7 @@
                 size * 0.5,
                 size * 0.5
             );
+            // 底部静态光晕：中心空心，环形区域有柔和亮度，再向外渐隐。
             gradient.addColorStop(0, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.22, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.36, 'rgba(140, 255, 210, 0.62)');
@@ -1009,6 +978,7 @@
                 material
             );
             disk.frustumCulled = false;
+            // 几乎贴着第二层陆地，避免明显缝隙
             disk.position.set(0, 0, pointAGlowOffset);
             return disk;
         }
@@ -1027,6 +997,7 @@
                 size * 0.5,
                 size * 0.5
             );
+            // 动态扩散波：中心空心，仅保留一圈更亮的波前。
             gradient.addColorStop(0, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.4, 'rgba(0, 255, 153, 0)');
             gradient.addColorStop(0.58, 'rgba(170, 255, 220, 0.8)');
@@ -1067,10 +1038,12 @@
                 blending: THREE.AdditiveBlending
             });
             const ring = new THREE.Mesh(
+                // 环本体做大一点，避免视觉上“看不到向上发射”
                 new THREE.RingGeometry(1.8, 2.15, 64),
                 material
             );
             ring.frustumCulled = false;
+            // RingGeometry 默认在本地 XY 平面；沿本地 z 推进即可与陆地法线保持一致。
             ring.position.set(0, 0, 0);
             return ring;
         }
@@ -1078,7 +1051,10 @@
         function addPointA() {
             pointAGroup = new THREE.Group();
 
+            // 平面模式：贴第二层陆地高度；球体模式：点位必须站在第二层陆地表面之上，而不是只用 surfaceOffset，否则会被凸起陆地遮挡。
             const flatAltitude = landHeight + POINT_A.surfaceOffset;
+            // 球体模式下第二层陆地面片本身也被抬到了 landHeight。
+            // 点位必须站在第二层陆地表面之上，而不是只用 surfaceOffset，否则会被凸起陆地遮挡。
             const sphereAltitude = landHeight + POINT_A.surfaceOffset;
             const flat = lonLatToPlane(POINT_A.lon, POINT_A.lat, flatAltitude);
             const sphere = lonLatToSphere(POINT_A.lon, POINT_A.lat, sphereAltitude);
@@ -1107,6 +1083,9 @@
             core.renderOrder = 420;
             pointAGroup.add(core);
 
+            // A 点光晕分两层：
+            // 1) glow-base: 静态空心底光
+            // 2) glow-wave: 仅向外扩散的动态波，不做回缩闪烁
             const glowBase = makePointGlowDisk();
             glowBase.name = 'pointA-glow-base';
             glowBase.scale.setScalar(pointAGlowScale);
@@ -1133,6 +1112,8 @@
             label.renderOrder = 430;
             pointAGroup.add(label);
 
+            // 平面模式下圆环本来就在 XY 平面上；球体模式下后续如果要严格贴切面，
+            // 应继续用 surface normal 构建局部坐标系。当前先确保 A 点位置贴在陆地面片高度上。
             pointAGroup.renderOrder = 430;
             mapGroup.add(pointAGroup);
         }
@@ -1140,6 +1121,7 @@
         function addPointB() {
             pointBGroup = new THREE.Group();
             const flatAltitude = landHeight + POINT_B.surfaceOffset;
+            // B 点同样必须高于球体模式的第二层陆地表面。
             const sphereAltitude = landHeight + POINT_B.surfaceOffset;
             const flat = lonLatToPlane(POINT_B.lon, POINT_B.lat, flatAltitude);
             const sphere = lonLatToSphere(POINT_B.lon, POINT_B.lat, sphereAltitude);
@@ -1174,6 +1156,7 @@
             pointCGroup = new THREE.Group();
 
             const flatAltitude = landHeight + POINT_C.surfaceOffset;
+            // C 点同样必须高于球体模式的第二层陆地表面。
             const sphereAltitude = landHeight + POINT_C.surfaceOffset;
             const flat = lonLatToPlane(POINT_C.lon, POINT_C.lat, flatAltitude);
             const sphere = lonLatToSphere(POINT_C.lon, POINT_C.lat, sphereAltitude);
@@ -1472,7 +1455,6 @@
         function updatePointGroupEffects(group, pointKey, frontVisible) {
             if (!group) return;
             const useSphereOcclusion = morphProgress > 0.35;
-            const hideDynamicEffects = viewMode === 'sphere' && isSphereUserInteracting;
             const core = group.getObjectByName(`${pointKey}-core`);
             const glowBase = group.getObjectByName(`${pointKey}-glow-base`);
             const glowWave = group.getObjectByName(`${pointKey}-glow-wave`);
@@ -1487,14 +1469,14 @@
                 label.scale.set(20 * pointASizeScale, 13 * pointASizeScale, 1);
             }
             if (glowBase) {
-                glowBase.visible = pointAGlowScale > 0 && frontVisible && !hideDynamicEffects;
+                glowBase.visible = pointAGlowScale > 0 && frontVisible;
                 glowBase.scale.setScalar(pointAGlowScale);
                 glowBase.position.z = useSphereOcclusion
                     ? SPHERE_EFFECT_SURFACE_OFFSET
                     : pointAGlowOffset;
             }
             if (glowWave) {
-                glowWave.visible = pointAGlowScale > 0 && frontVisible && !hideDynamicEffects;
+                glowWave.visible = pointAGlowScale > 0 && frontVisible;
                 const waveT = (performance.now() * 0.0007) % 1;
                 const waveScale = pointAGlowScale * (0.72 + waveT * 1.08);
                 glowWave.scale.setScalar(waveScale);
@@ -1506,7 +1488,7 @@
                 }
             }
 
-            const ringVisible = pointAGlowScale > 0 && frontVisible && !hideDynamicEffects;
+            const ringVisible = pointAGlowScale > 0 && frontVisible;
             for (let i = 0; i < POINT_A_RING_LAYER_COUNT; i += 1) {
                 const ring = group.getObjectByName(`${pointKey}-vring-${i}`);
                 if (!ring) continue;
@@ -1580,6 +1562,7 @@
             SAMPLE_COUNTRY_POINTS.forEach((item) => {
                 const group = new THREE.Group();
                 const flatAltitude = landHeight + 2.6;
+                // 示例发射点也必须位于第二层陆地凸起表面之上，否则球体模式会被 raisedLandGroup 深度遮挡。
                 const sphereAltitude = landHeight + 2.6;
                 const flatPos = lonLatToPlane(item.lon, item.lat, flatAltitude);
                 const spherePos = lonLatToSphere(item.lon, item.lat, sphereAltitude);
@@ -1595,6 +1578,7 @@
                 group.position.copy(flatPos.clone().lerp(spherePos, morphProgress));
                 group.quaternion.copy(flatQ).slerp(sphereQ, morphProgress);
 
+                // 与 A 点保持一致：仅保留空心底光 + 扩散波，不使用中心实心亮点。
                 const glowBase = makePointGlowDisk();
                 glowBase.name = 'emitter-glow-base';
                 glowBase.visible = false;
@@ -1702,13 +1686,13 @@
             const nextTargetMorph = nextMode === 'sphere' ? 1 : 0;
             if (Math.abs(nextTargetMorph - morphProgress) < 0.001) return;
             viewMode = nextMode;
-            isSphereUserInteracting = false;
             targetMorph = nextTargetMorph;
             morphStart = nextTargetMorph;
             morphEnd = nextTargetMorph;
             morphProgress = nextTargetMorph;
             morphStartTime = performance.now();
             if (viewMode === 'sphere') {
+                // 进入球体前保存当前平面位置和缩放，保证从球体切回平面时能恢复原位置。
                 savedFlatPanX = panX;
                 savedFlatPanY = panY;
                 savedFlatTargetPanX = targetPanX;
@@ -1732,6 +1716,7 @@
                 modeTitle.textContent = 'FLAT RAISED WORLD MAP';
                 setOptionalText(viewToggleLabel, '');
 
+                // 从球体回到平面时恢复切换前的平移和缩放状态。
                 panX = savedFlatPanX;
                 panY = savedFlatPanY;
                 targetPanX = savedFlatTargetPanX;
@@ -1744,6 +1729,7 @@
                 camera.position.set(0, 0, FLAT_FIXED_CAMERA_Z);
                 camera.lookAt(0, 0, 0);
             }
+            // 不再直接调用 refreshMap()，动画中处理
         }
 
         function updateTransitionMask() {
@@ -1883,6 +1869,8 @@
                 FLAT_MIN_TILT
             );
 
+            // 平面滚轮仍以视角切换为主，同时带一点轻微放大效果。
+            // 向下滚：低角度 + 轻微放大；向上滚：回正面 + 恢复原始大小。
             const zoomDelta = event.deltaY > 0 ? FLAT_ZOOM_STEP : -FLAT_ZOOM_STEP;
             targetZoom += zoomDelta;
         }, { passive: false });
@@ -1891,9 +1879,6 @@
             isDragging = true;
             lastPointerX = event.clientX;
             lastPointerY = event.clientY;
-            if (viewMode === 'sphere') {
-                isSphereUserInteracting = true;
-            }
             globeContainer.setPointerCapture(event.pointerId);
         });
 
@@ -1905,6 +1890,7 @@
             lastPointerY = event.clientY;
 
             if (viewMode === 'sphere') {
+                // 不直接改旋转角，拖动只改变目标角速度，形成阻尼惯性手感
                 sphereRotationTarget.y += deltaX * sphereDragSensitivity.x;
                 sphereRotationTarget.x += deltaY * sphereDragSensitivity.y;
                 return;
@@ -1916,7 +1902,6 @@
 
         globeContainer.addEventListener('pointerup', (event) => {
             isDragging = false;
-            isSphereUserInteracting = false;
             if (globeContainer.hasPointerCapture(event.pointerId)) {
                 globeContainer.releasePointerCapture(event.pointerId);
             }
@@ -1924,12 +1909,6 @@
 
         globeContainer.addEventListener('pointerleave', () => {
             isDragging = false;
-            isSphereUserInteracting = false;
-        });
-
-        globeContainer.addEventListener('pointercancel', () => {
-            isDragging = false;
-            isSphereUserInteracting = false;
         });
 
         window.addEventListener('resize', () => {
@@ -1951,7 +1930,7 @@
 
         function updateFlatBeamEffect() {
             if (!beamGroup || !beamRibbons.length) return;
-            const visible = beamEnabled && !(viewMode === 'sphere' && isSphereUserInteracting);
+            const visible = beamEnabled;
             beamGroup.visible = visible;
             if (!visible) {
                 sampleEmitters.forEach((emitter) => {
@@ -1995,6 +1974,7 @@
                     return;
                 }
                 const dist = start.distanceTo(end);
+                // 同一个国家/非常近距离不显示长光带，避免短线在点位附近乱跳。
                 if (dist < 20) {
                     mesh.visible = false;
                     return;
@@ -2073,9 +2053,6 @@
             panY += (targetPanY - panY) * 0.16;
             sphereCameraZ += (sphereTargetCameraZ - sphereCameraZ) * 0.14;
             sphereRotationVelocity.lerp(sphereRotationTarget, sphereRotationLerp);
-            if (viewMode === 'sphere' && !isSphereUserInteracting) {
-                sphereRotationY += sphereAutoRotateSpeed;
-            }
             sphereRotationY += sphereRotationVelocity.y;
             sphereRotationX += sphereRotationVelocity.x;
             sphereRotationX = THREE.MathUtils.clamp(sphereRotationX, -Math.PI, Math.PI);
@@ -2124,61 +2101,5 @@
 
         animate();
     </script>
-
-    <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
-        <div class="container mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-2">
-                        <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
-                    </div>
-                    <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
-                    <div class="flex space-x-4 mt-5">
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Products</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/products" class="hover:text-cyber-red">Fuxi SIEM</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Endpoint Security</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Network Security</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Cloud Security</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Solutions</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/solutions" class="hover:text-cyber-red">Ransomware Defense</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">Zero Trust</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">SOC Modernization</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">Compliance</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Company</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/company" class="hover:text-cyber-red">About Us</a></li>
-                        <li><a href="/company" class="hover:text-cyber-red">Careers</a></li>
-                        <li><a href="/blog" class="hover:text-cyber-red">News</a></li>
-                        <li><a href="/contact" class="hover:text-cyber-red">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-8 border-red-900/30">
-            <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
-                <p>© 2026 Fuxi Technology. All rights reserved.</p>
-                <div class="flex gap-6 mt-3 md:mt-0">
-                    <a href="/" class="hover:text-cyber-red">Privacy Policy</a>
-                    <a href="/" class="hover:text-cyber-red">Terms of Service</a>
-                    <a href="/" class="hover:text-cyber-red">Cookie Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
 </body>
 </html>
