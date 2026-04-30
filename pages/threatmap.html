@@ -1052,6 +1052,8 @@ async function safeInitGlobe() {
         const omega = Math.acos(dot);
         const sinOmega = Math.sin(omega);
 
+        // aProgress 略缩到 [0, 1-ε)，与彗星方案2.js 一致地配合 uHead∈[0,1)：避免开放弧上 vProgress=1 时 trailDist 被错误环绕
+        const progressScale = sampleCount > 1 ? 1.0 - 1e-4 : 1.0;
         for (let i = 0; i < sampleCount; i += 1) {
             const t = i / (sampleCount - 1);
             let pointDir;
@@ -1065,7 +1067,7 @@ async function safeInitGlobe() {
             const lift = Math.sin(Math.PI * t) * altitude;
             points.push({
                 position: pointDir.multiplyScalar(globeRadius + lift),
-                progress: t
+                progress: t * progressScale
             });
         }
 
@@ -1106,7 +1108,7 @@ async function safeInitGlobe() {
                 side = new window.THREE.Vector3().crossVectors(fallback, tangent).normalize();
             }
 
-            const width = maxWidth * Math.sin(Math.PI * t) * 0.32;
+            const width = maxWidth * Math.sin(Math.PI * t) * 0.3;
             const radiusAtPoint = current.length();
             const left = current.clone().addScaledVector(side, width).normalize().multiplyScalar(radiusAtPoint);
             const right = current.clone().addScaledVector(side, -width).normalize().multiplyScalar(radiusAtPoint);
@@ -1173,40 +1175,36 @@ async function safeInitGlobe() {
             },
             vertexShader: `
                 attribute float aProgress;
-
                 varying float vProgress;
                 varying float vAlpha;
-
                 void main() {
                     vProgress = aProgress;
                     vAlpha = sin(3.14159265 * aProgress);
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    gl_Position = projectionMatrix * mvPosition;
                 }
             `,
             fragmentShader: `
                 uniform vec3 uColor;
+                uniform float uBrightness;
                 uniform float uHead;
                 uniform float uTrail;
-                uniform float uBrightness;
                 uniform float uAlphaMul;
                 varying float vProgress;
                 varying float vAlpha;
-
                 void main() {
                     float centerBoost = pow(sin(3.14159265 * vProgress), 1.45);
                     float alphaProfile = clamp(vAlpha, 0.0, 1.0);
                     float trailDist = uHead - vProgress;
+                    // Open arc A->B: do not wrap (negative means ahead of head).
                     if (trailDist < 0.0) {
-                        trailDist += 1.0;
+                        trailDist = 1.0;
                     }
                     float trailMask = 1.0 - smoothstep(0.0, uTrail, trailDist);
                     float headGlow = exp(-trailDist * 24.0);
-                    float alpha = alphaProfile * max(trailMask, headGlow * 0.95) * uAlphaMul;
-                    if (alpha < 0.001) {
-                        discard;
-                    }
+                    float alpha = alphaProfile * max(trailMask, headGlow * 0.95);
                     vec3 color = uColor * (0.35 + uBrightness * (centerBoost * trailMask + headGlow));
-                    gl_FragColor = vec4(color, alpha);
+                    gl_FragColor = vec4(color, alpha * uAlphaMul);
                 }
             `
         });
@@ -1224,19 +1222,17 @@ async function safeInitGlobe() {
      * 5. buildTrailMaterial(...) 生成发光材质
      * 6. createEndpointRadiation(...) 创建起点/终点扩散特效
      *
-     * 最重要的控制点在这里：
-     * - sampleArcPoints(attack, 72, globeRadius * 1.005, globeRadius * 0.28)
-     *   72：线条平滑度
-     *   globeRadius * 1.005：线条基础半径，越大越浮在球外
-     *   globeRadius * 0.28：线条弧线高度，越大飞得越高
-     *
-     * - buildTrailGeometry(sampledPoints, globeRadius * 0.0105)
-     *   globeRadius * 0.0105：光带宽度
+     * 与 img/00/PageSelect/彗星方案2.js 对齐的主要参数：
+     * - 弧高 globeRadius*(2.8/9) 对应 FIXED_GLOBE_ARC_HEIGHT；带宽 globeRadius*(0.45/9) 与 maxWidth=0.45 比例一致；sin(pi*t)*0.3
+     * - attacks 可达上千条：每条彗尾都是独立 Shader 几何，全量会撑爆 WebGL/显存导致整页空白且无 JS 报错，故仅对前 MAX_GLOBE_RIBBON_TRAILS 条建球面彗尾（平面地图仍用全量 attacks）
      */
     function setupAttackTrails(scene) {
         const globeRadius = typeof globeInstance.getGlobeRadius === "function"
             ? globeInstance.getGlobeRadius()
             : 100;
+        const MAX_GLOBE_RIBBON_TRAILS = 160;
+        const RIBBON_ARC_SEGMENTS = 80;
+        const ribbonAttacks = attacks.slice(0, MAX_GLOBE_RIBBON_TRAILS);
         const trailGroup = new window.THREE.Group();
         trailGroup.name = "attack-trails";
         scene.add(trailGroup);
@@ -1248,19 +1244,17 @@ async function safeInitGlobe() {
         attackEffects.length = 0;
         console.info("[ThreatMap] Trail setup start:", {
             attackCount: attacks.length,
+            ribbonTrailCount: ribbonAttacks.length,
             globeRadius
         });
 
-        attacks.forEach((attack) => {
-            // 【彗星线条位置/弧度核心控制】
-            // 72：采样点数量，越大越平滑
-            // globeRadius * 1.005：轨迹基础半径，略大于球体半径，避免线条被地球表面遮住
-            // globeRadius * 0.28：轨迹最高弧度，越大线飞得越高，越小越贴球面
-            const sampledPoints = sampleArcPoints(attack, 42, globeRadius * 1.004, globeRadius * 0.045);
+        ribbonAttacks.forEach((attack) => {
+            // 与彗星方案2.js 球面模式：弧顶 2.8@R=9、轨迹层 1.004R；细分取 80 在效果与 WebGL 负载间折中（方案 UI 默认 120）
+            const arcHeightWorld = globeRadius * (2.8 / 9.0);
+            const sampledPoints = sampleArcPoints(attack, RIBBON_ARC_SEGMENTS, globeRadius * 1.004, arcHeightWorld);
 
-            // 【彗星线条宽度控制】
-            // globeRadius * 0.0105：光带最大宽度基础值，越大线越粗
-            const geometry = buildTrailGeometry(sampledPoints, globeRadius * 0.0065);
+            // maxWidth 与方案中 ui.maxWidth=0.45 相对 globeRadius=9 的比例一致
+            const geometry = buildTrailGeometry(sampledPoints, globeRadius * (0.45 / 9.0));
             const material = buildTrailMaterial(attack.color);
             const mesh = new window.THREE.Mesh(geometry, material);
             mesh.renderOrder = 9;
@@ -1289,8 +1283,8 @@ async function safeInitGlobe() {
                 center: Math.random(),
                 // 【彗星移动速度】数值越大，光带跑得越快
                 speed: 0.055 + Math.random() * 0.07,
-                // 【彗星尾巴长度】数值越大，尾巴越长
-                trailLength: 0.13 + Math.random() * 0.1,
+                // 与方案预设 trail≈0.18~0.28 及 FIXED_TRAIL_LENGTH_PERCENT=145（×1.45）一致
+                trailLength: (0.18 + Math.random() * 0.1) * 1.45,
                 activityOffset: Math.random(),
                 activitySpeed: 0.045 + Math.random() * 0.03,
                 activityDuty: 0.18 + Math.random() * 0.14
