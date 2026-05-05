@@ -15,11 +15,11 @@
             theme: {
                 extend: {
                     colors: {
-                        'cyber-red': '#ff0000',
-                        'dark-bg': '#050505',
-                        'card-bg': '#0a0a0a',
-                        'muted-text': '#b0b0b0',
-                        'border-glow': 'rgba(255, 0, 0, 0.2)',
+                        'cyber-red': '#e63d3d',
+                        'dark-bg': '#070505',
+                        'card-bg': '#0f0a0a',
+                        'muted-text': '#b9aeae',
+                        'border-glow': 'rgba(230, 61, 61, 0.28)',
                     },
                     animation: {
                         'fade-up': 'fadeUp 0.8s ease-out forwards',
@@ -31,8 +31,8 @@
                             '100%': { opacity: '1', transform: 'translateY(0)' },
                         },
                         pulseGlow: {
-                            '0%, 100%': { textShadow: '0 0 5px rgba(255,0,0,0.3)' },
-                            '50%': { textShadow: '0 0 20px rgba(255,0,0,0.7)' },
+                            '0%, 100%': { textShadow: '0 0 5px rgba(230,61,61,0.35)' },
+                            '50%': { textShadow: '0 0 20px rgba(230,61,61,0.65)' },
                         }
                     }
                 }
@@ -43,50 +43,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/nav-baseline.css">
     <link rel="stylesheet" href="../css/site-nav.css">
+    <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
     <style>
-        :root {
-            --color-cyber-red: #ff0000;
-            --color-dark-bg: #050505;
-            --color-card-bg: #0a0a0a;
-            --color-muted-text: #b0b0b0;
-        }
-        .text-cyber-red {
-            color: var(--color-cyber-red);
-        }
-        .hover\:text-cyber-red:hover {
-            color: var(--color-cyber-red);
-        }
-        .bg-cyber-red {
-            background-color: var(--color-cyber-red);
-        }
-        .bg-dark-bg {
-            background-color: var(--color-dark-bg);
-        }
-        .text-muted-text {
-            color: var(--color-muted-text);
-        }
-        .font-sans {
-            font-family: 'Google Sans Flex', system-ui, 'Segoe UI', sans-serif;
-        }
-        /* custom utility for smooth scroll & video overlay */
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            background-color: var(--color-dark-bg);
-        }
-        section {
-            border: 0;
-        }
-        section + section {
-            border-top: 1px solid rgb(127 29 29 / 0.3);
-        }
         .btn-primary {
             transition: all 0.2s ease;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(255,0,0,0.4);
+            box-shadow: 0 10px 24px -6px rgba(230, 61, 61, 0.45);
         }
         .animate-on-scroll {
             opacity: 0;
@@ -102,19 +66,19 @@
         }
         .contact-card:hover {
             transform: translateY(-5px);
-            border-color: rgba(255, 0, 0, 0.5);
-            box-shadow: 0 10px 25px -5px rgba(255, 0, 0, 0.2);
+            border-color: var(--color-border-hover);
+            box-shadow: 0 10px 25px -5px rgba(230, 61, 61, 0.22);
         }
         .form-input {
-            background-color: #0a0a0a;
+            background-color: var(--color-card-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             transition: all 0.2s ease;
         }
         .form-input:focus {
             outline: none;
-            border-color: rgba(255, 0, 0, 0.5);
-            box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2);
+            border-color: var(--color-border-hover);
+            box-shadow: 0 0 0 2px rgba(230, 61, 61, 0.22);
         }
         .form-input.is-invalid {
             border-color: #dc3545 !important;
@@ -124,28 +88,28 @@
            Borders use explicit colors here because this build's tailwind.css omits border-gray-700,
            so Preflight's `*, ::before, ::after { border-color: #e5e7eb }` would otherwise win. */
         .country-select-dropdown {
-            background-color: #0a0a0a;
+            background-color: var(--color-card-bg);
             box-sizing: border-box;
             width: 100%;
             border: 1px solid #374151;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.95);
         }
         .country-select-dropdown .country-select-search-wrap {
-            background-color: #0a0a0a;
+            background-color: var(--color-card-bg);
             border-bottom: 1px solid #374151;
         }
         .country-select-list {
             max-height: calc(5 * 3rem);
             overflow-y: auto;
-            background-color: #0a0a0a;
-            scrollbar-color: #52525b #0a0a0a;
+            background-color: var(--color-card-bg);
+            scrollbar-color: #52525b var(--color-card-bg);
             scrollbar-width: thin;
         }
         .country-select-list::-webkit-scrollbar {
             width: 8px;
         }
         .country-select-list::-webkit-scrollbar-track {
-            background: #0a0a0a;
+            background: var(--color-card-bg);
         }
         .country-select-list::-webkit-scrollbar-thumb {
             background: #52525b;
@@ -157,7 +121,7 @@
         .map-container {
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(255, 0, 0, 0.2);
+            border: 1px solid var(--color-border-subtle);
             position: relative;
             min-height: 400px;
             height: 100%;
@@ -174,8 +138,8 @@
         .contact-icon {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(255,0,0,0.05));
-            border: 1px solid rgba(255,0,0,0.2);
+            background: linear-gradient(135deg, rgba(230, 61, 61, 0.12), rgba(230, 61, 61, 0.05));
+            border: 1px solid var(--color-border-subtle);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -288,7 +252,7 @@
         }
     </style>
 </head>
-<body class="font-sans text-white">
+<body class="font-sans text-white bg-dark-bg">
 
     <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
@@ -364,7 +328,7 @@
 
                 <!-- Middle Column: Contact Information -->
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.1s;">
-                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 h-full contact-card contact-scroll-card">
+                    <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 h-full contact-card contact-scroll-card">
                         <h2 class="text-2xl font-bold mb-8">Contact Information</h2>
 
                         <!-- Phone -->
@@ -402,7 +366,7 @@
                         </div>
 
                         <!-- Business Hours -->
-                        <div class="mt-10 pt-8 border-t border-red-900/30">
+                        <div class="mt-10 pt-8 border-t border-theme-subtle">
                             <h3 class="font-semibold text-lg mb-4">Business Hours</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between">
@@ -424,7 +388,7 @@
 
                 <!-- Right Column: Contact Form -->
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.2s;">
-                    <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 h-full contact-card contact-scroll-card">
+                    <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 h-full contact-card contact-scroll-card">
                         <h2 class="text-2xl font-bold mb-8">Send us a Message</h2>
 
                         <form id="contactForm" class="space-y-6">
@@ -537,7 +501,7 @@
                             <button
                                 type="submit"
                                 id="submitBtn"
-                                class="w-full bg-cyber-red hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all btn-primary">
+                                class="w-full bg-cyber-red hover:bg-accent-deep text-white font-semibold py-3 px-4 rounded-lg transition-all btn-primary">
                                 Send Message
                             </button>
 
@@ -552,7 +516,7 @@
     </main>
 
     <!-- Footer (Tailwind only) -->
-    <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
+    <footer class="bg-dark-bg relative py-12 px-5">
         <div class="container mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
                 <div class="md:col-span-2">
@@ -595,7 +559,7 @@
                     </ul>
                 </div>
             </div>
-            <hr class="my-8 border-red-900/30">
+            <hr class="my-8 hr-theme" aria-hidden="true">
             <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
                 <p>© 2026 Fuxi Technology. All rights reserved.</p>
                 <div class="flex gap-6 mt-3 md:mt-0">
