@@ -45,6 +45,16 @@
     <link rel="stylesheet" href="../css/site-nav.css">
     <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
     <style>
+        /* Editorial layout + card chrome inspired by scroll-carousel reference (typography rhythm, 8:5 media, CTA pills) */
+        .blog-page {
+            --blog-space: 1.5rem;
+            --blog-media-aspect: 8 / 5;
+            --blog-media-aspect-sm: 4 / 3;
+            --blog-card-radius: 0.875rem;
+            --blog-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+            --blog-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
         .btn-primary {
             transition: all 0.2s ease;
         }
@@ -52,38 +62,217 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 24px -6px rgba(230, 61, 61, 0.45);
         }
+
         .read-more-arrow {
-            transition: transform 0.2s ease;
+            transition: transform 0.25s var(--blog-ease-out);
         }
         .group:hover .read-more-arrow {
             transform: translateX(5px);
         }
+
+        .blog-hero {
+            position: relative;
+            overflow: hidden;
+        }
+        .blog-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 120% 80% at 50% -20%, rgba(230, 61, 61, 0.14), transparent 55%),
+                radial-gradient(ellipse 70% 50% at 100% 40%, rgba(179, 36, 36, 0.08), transparent 50%);
+        }
+        .blog-hero .container {
+            position: relative;
+            z-index: 1;
+        }
+        .blog-hero-kicker {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(185, 174, 174, 0.92);
+            margin-bottom: 1rem;
+        }
+        .blog-hero h1 {
+            text-wrap: balance;
+            letter-spacing: -0.02em;
+        }
+        .blog-hero p.text-muted-text {
+            text-wrap: pretty;
+            letter-spacing: 0.02em;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 2rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: rgba(12, 8, 8, 0.65);
+            color: #a89898;
+            border-color: rgba(230, 61, 61, 0.22);
+            transition: background-color 0.2s var(--blog-ease-soft), color 0.2s var(--blog-ease-soft), border-color 0.2s var(--blog-ease-soft), transform 0.2s var(--blog-ease-soft), box-shadow 0.2s var(--blog-ease-soft);
+        }
+        .category-badge:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 122, 110, 0.35);
+            box-shadow: 0 6px 20px -8px rgba(230, 61, 61, 0.35);
+        }
+        .category-badge.is-active {
+            background-color: rgba(230, 61, 61, 0.22);
+            color: #ff8a80;
+            border-color: rgba(255, 122, 110, 0.45);
+        }
+
+        .blog-grid {
+            perspective: 1400px;
+        }
+
+        .blog-card {
+            --blog-card-bg: linear-gradient(165deg, rgba(22, 14, 14, 0.98) 0%, rgba(12, 8, 8, 1) 48%, rgba(8, 5, 5, 1) 100%);
+            background: var(--blog-card-bg);
+            border-radius: var(--blog-card-radius);
+            transform-style: preserve-3d;
+            transition:
+                transform 0.45s var(--blog-ease-out),
+                border-color 0.35s var(--blog-ease-soft),
+                box-shadow 0.45s var(--blog-ease-out);
+            box-shadow:
+                0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+                0 1px 0 rgba(255, 255, 255, 0.04) inset,
+                0 18px 40px -28px rgba(0, 0, 0, 0.85);
+        }
+        .blog-card:hover {
+            transform: translateY(-6px) rotateX(2deg);
+            border-color: var(--color-border-hover);
+            box-shadow:
+                0 0 0 1px rgba(230, 61, 61, 0.12) inset,
+                0 1px 0 rgba(255, 255, 255, 0.06) inset,
+                0 24px 48px -20px rgba(230, 61, 61, 0.2),
+                0 28px 56px -24px rgba(0, 0, 0, 0.9);
+        }
+
+        .blog-card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: var(--blog-media-aspect);
+            overflow: hidden;
+            background: #1a1010;
+            border-radius: var(--blog-card-radius) var(--blog-card-radius) 0 0;
+        }
+        .blog-card-media::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(to top, rgba(7, 5, 5, 0.55) 0%, transparent 42%);
+            opacity: 0.85;
+            transition: opacity 0.4s var(--blog-ease-out);
+        }
+        .blog-card:hover .blog-card-media::after {
+            opacity: 0.65;
+        }
+        .blog-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 50% 50%;
+            transform: scale(1.02);
+            transition: transform 0.65s var(--blog-ease-out);
+        }
+        .blog-card:hover .blog-card-media img {
+            transform: scale(1.06);
+        }
+
+        .blog-card-body {
+            position: relative;
+            padding: var(--blog-space);
+        }
+        .blog-card-body h3 {
+            letter-spacing: -0.015em;
+            line-height: 1.25;
+        }
+        .blog-card-body p {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            overflow: hidden;
+            letter-spacing: 0.02em;
+        }
+
+        /* CTA row — reference cta-button: bordered pill, invert on hover */
+        .blog-card-cta {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 1.25rem;
+            padding: 0.3rem 0.55rem 0.3rem 0.65rem;
+            min-height: 2rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(255, 200, 196, 0.95);
+            text-decoration: none;
+            border: 1px solid rgba(230, 61, 61, 0.42);
+            background: rgba(230, 61, 61, 0.1);
+            border-radius: 0.25rem;
+            transition: background-color 0.2s var(--blog-ease-soft), color 0.2s var(--blog-ease-soft), border-color 0.2s var(--blog-ease-soft), box-shadow 0.25s var(--blog-ease-out);
+        }
+        .blog-card-cta:hover {
+            color: #0a0606;
+            background: rgba(255, 138, 128, 0.95);
+            border-color: rgba(255, 180, 170, 0.95);
+            box-shadow: 0 8px 24px -10px rgba(230, 61, 61, 0.55);
+        }
+        .blog-card-cta:focus-visible {
+            outline: 2px solid rgba(255, 138, 128, 0.9);
+            outline-offset: 2px;
+        }
+
         .animate-on-scroll {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            transform: translate3d(0, 28px, 0);
+            transition: opacity 0.85s var(--blog-ease-soft), transform 0.85s var(--blog-ease-soft);
+            will-change: opacity, transform;
         }
         .animate-on-scroll.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translate3d(0, 0, 0);
+            will-change: auto;
         }
-        .category-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+
+        @media (max-width: 51.25em) {
+            .blog-card-media {
+                aspect-ratio: var(--blog-media-aspect-sm);
+            }
         }
-        .blog-card {
-            transition: all 0.3s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+            .blog-card,
+            .blog-card-media img,
+            .category-badge,
+            .animate-on-scroll {
+                transition-duration: 0.01ms !important;
+            }
+            .blog-card:hover {
+                transform: translateY(-4px);
+            }
+            .animate-on-scroll {
+                transform: none;
+                opacity: 1;
+            }
         }
-        .blog-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--color-border-hover);
-            box-shadow: 0 10px 25px -5px rgba(230, 61, 61, 0.22);
-        }
+
         @media (min-width: 1024px) {
             .blog-above-fold {
                 min-height: calc(100vh - 4rem);
@@ -114,10 +303,11 @@
             .blog-grid-section-secondary {
                 padding-top: 1.5rem;
             }
-            .blog-grid .blog-card-primary .relative {
-                height: 10.5rem;
+            .blog-grid .blog-card-primary .blog-card-media {
+                min-height: 10.5rem;
+                aspect-ratio: var(--blog-media-aspect);
             }
-            .blog-grid .blog-card-primary .p-6 {
+            .blog-grid .blog-card-primary .blog-card-body {
                 padding: 1rem;
             }
             .blog-grid .blog-card-primary h3 {
@@ -128,13 +318,13 @@
                 margin-top: 0.5rem;
                 line-height: 1.45;
             }
-            .blog-grid .blog-card-primary a {
+            .blog-grid .blog-card-primary .blog-card-cta {
                 margin-top: 0.75rem;
             }
         }
     </style>
 </head>
-<body class="font-sans text-white bg-dark-bg">
+<body class="font-sans text-white bg-dark-bg blog-page">
 
     <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
@@ -178,6 +368,7 @@
         <section class="pt-32 pb-16 px-5 bg-gradient-to-b from-dark-bg to-black blog-hero">
             <div class="container mx-auto text-center">
                 <div class="animate-[fadeUp_0.8s_ease-out]">
+                    <p class="blog-hero-kicker">Fuxi Labs · Newsletters</p>
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
                         Fuxi <span class="text-cyber-red">Threat Research</span> & Insights
                     </h1>
@@ -185,13 +376,13 @@
                         Latest threat intelligence, SOC strategies, and product news from Fuxi Labs.
                     </p>
                     <div class="mt-10 flex flex-wrap justify-center gap-3">
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">All Posts</button>
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">Threat Research</button>
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">Events</button>
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">Whitepaper</button>
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">Technology</button>
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">Education</button>
-                        <button class="category-badge bg-cyber-red/20 text-cyber-red border border-theme-subtle">Threat Alert</button>
+                        <button type="button" class="category-badge is-active border border-theme-subtle" data-blog-category="All">All Posts</button>
+                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Threat Research">Threat Research</button>
+                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Events">Events</button>
+                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Whitepaper">Whitepaper</button>
+                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Technology">Technology</button>
+                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Education">Education</button>
+                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Threat Alert">Threat Alert</button>
                     </div>
                 </div>
             </div>
@@ -202,49 +393,49 @@
             <div class="container mx-auto">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 blog-grid">
                 <!-- Blog Card 1: Threat Research -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden blog-card blog-card-primary animate-on-scroll">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="AI-Driven Threat Hunting" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card blog-card-primary group animate-on-scroll" data-blog-category="Threat Research">
+                    <div class="blog-card-media">
+                        <img src="/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="AI-Driven Threat Hunting">
                     </div>
-                    <div class="p-6">
+                    <div class="blog-card-body">
                         <h3 class="text-xl font-bold">AI-Driven Threat Hunting</h3>
                         <p class="text-muted-text mt-3 text-sm leading-relaxed">
                             How our new correlation engine reduces alert fatigue by 60% using behavioral baselining.
                         </p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-5 group">
-                            Read Report <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i>
+                        <a href="/" class="blog-card-cta">
+                            Read Report <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Blog Card 2: Events -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden blog-card blog-card-primary animate-on-scroll" style="transition-delay: 0.1s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="Fuxi at CyberSec 2026" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card blog-card-primary group animate-on-scroll" style="transition-delay: 0.1s;" data-blog-category="Events">
+                    <div class="blog-card-media">
+                        <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="Fuxi at CyberSec 2026">
                     </div>
-                    <div class="p-6">
+                    <div class="blog-card-body">
                         <h3 class="text-xl font-bold">Fuxi at CyberSec 2026</h3>
                         <p class="text-muted-text mt-3 text-sm leading-relaxed">
                             Join our experts in Shenzhen for live demos of the new portable SIEM appliance.
                         </p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-5 group">
-                            Event Details <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i>
+                        <a href="/" class="blog-card-cta">
+                            Event Details <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Blog Card 3: Whitepaper -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden blog-card blog-card-primary animate-on-scroll" style="transition-delay: 0.2s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/960x0.jpg" alt="The Portable SOC Guide" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card blog-card-primary group animate-on-scroll" style="transition-delay: 0.2s;" data-blog-category="Whitepaper">
+                    <div class="blog-card-media">
+                        <img src="/img/960x0.jpg" alt="The Portable SOC Guide">
                     </div>
-                    <div class="p-6">
+                    <div class="blog-card-body">
                         <h3 class="text-xl font-bold">The Portable SOC Guide</h3>
                         <p class="text-muted-text mt-3 text-sm leading-relaxed">
                             Best practices for deploying rapid-response security kits in remote locations.
                         </p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-5 group">
-                            Download Guide <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i>
+                        <a href="/" class="blog-card-cta">
+                            Download Guide <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -258,49 +449,49 @@
         <div class="container mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 blog-grid">
                 <!-- Blog Card 4: Technology -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.3s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="The Future of AI in Cyber Defense" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card group animate-on-scroll" style="transition-delay: 0.3s;" data-blog-category="Technology">
+                    <div class="blog-card-media">
+                        <img src="/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="The Future of AI in Cyber Defense">
                     </div>
-                    <div class="p-6">
+                    <div class="blog-card-body">
                         <h3 class="text-xl font-bold">The Future of AI in Cyber Defense</h3>
                         <p class="text-muted-text mt-3 text-sm leading-relaxed">
                             Predictive analytics are changing how we defend against zero-day exploits.
                         </p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-5 group">
-                            Read Article <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i>
+                        <a href="/" class="blog-card-cta">
+                            Read Article <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Blog Card 5: Education -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.4s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/computer-science-degree.jpg" alt="Closing the Skills Gap" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card group animate-on-scroll" style="transition-delay: 0.4s;" data-blog-category="Education">
+                    <div class="blog-card-media">
+                        <img src="/img/computer-science-degree.jpg" alt="Closing the Skills Gap">
                     </div>
-                    <div class="p-6">
+                    <div class="blog-card-body">
                         <h3 class="text-xl font-bold">Closing the Skills Gap</h3>
                         <p class="text-muted-text mt-3 text-sm leading-relaxed">
                             How Fuxi's training mode helps junior analysts become threat hunters faster.
                         </p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-5 group">
-                            Learn More <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i>
+                        <a href="/" class="blog-card-cta">
+                            Learn More <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Blog Card 6: Threat Alert -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden blog-card animate-on-scroll" style="transition-delay: 0.5s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="2026 Ransomware Trends" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card group animate-on-scroll" style="transition-delay: 0.5s;" data-blog-category="Threat Alert">
+                    <div class="blog-card-media">
+                        <img src="/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="2026 Ransomware Trends">
                     </div>
-                    <div class="p-6">
+                    <div class="blog-card-body">
                         <h3 class="text-xl font-bold">2026 Ransomware Trends</h3>
                         <p class="text-muted-text mt-3 text-sm leading-relaxed">
                             New double-extortion tactics targeting critical infrastructure in Asia.
                         </p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-5 group">
-                            Read Analysis <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i>
+                        <a href="/" class="blog-card-cta">
+                            Read Analysis <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -398,47 +589,32 @@
             });
         });
 
-        // Category filter functionality
-        const categoryButtons = document.querySelectorAll('.category-badge');
-        const blogCards = document.querySelectorAll('.blog-card');
+        // Category filter (uses data-blog-category on cards and buttons)
+        const categoryButtons = document.querySelectorAll('.category-badge[data-blog-category]');
+        const blogCards = document.querySelectorAll('.blog-card[data-blog-category]');
 
         categoryButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all buttons
-                categoryButtons.forEach(btn => {
-                    btn.classList.remove('bg-cyber-red/20', 'text-cyber-red', 'border-cyber-red/30');
-                    btn.classList.add('bg-opacity-20', 'border-opacity-30');
-                });
+                categoryButtons.forEach(btn => btn.classList.remove('is-active'));
+                button.classList.add('is-active');
 
-                // Add active class to clicked button
-                button.classList.remove('bg-opacity-20', 'border-opacity-30');
-                button.classList.add('bg-cyber-red/20', 'text-cyber-red', 'border-cyber-red/30');
+                const selected = button.getAttribute('data-blog-category') || 'All';
 
-                const selectedCategory = button.textContent.trim();
-
-                // Filter blog cards
                 blogCards.forEach(card => {
-                    if (selectedCategory === 'All Posts') {
-                        card.style.display = 'block';
-                        setTimeout(() => {
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, 10);
+                    const cat = card.getAttribute('data-blog-category') || '';
+                    const match = selected === 'All' || cat === selected;
+                    if (match) {
+                        card.style.removeProperty('display');
+                        requestAnimationFrame(() => {
+                            card.style.removeProperty('opacity');
+                            card.style.removeProperty('transform');
+                        });
                     } else {
-                        const cardCategory = card.querySelector('.category-badge').textContent.trim();
-                        if (cardCategory === selectedCategory) {
-                            card.style.display = 'block';
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            }, 10);
-                        } else {
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(20px)';
-                            setTimeout(() => {
-                                card.style.display = 'none';
-                            }, 300);
-                        }
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(12px)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 280);
                     }
                 });
             });

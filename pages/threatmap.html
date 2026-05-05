@@ -38,7 +38,7 @@
             top: 10px;
             left: 10px;
             background: rgba(0, 0, 0, 0.7);
-            color: #00ff00;
+            color: #ff0000;
             font-family: Consolas, Monaco, monospace;
             font-size: 12px;
             padding: 12px;
@@ -46,7 +46,7 @@
             z-index: 9999;
             min-width: 240px;
             line-height: 1.55;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.25);
+            box-shadow: 0 0 10px rgb(255, 0, 0);
         }
 
         .control-panel {
@@ -55,21 +55,21 @@
             top: 10px;
             width: 300px;
             background: rgba(0, 0, 0, 0.72);
-            color: #e8f7ff;
+            color: #ff0000;
             font-family: Consolas, Monaco, "Microsoft YaHei", sans-serif;
             font-size: 13px;
             padding: 12px;
             border-radius: 6px;
             z-index: 9999;
-            border: 1px solid rgba(0, 170, 255, 0.35);
-            box-shadow: 0 0 12px rgba(0, 170, 255, 0.25);
+            border: 1px solid rgb(255, 0, 0);
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.999);
             line-height: 1.6;
         }
 
         .control-panel label {
             display: block;
             margin-bottom: 6px;
-            color: #9bdcff;
+            color: #ff0000f1;
         }
 
         .control-panel input[type="range"] {
@@ -106,45 +106,72 @@
             pointer-events: none;
         }
 
-        .view-toggle-btn {
+        #map_controls_buttons {
             position: fixed;
-            left: 50%;
-            top: 48px;
-            transform: translateX(-50%);
-            z-index: 9999;
-            border: 1px solid rgba(230, 61, 61, 0.72);
-            background: rgba(0, 0, 0, 0.76);
-            color: var(--color-accent-bright);
-            font-family: Consolas, Monaco, "Microsoft YaHei", sans-serif;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            padding: 8px 14px;
-            border-radius: 999px;
-            cursor: pointer;
-            box-shadow: 0 0 14px rgba(230, 61, 61, 0.45);
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            margin: 0;
+            padding: 0;
             list-style: none;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            width: 40px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .view-toggle-btn:hover {
-            color: #ffffff;
-            border-color: var(--color-accent-bright);
-            box-shadow: 0 0 22px rgba(230, 61, 61, 0.55);
+        #map_controls_buttons > li {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #1a241e;
+            color: #ff0000;
+            cursor: pointer;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 0, 0, 0.992);
         }
+
+        #map_controls_buttons > li:last-child {
+            border-bottom: none;
+        }
+
+     
 
         .map_control_button {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             display: block;
             flex: 0 0 auto;
+            pointer-events: none;
         }
 
         .map_control_button_label_right {
+            position: absolute;
+            right: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%);
             white-space: nowrap;
-            line-height: 1;
+            line-height: 1.2;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #e8f0ea;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        #map_controls_buttons > li:hover .map_control_button_label_right {
+            opacity: 1;
         }
 
         #transitionMask {
@@ -190,18 +217,36 @@
             <a href="/contact" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
     </nav>
+    <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+        <defs>
+            <symbol id="map-globe" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+                <path d="M3.5 12h17" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+                <path d="M12 3.5a13.5 13.5 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+                <path d="M12 3.5a13.5 13.5 0 0 0 0 17" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+            </symbol>
+            <symbol id="map-plane" viewBox="0 0 24 24">
+                <rect x="6" y="7" width="9" height="9" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"></rect>
+                <rect x="9" y="4" width="9" height="9" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"></rect>
+            </symbol>
+        </defs>
+    </svg>
     <div id="globeViz"></div>
-    <li id="viewToggleBtn" class="view-toggle-btn" data-element-id="map-controls-view-toggle">
-        <svg class="map_control_button" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
-            <path d="M3.5 12h17" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-            <path d="M12 3.5a13.5 13.5 0 0 1 0 17" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-            <path d="M12 3.5a13.5 13.5 0 0 0 0 17" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-        </svg>
-        <div id="viewToggleLabel" class="map_control_button_label_right"></div>
-    </li>
+    <ul id="map_controls_buttons" data-element-id="map-controls-block">
+        <li id="map_control_type_globe" data-element-id="map-controls-view-toggle" style="display: flex;">
+            <svg class="map_control_button" viewBox="0 0 24 24" aria-hidden="true">
+                <use href="#map-globe"></use>
+            </svg>
+            <div class="map_control_button_label_right">Switch to Globe view</div>
+        </li>
+        <li id="map_control_type_plane" data-element-id="map-controls-view-toggle" style="display: none;">
+            <svg class="map_control_button" viewBox="0 0 24 24" aria-hidden="true">
+                <use href="#map-plane"></use>
+            </svg>
+            <div class="map_control_button_label_right">Switch to Plane view</div>
+        </li>
+    </ul>
     <div id="transitionMask"></div>
-
     <script src="/js/vendor/three.min.js"></script>
     <script src="/js/vendor/earcut.min.js"></script>
     <script>
@@ -233,8 +278,8 @@
         const beamBrightnessValue = document.getElementById('beamBrightnessValue');
         const beamWidthSlider = document.getElementById('beamWidthSlider');
         const beamWidthValue = document.getElementById('beamWidthValue');
-        const viewToggleBtn = document.getElementById('viewToggleBtn');
-        const viewToggleLabel = document.getElementById('viewToggleLabel');
+        const mapControlTypeGlobe = document.getElementById('map_control_type_globe');
+        const mapControlTypePlane = document.getElementById('map_control_type_plane');
         const modeTitle = document.querySelector('.mode-title');
         const transitionMask = document.getElementById('transitionMask');
 
@@ -1724,7 +1769,6 @@
                 savedFlatTargetTilt = targetFlatTilt;
 
                 modeTitle.textContent = 'RAISED WORLD MAP · SPHERE VIEW';
-                setOptionalText(viewToggleLabel, '');
                 targetZoom = 1;
                 zoom = 1;
                 panX = 0;
@@ -1735,7 +1779,6 @@
                 sphereTargetCameraZ = sphereCameraZ;
             } else {
                 modeTitle.textContent = 'FLAT RAISED WORLD MAP';
-                setOptionalText(viewToggleLabel, '');
 
                 panX = savedFlatPanX;
                 panY = savedFlatPanY;
@@ -1748,6 +1791,16 @@
 
                 camera.position.set(0, 0, FLAT_FIXED_CAMERA_Z);
                 camera.lookAt(0, 0, 0);
+            }
+            updateMapControlViewButtons();
+        }
+
+        function updateMapControlViewButtons() {
+            if (mapControlTypeGlobe) {
+                mapControlTypeGlobe.style.display = viewMode === 'flat' ? 'flex' : 'none';
+            }
+            if (mapControlTypePlane) {
+                mapControlTypePlane.style.display = viewMode === 'sphere' ? 'flex' : 'none';
             }
         }
 
@@ -1762,9 +1815,16 @@
             transitionMask.style.opacity = (0.88 * t).toFixed(3);
         }
 
-        viewToggleBtn.addEventListener('click', () => {
+        function onMapViewToggleClick() {
             setViewMode(viewMode === 'flat' ? 'sphere' : 'flat');
-        });
+        }
+        if (mapControlTypeGlobe) {
+            mapControlTypeGlobe.addEventListener('click', onMapViewToggleClick);
+        }
+        if (mapControlTypePlane) {
+            mapControlTypePlane.addEventListener('click', onMapViewToggleClick);
+        }
+        updateMapControlViewButtons();
 
         if (outlineSlider) {
             outlineSlider.addEventListener('input', () => {
