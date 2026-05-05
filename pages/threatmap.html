@@ -8,11 +8,15 @@
     <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="/img/logimg/image.png">
     <link rel="stylesheet" href="../css/vendor/tailwind.css">
-    <link rel="stylesheet" href="../css/vendor/inter-local.css">
+    <link rel="stylesheet" href="../css/vendor/google-sans-flex-local.css">
     <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
     <link rel="stylesheet" href="../css/nav-baseline.css">
     <link rel="stylesheet" href="../css/site-nav.css">
     <style>
+        .font-sans {
+            font-family: 'Google Sans Flex', system-ui, 'Segoe UI', sans-serif;
+        }
+
         html, body {
             margin: 0;
             padding: 0;
@@ -152,7 +156,7 @@
         }
     </style>
 </head>
-<body>
+<body class="font-sans">
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
@@ -165,7 +169,6 @@
                 <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Newsletters</a>
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
-
             </div>
             <div class="flex items-center gap-2 sm:gap-3">
                 <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
@@ -175,14 +178,15 @@
                 </button>
             </div>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
+        <!-- mobile menu (simple) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-theme-nav px-5 py-4 flex flex-col space-y-3">
             <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
             <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
             <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
             <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Newsletters</a>
             <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
             <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
-            <a href="/" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
+            <a href="/contact" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
     </nav>
     <div id="globeViz"></div>
