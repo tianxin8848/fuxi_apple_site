@@ -5,7 +5,7 @@
 .nav-blur {
     backdrop-filter: blur(12px);
     background-color: rgb(4, 0, 0);
-    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+    border-bottom: 1px solid rgb(255, 0, 0);
 }
 
 nav.nav-blur > .container {

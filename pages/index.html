@@ -12,10 +12,64 @@
     <!-- Custom Tailwind config override for modern dark/cyber theme -->
     <style>
         :root {
-            --color-cyber-red: #ff0000;
-            --color-dark-bg: #050505;
-            --color-card-bg: #0a0a0a;
-            --color-muted-text: #b0b0b0;
+            /* Red–black theme: one accent family (crimson/coral), no pure #f00 */
+            --color-accent: #e63d3d;
+            --color-accent-bright: #ff7a6e;
+            --color-accent-soft: #f08080;
+            --color-accent-deep: #b32424;
+            --color-accent-darker: #8b1a1a;
+            --color-cyber-red: var(--color-accent);
+
+            --color-dark-bg: #070505;
+            --color-card-bg: #0f0a0a;
+            --color-muted-text: #b9aeae;
+
+            --color-border-subtle: rgba(230, 61, 61, 0.32);
+            --color-border-hover: rgba(255, 122, 110, 0.55);
+            --color-border-nav: rgba(230, 61, 61, 0.45);
+            --color-icon-well: rgba(179, 36, 36, 0.22);
+
+            --section-divider-mid: rgba(255, 120, 110, 0.92);
+            --section-divider-side: rgba(230, 61, 61, 0.18);
+            --section-divider-glow: rgba(230, 61, 61, 0.28);
+        }
+
+        .border-theme-subtle {
+            border-color: var(--color-border-subtle);
+        }
+
+        .hover\:border-theme-accent:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        .hover\:border-theme-accent-soft:hover {
+            border-color: rgba(255, 122, 110, 0.42);
+        }
+
+        .border-theme-nav {
+            border-color: var(--color-border-nav);
+        }
+
+        .bg-accent-glow {
+            background-color: var(--color-icon-well);
+        }
+
+        .hr-theme {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--section-divider-side) 12%,
+                var(--section-divider-mid) 50%,
+                var(--section-divider-side) 88%,
+                transparent
+            );
+            box-shadow: 0 0 12px var(--section-divider-glow);
+        }
+
+        .hover\:bg-accent-deep:hover {
+            background-color: var(--color-accent-deep);
         }
 
         @keyframes fadeUp {
@@ -36,11 +90,11 @@
         }
 
         .border-cyber-red\/50 {
-            border-color: rgba(255, 0, 0, 0.5);
+            border-color: rgba(230, 61, 61, 0.48);
         }
 
         .hover\:border-cyber-red\/50:hover {
-            border-color: rgba(255, 0, 0, 0.5);
+            border-color: rgba(255, 122, 110, 0.55);
         }
 
         .bg-dark-bg {
@@ -70,7 +124,7 @@
             scroll-behavior: smooth;
         }
         body {
-            color: #f01d1d; /* Fallback text color when utility CSS fails */
+            color: #f4f0f0;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
             scrollbar-gutter: stable;
@@ -84,8 +138,49 @@
             content-visibility: visible;
             contain-intrinsic-size: auto;
         }
+        /* Clear red dividers between blocks: gradient line + soft glow */
         section + section {
-            border-top: 1px solid rgb(127 29 29 / 0.3); /* red-900/30 */
+            position: relative;
+            border-top: 0;
+        }
+        section + section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                var(--section-divider-side) 0%,
+                var(--section-divider-mid) 50%,
+                var(--section-divider-side) 100%
+            );
+            box-shadow: 0 0 16px var(--section-divider-glow), 0 1px 0 rgba(0, 0, 0, 0.35);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Footer top edge: same language as section dividers */
+        body > footer.bg-dark-bg {
+            position: relative;
+            border-top-width: 0;
+        }
+        body > footer.bg-dark-bg::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                var(--section-divider-side) 0%,
+                var(--section-divider-mid) 50%,
+                var(--section-divider-side) 100%
+            );
+            box-shadow: 0 0 16px var(--section-divider-glow);
+            pointer-events: none;
         }
         .hero-section {
             position: relative;
@@ -98,8 +193,8 @@
         }
         .stat-hover:hover {
             transform: translateY(-5px);
-            border-color: #ff0000;
-            box-shadow: 0 0 18px rgba(255,0,0,0.25);
+            border-color: var(--color-border-hover);
+            box-shadow: 0 0 22px rgba(230, 61, 61, 0.28);
         }
         .feature-img-hover:hover {
             transform: scale(1.03);
@@ -109,7 +204,7 @@
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(255,0,0,0.4);
+            box-shadow: 0 10px 24px -6px rgba(230, 61, 61, 0.45);
         }
         .nav-dropdown-backdrop {
             position: fixed;
@@ -276,7 +371,13 @@
             filter: blur(0);
         }
         .text-gradient-reveal {
-            background-image: linear-gradient(90deg, #ffffff 0%, #ff7a7a 45%, #ff0000 75%, #ffffff 100%);
+            background-image: linear-gradient(
+                90deg,
+                #ffffff 0%,
+                var(--color-accent-bright) 42%,
+                var(--color-accent) 72%,
+                #fff5f3 100%
+            );
             background-size: 250% auto;
             -webkit-background-clip: text;
             background-clip: text;
@@ -320,7 +421,7 @@
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
                 <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
                 <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
-                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Blog</a>
+                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Newsletters</a>
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
             </div>
@@ -333,11 +434,11 @@
             </div>
         </div>
         <!-- mobile menu (simple) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-red-900/40 px-5 py-4 flex flex-col space-y-3">
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-theme-nav px-5 py-4 flex flex-col space-y-3">
             <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
             <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
             <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
-            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Blog</a>
+            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Newsletters</a>
             <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
             <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
             <a href="/contact" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
@@ -379,13 +480,13 @@
             <div class="animate-[fadeUp_0.8s_ease-out]">
                 <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight">
                     <span class="text-reveal [--text-delay:50ms]">Explore the World's First</span>
-                    <span class="text-cyber-red text-reveal text-gradient-reveal block [--text-delay:220ms]">Portable SIEM Platform</span>
+                    <span class="text-cyber-red text-reveal text-gradient-reveal block [--text-delay:220ms]">Portable Multiple Layers Security Platform</span>
                 </h1>
                 <p class="text-base md:text-lg text-gray-200 mt-6 max-w-2xl mx-auto leading-relaxed text-reveal [--text-delay:380ms]">
                     A compact, lightweight Security Information Event Management (SIEM) solution that transforms global threat intelligence into local multiple-layers defence. By leveraging real-time data from diverse sources worldwide, it delivers high-fidelity log analysis and incident response capabilities—anywhere, anytime.
                 </p>
                 <div class="flex flex-wrap justify-center gap-4 mt-8 text-reveal [--text-delay:520ms]">
-                    <a href="/Contact" class="bg-cyber-red hover:bg-red-700 text-white px-7 py-3 rounded-md font-semibold text-base transition-all shadow-md btn-primary">Contact Us</a>
+                    <!-- <a href="/Contact" class="bg-cyber-red hover:bg-red-700 text-white px-7 py-3 rounded-md font-semibold text-base transition-all shadow-md btn-primary">Contact Us</a> -->
                     <a href="/" class="border border-white/60 hover:bg-white/10 text-white px-7 py-3 rounded-md font-semibold transition">Learn More</a>
                 </div>
             </div>
@@ -401,7 +502,7 @@
             </div>
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- card 1 -->
-                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden hover:border-theme-accent transition-all duration-300 group animate-on-scroll">
                     <img src="/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="threat detection" class="w-full h-56 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Advanced Threat Detection</h3>
@@ -410,7 +511,7 @@
                     </div>
                 </div>
                 <!-- card 2 -->
-                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden hover:border-theme-accent transition-all duration-300 group animate-on-scroll">
                     <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="cybersec event" class="w-full h-56 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Fuxi at CyberSec 2026</h3>
@@ -419,7 +520,7 @@
                     </div>
                 </div>
                 <!-- card 3 -->
-                <div class="bg-card-bg border border-red-900/30 rounded-xl overflow-hidden hover:border-cyber-red/50 transition-all duration-300 group animate-on-scroll">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl overflow-hidden hover:border-theme-accent transition-all duration-300 group animate-on-scroll">
                     <img src="/img/960x0.jpg" alt="portable guide" class="w-full h-56 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-bold">Portable Security Guide</h3>
@@ -438,18 +539,18 @@
                 <h2 class="text-3xl md:text-4xl font-bold">Explore <span class="text-cyber-red">Fuxi SIEM</span></h2>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-7 rounded-xl bg-card-bg border border-red-900/30 hover:border-cyber-red/40 transition animate-on-scroll">
-                    <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-shield-halved text-3xl text-cyber-red"></i></div>
+                <div class="text-center p-7 rounded-xl bg-card-bg border border-theme-subtle hover:border-theme-accent-soft transition animate-on-scroll">
+                    <div class="w-16 h-16 bg-accent-glow rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-shield-halved text-3xl text-cyber-red"></i></div>
                     <h3 class="text-xl font-bold">Endpoint & Email Protection</h3>
                     <p class="text-muted-text mt-3 text-sm">Harden laptops, servers, and mailboxes against ransomware, phishing, and zero-day threats.</p>
                 </div>
-                <div class="text-center p-7 rounded-xl bg-card-bg border border-red-900/30 hover:border-cyber-red/40 transition animate-on-scroll">
-                    <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-robot text-3xl text-cyber-red"></i></div>
+                <div class="text-center p-7 rounded-xl bg-card-bg border border-theme-subtle hover:border-theme-accent-soft transition animate-on-scroll">
+                    <div class="w-16 h-16 bg-accent-glow rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-robot text-3xl text-cyber-red"></i></div>
                     <h3 class="text-xl font-bold">AI-powered SOC Automation</h3>
                     <p class="text-muted-text mt-3 text-sm">Apply agentic AI across alerts, events, and tickets to cut response time and fatigue.</p>
                 </div>
-                <div class="text-center p-7 rounded-xl bg-card-bg border border-red-900/30 hover:border-cyber-red/40 transition animate-on-scroll">
-                    <div class="w-16 h-16 bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-network-wired text-3xl text-cyber-red"></i></div>
+                <div class="text-center p-7 rounded-xl bg-card-bg border border-theme-subtle hover:border-theme-accent-soft transition animate-on-scroll">
+                    <div class="w-16 h-16 bg-accent-glow rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-network-wired text-3xl text-cyber-red"></i></div>
                     <h3 class="text-xl font-bold">Secure LAN & Remote Sites</h3>
                     <p class="text-muted-text mt-3 text-sm">Converge LAN and security for branches, factories, and remote offices with one platform.</p>
                 </div>
@@ -461,14 +562,14 @@
     <section class="py-20 px-5 bg-dark-bg ">
         <div class="container mx-auto flex flex-col lg:flex-row items-center gap-12 ">
             <div class="lg:w-1/2 animate-on-scroll">
-                <div class="overflow-hidden rounded-2xl border border-red-900/30">
+                <div class="overflow-hidden rounded-2xl border border-theme-subtle">
                     <img src="/img/23_0127_ecd_ps-cyber_header_1600x600.png" alt="security team" class="w-full h-auto object-cover transition-transform duration-700 feature-img-hover">
                 </div>
             </div>
             <div class="lg:w-1/2 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Empowering Security Teams</h2>
                 <p class="text-muted-text text-lg mt-5 leading-relaxed">Whether you are a red teamer needing a portable rig or a blue teamer defending a remote site, Fuxi SIEM adapts to your needs. No complex cloud setup required—just plug and play.</p>
-                <a href="/" class="inline-block mt-8 bg-cyber-red px-6 py-2.5 rounded-md font-semibold hover:bg-red-700 transition">Learn More <i class="fas fa-chevron-right ml-2 text-xs"></i></a>
+                <a href="/" class="inline-block mt-8 bg-cyber-red px-6 py-2.5 rounded-md font-semibold hover:bg-accent-deep transition">Learn More <i class="fas fa-chevron-right ml-2 text-xs"></i></a>
             </div>
         </div>
     </section>
@@ -477,14 +578,14 @@
     <section class="py-20 px-5 bg-dark-bg">
         <div class="container mx-auto flex flex-col lg:flex-row-reverse items-center gap-12">
             <div class="lg:w-1/2 animate-on-scroll">
-                <div class="overflow-hidden rounded-2xl border border-red-900/30">
+                <div class="overflow-hidden rounded-2xl border border-theme-subtle">
                     <img src="/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="data viz" class="w-full h-auto object-cover feature-img-hover transition-transform duration-700">
                 </div>
             </div>
             <div class="lg:w-1/2 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Visualize Your Data</h2>
                 <p class="text-muted-text text-lg mt-5 leading-relaxed">Turn raw logs into actionable insights. Our visualization tools help you spot anomalies and trends at a glance, ensuring you never miss a critical security event.</p>
-                <a href="/" class="inline-block mt-8 bg-cyber-red px-6 py-2.5 rounded-md font-semibold hover:bg-red-700 transition">See Demo <i class="fas fa-chart-line ml-2"></i></a>
+                <a href="/" class="inline-block mt-8 bg-cyber-red px-6 py-2.5 rounded-md font-semibold hover:bg-accent-deep transition">See Demo <i class="fas fa-chart-line ml-2"></i></a>
             </div>
         </div>
     </section>
@@ -496,19 +597,19 @@
                 <h2 class="text-3xl md:text-4xl font-bold">Why Customers Choose <span class="text-cyber-red">Fuxi</span></h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
-                    <div class="text-4xl md:text-5xl font-black text-cyber-red">98%</div>
+                <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                    <div class="text-4xl md:text-5xl font-black text-cyber-red">100%</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Customer Satisfaction</div>
                 </div>
-                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">300+</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Deployments</div>
                 </div>
-                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">24x7</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Security Monitoring</div>
                 </div>
-                <div class="bg-card-bg border border-red-900/30 rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">10k+</div>
                     <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Protected Identities</div>
                 </div>
@@ -516,44 +617,10 @@
         </div>
     </section>
 
-    <!-- Upcoming Events -->
-    <section class="py-20 px-5 bg-dark-bg">
-        <div class="container mx-auto">
-            <div class="text-center mb-12 animate-on-scroll">
-                <h2 class="text-3xl md:text-4xl font-bold">Upcoming <span class="text-cyber-red">Events</span></h2>
-                <p class="text-muted-text mt-2">Meet the Fuxi team at leading cybersecurity conferences and community events.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-card-bg rounded-xl overflow-hidden border border-red-900/30 hover:border-cyber-red/40 transition group animate-on-scroll">
-                    <img src="/img/003-North-Zone-of-Qianhai-Shenzhen-Hong-Kong-Youth-Innovation-and-Entrepreneur-Hub-in-Shenzhen-by-L-A-Design-Group-960x720.jpg" class="h-52 w-full object-cover" alt="event">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold">CyberSec Shenzhen 2026</h3>
-                        <p class="text-muted-text text-sm mt-2">Live demos of Fuxi SIEM and sessions on portable SOC architectures.</p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Register Now <i class="fas fa-arrow-right ml-2 read-more-arrow text-xs"></i></a>
-                    </div>
-                </div>
-                <div class="bg-card-bg rounded-xl overflow-hidden border border-red-900/30 hover:border-cyber-red/40 transition group animate-on-scroll">
-                    <img src="/img/computer-science-degree.jpg" class="h-52 w-full object-cover" alt="workshop">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold">Fuxi SOC Modernization Workshop</h3>
-                        <p class="text-muted-text text-sm mt-2">Hands-on lab for security teams exploring AI analytics and log correlation.</p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Join Workshop <i class="fas fa-arrow-right ml-2 read-more-arrow text-xs"></i></a>
-                    </div>
-                </div>
-                <div class="bg-card-bg rounded-xl overflow-hidden border border-red-900/30 hover:border-cyber-red/40 transition group animate-on-scroll">
-                    <img src="/img/Advantages-and-Disadvantages-of-LAN-1024x576.jpg" class="h-52 w-full object-cover" alt="webinar">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold">Zero Trust and OT Security Webinar</h3>
-                        <p class="text-muted-text text-sm mt-2">Learn how to secure factories and remote sites with portable SIEM.</p>
-                        <a href="/" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Watch Webinar <i class="fas fa-arrow-right ml-2 read-more-arrow text-xs"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+
 
     <!-- Footer (Tailwind only) -->
-    <footer class="bg-dark-bg border-t border-red-900/30 py-12 px-5">
+    <footer class="bg-dark-bg relative py-12 px-5">
         <div class="container mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
                 <div class="md:col-span-2">
@@ -596,7 +663,7 @@
                     </ul>
                 </div>
             </div>
-                <hr class="my-8 border-red-900/30">
+                <hr class="my-8 hr-theme" aria-hidden="true">
             <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
                 <p>© 2026 Fuxi Technology. All rights reserved.</p>
                 <div class="flex gap-6 mt-3 md:mt-0">
