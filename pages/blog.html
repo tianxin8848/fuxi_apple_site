@@ -55,6 +55,15 @@
             --blog-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /*
+         * At least one full layout viewport: fixed nav does NOT shrink document flow, so subtracting
+         * nav height made main shorter than the visible window and let row 2 peek under the fold.
+         */
+        .blog-above-fold {
+            min-height: 100svh;
+            min-height: 100dvh;
+        }
+
         .btn-primary {
             transition: all 0.2s ease;
         }
@@ -275,8 +284,6 @@
 
         @media (min-width: 1024px) {
             .blog-above-fold {
-                min-height: calc(100vh - 4rem);
-                min-height: calc(100dvh - 4rem);
                 display: flex;
                 flex-direction: column;
             }
@@ -445,7 +452,7 @@
     </main>
 
     <!-- Blog Grid Section (Remaining cards) -->
-    <section class="py-16 px-5 bg-dark-bg blog-grid-section blog-grid-section-secondary">
+    <section class="py-16 px-5 bg-dark-bg blog-grid-section blog-grid-section-secondary border-t border-theme-subtle">
         <div class="container mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 blog-grid">
                 <!-- Blog Card 4: Technology -->
