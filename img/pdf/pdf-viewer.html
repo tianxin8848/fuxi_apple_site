@@ -1,56 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>PDF Viewer</title>
     <style>
-        * {
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
-        html, body {
-            width: 100%;
-            height: 100%;
-            background-color: #1f1f1f;
+
+        html {
+            background-color: #0a0a0a !important;
+            min-height: 100% !important;
         }
 
-        .pdf-container {
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #ff3b3b #1f1f1f;
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            background-color: #0a0a0a !important;
+            overflow: hidden !important;
+            background-image: none !important;
         }
 
-        .pdf-container::-webkit-scrollbar {
+        #pdf-container {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            overflow: auto !important;
+            scrollbar-width: thin !important;
+            scrollbar-color: #333 #0a0a0a !important;
+            background-color: #0a0a0a !important;
+        }
+
+        #pdf-container::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
 
-        .pdf-container::-webkit-scrollbar-track {
-            background: #1f1f1f;
+        #pdf-container::-webkit-scrollbar-track {
+            background: #0a0a0a !important;
         }
 
-        .pdf-container::-webkit-scrollbar-thumb {
-            background: #ff3b3b;
+        #pdf-container::-webkit-scrollbar-thumb {
+            background: #333;
             border-radius: 2px;
         }
 
-        .pdf-container::-webkit-scrollbar-thumb:hover {
-            background: #ff4d4d;
+        #pdf-container::-webkit-scrollbar-thumb:hover {
+            background: #444;
         }
 
-        object {
-            display: block;
-            width: 100%;
-            min-height: 100%;
+        .pdf-page {
+            margin: 0 auto !important;
+            display: block !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            margin-bottom: 4px !important;
+            background-color: #0a0a0a !important;
+        }
+
+        canvas {
+            background-color: #0a0a0a !important;
+            display: block !important;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            background: transparent !important;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
-<body>
-    <div class="pdf-container">
-        <object data="(CML) Newsletter ENG - Feb 21 2026.pdf" type="application/pdf" width="100%" height="100%">
-        </object>
-    </div>
+<body style="background-color: #0a0a0a !important;">
+    <div id="loading" style="background-color: transparent !important;">Loading PDF...</div>
+    <div id="pdf-container" style="background-color: #0a0a0a !important;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search || '');
+            const fromQuery = params.get('url');
+            /** When embedded from /blog, parent passes absolute path like /img/pdf/foo.pdf */
+            const url = fromQuery || '(CML) Newsletter ENG - Feb 21 2026.pdf';
+            const container = document.getElementById('pdf-container');
+            const loading = document.getElementById('loading');
+
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                loading.style.display = 'none';
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    pdf.getPage(i).then(function(page) {
+                        const viewport = page.getViewport({ scale: 1.5 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        canvas.className = 'pdf-page';
+
+                        context.fillStyle = '#0a0a0a';
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport,
+                            background: 'rgb(10, 10, 10)'
+                        };
+
+                        const task = page.render(renderContext);
+                        task.promise.then(function() {
+                            context.fillStyle = '#0a0a0a';
+                            context.globalCompositeOperation = 'destination-over';
+                            context.fillRect(0, 0, canvas.width, canvas.height);
+                            context.globalCompositeOperation = 'source-over';
+                            container.appendChild(canvas);
+                        });
+                    });
+                }
+            }).catch(function(error) {
+                loading.textContent = 'Error loading PDF: ' + error.message;
+                loading.style.color = '#ff3b3b';
+            });
+        });
+    </script>
 </body>
 </html>

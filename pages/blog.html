@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Newsletters | PDF editions</title>
     <meta name="description" content="Read and download Fuxi Technology cybersecurity newsletters as PDF.">
     <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
@@ -251,8 +254,9 @@
             width: 100%;
             height: 100%;
             border: 0;
-            background: #111;
+            background: #0a0a0a !important;
             display: block;
+            filter: unset;
         }
 
         .pdf-doc-footnote {
@@ -345,7 +349,7 @@
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
 
-    <section class="pdf-first-screen mt-16 pb-6 pt-10 to-black" aria-labelledby="pdf-hub-title">
+    <section class="pdf-first-screen mt-16 pb-6 pt-10 bg-dark-bg" aria-labelledby="pdf-hub-title">
         <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
                 <div class="pdf-doc-frame__inner">
                     <div class="pdf-toolbar">
@@ -379,7 +383,7 @@
                         </div>
                     </div>
                     <div id="pdf-panel" class="pdf-doc-body">
-                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html"></iframe>
+                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?v=2026050604&amp;url=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
                     </div>
 
                 </div>
@@ -563,7 +567,9 @@
             function applySelection(seriesId, issueId, { syncHash = true } = {}) {
                 const issue = getIssue(seriesId, issueId);
                 if (!issue || !frame || !downloadLink || !openTabLink) return;
-                frame.src = issue.href;
+                frame.src =
+                    '/img/pdf/pdf-viewer.html?v=2026050604&url=' +
+                    encodeURIComponent(issue.href);
                 frame.setAttribute(
                     'title',
                     `PDF: ${PDF_CATALOG[seriesId].label} — ${issue.label}`
