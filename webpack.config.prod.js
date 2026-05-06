@@ -9,6 +9,7 @@ module.exports = merge(common, {
       patterns: [
         { from: 'pages', to: 'pages' },
         { from: 'img/img', to: 'img' },
+        { from: 'img/pdf', to: 'img/pdf' },
         { from: 'css', to: 'css' },
         { from: 'js/vendor', to: 'js/vendor' },
         { from: 'icon.svg', to: 'icon.svg' },
