@@ -224,6 +224,25 @@
             display: flex;
             flex-direction: column;
             background: var(--pdf-frame-bg);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #ff3b3b #0a0a0a;
+        }
+        .pdf-doc-body::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .pdf-doc-body::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        .pdf-doc-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff3b3b, #8b0000);
+            border-radius: 999px;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+        .pdf-doc-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #ff4d4d, #9b0000);
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
         }
 
         .pdf-doc-body iframe {
@@ -326,14 +345,8 @@
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
 
-    <section class="pdf-first-screen mt-16 px-5 lg:px-8 pb-6 pt-10 bg-gradient-to-b from-dark-bg to-black" aria-labelledby="pdf-hub-title">
-        <div class="container mx-auto max-w-6xl">
-            <header class="mb-8 md:mb-10 animate-on-scroll">
-           
-           
-            </header>
-
-            <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
+    <section class="pdf-first-screen mt-16 pb-6 pt-10 to-black" aria-labelledby="pdf-hub-title">
+        <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
                 <div class="pdf-doc-frame__inner">
                     <div class="pdf-toolbar">
                         <div class="pdf-toolbar__primary">
@@ -371,8 +384,6 @@
 
                 </div>
             </div>
-      
-        </div>
     </section>
 
     <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">

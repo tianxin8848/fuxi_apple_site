@@ -122,6 +122,28 @@ body {
     text-rendering: optimizeLegibility;
     scrollbar-gutter: stable;
     background-color: var(--color-dark-bg);
+    scrollbar-width: thin;
+    scrollbar-color: #ff3b3b #1f1f1f;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f1f1f;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff3b3b, #8b0000);
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff4d4d, #9b0000);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
 }
 
 section {
