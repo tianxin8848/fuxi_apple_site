@@ -53,7 +53,6 @@
         }
 
         .pdf-doc-frame {
-            border: 1px solid rgba(230, 61, 61, 0.35);
             border-radius: 0.375rem;
             overflow: hidden;
             background: var(--pdf-frame-bg);
@@ -62,10 +61,34 @@
                 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
         }
 
+        /* First screen below nav: fill viewport so footer starts after scroll */
+        .pdf-first-screen {
+            min-height: calc(100vh - 4rem);
+            min-height: calc(100svh - 4rem);
+            min-height: calc(100dvh - 4rem);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdf-first-screen > .container {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .pdf-first-screen .pdf-doc-frame {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
         .pdf-doc-frame__inner {
             display: flex;
             flex-direction: column;
-            min-height: min(82vh, 960px);
+            flex: 1 1 auto;
+            min-height: 0;
         }
 
         .pdf-toolbar {
@@ -197,15 +220,17 @@
         .pdf-doc-body {
             flex: 1 1 auto;
             min-height: 0;
+            position: relative;
             display: flex;
             flex-direction: column;
             background: var(--pdf-frame-bg);
         }
 
         .pdf-doc-body iframe {
-            flex: 1 1 auto;
+            position: absolute;
+            inset: 0;
             width: 100%;
-            min-height: min(72vh, 820px);
+            height: 100%;
             border: 0;
             background: #111;
             display: block;
@@ -301,16 +326,11 @@
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
 
-    <section class="mt-16 px-5 lg:px-8 pb-6 pt-10 bg-gradient-to-b from-dark-bg to-black min-h-[calc(100dvh-4rem)]" aria-labelledby="pdf-hub-title">
+    <section class="pdf-first-screen mt-16 px-5 lg:px-8 pb-6 pt-10 bg-gradient-to-b from-dark-bg to-black" aria-labelledby="pdf-hub-title">
         <div class="container mx-auto max-w-6xl">
             <header class="mb-8 md:mb-10 animate-on-scroll">
-                <p class="text-xs font-bold uppercase tracking-[0.2em] text-cyber-red mb-2">Newsletters</p>
-                <h1 id="pdf-hub-title" class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-                    Cyber digest <span class="text-cyber-red">PDF editions</span>
-                </h1>
-                <p class="mt-4 text-muted-text text-base md:text-lg max-w-2xl leading-relaxed">
-                    Pick a <strong class="text-gray-200 font-semibold">series</strong> and <strong class="text-gray-200 font-semibold">issue</strong> in the bar (same pattern as a product document viewer), then read inline or download. If the preview is blank on your device, use <em class="not-italic text-gray-300">Open</em>.
-                </p>
+           
+           
             </header>
 
             <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
@@ -335,11 +355,11 @@
                             </ul>
                             <div class="pdf-toolbar__selectors dynamic-selectors">
                                 <div class="pdf-selector-wrap">
-                                    <label for="select-series" class="pdf-selector-label">系列 · Series</label>
+                                    <label for="select-series" class="pdf-selector-label">Series</label>
                                     <select id="select-series" class="pdf-selector" aria-describedby="series-hint"></select>
                                 </div>
                                 <div class="pdf-selector-wrap">
-                                    <label for="select-issue" class="pdf-selector-label">期号 · Issue</label>
+                                    <label for="select-issue" class="pdf-selector-label">Issue</label>
                                     <select id="select-issue" class="pdf-selector"></select>
                                 </div>
                             </div>
@@ -348,15 +368,10 @@
                     <div id="pdf-panel" class="pdf-doc-body">
                         <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
                     </div>
-                    <p id="series-hint" class="pdf-doc-footnote">
-                        <span class="text-cyber-red font-semibold">Tip:</span> “Full digest” lists every English issue; “CML &amp; legal spotlight” only carries the CML-focused edition. Share a view with <code class="text-gray-300">#series/issue</code> in the URL (e.g. <code class="text-gray-300">#full/feb-21</code>).
-                    </p>
+
                 </div>
             </div>
-            <p class="mt-4 text-sm text-muted-text text-center md:text-left">
-                <i class="fas fa-info-circle text-cyber-red mr-1" style="opacity:0.85" aria-hidden="true"></i>
-                Inline preview uses your browser PDF viewer; layout can differ on phones and tablets.
-            </p>
+      
         </div>
     </section>
 
