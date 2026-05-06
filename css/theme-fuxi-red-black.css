@@ -11,7 +11,7 @@
     --color-accent-darker: #8b1a1a;
     --color-cyber-red: var(--color-accent);
 
-    --color-dark-bg: #070505;
+    --color-dark-bg: #323030; /* rgb(50, 48, 48) */
     --color-card-bg: #0f0a0a;
     --color-muted-text: #b9aeae;
 
