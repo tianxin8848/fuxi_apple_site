@@ -380,6 +380,71 @@
             max-width: 22em;
         }
 
+        /* Book-style horizontal page turns (enabled via html.nl-book-active + JS)
+           Only the active page stays in normal flow so document height matches one
+           “spread”; other pages are absolutely stacked (no triple-height blank gap). */
+        html.nl-book-active .nl-book__viewport--stacked {
+            display: block;
+            position: relative;
+            overflow-x: clip;
+            overflow-y: clip;
+        }
+        html.nl-book-active .nl-book__viewport--stacked > .nl-book__page {
+            min-width: 0;
+            width: 100%;
+            transition: transform 0.68s var(--nl-ease);
+            will-change: transform;
+        }
+        /* Active page sets viewport height */
+        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(1),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(2),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(3) {
+            position: relative;
+            z-index: 3;
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(2),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(3),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(1),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(3),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(1),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(2) {
+            position: absolute;
+            inset: 0;
+            /* Fill viewport sized by the in-flow page only — no min-height (content would stretch scroll) */
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(1) {
+            transform: translateX(0);
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(2),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(3) {
+            transform: translateX(100%);
+            z-index: 1;
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(1) {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(2) {
+            transform: translateX(0);
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(3) {
+            transform: translateX(100%);
+            z-index: 2;
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(1),
+        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(2) {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(3) {
+            transform: translateX(0);
+        }
+        html.nl-book-active .nl-book__viewport--stacked > .nl-book__page[inert] {
+            user-select: none;
+        }
+
         .animate-on-scroll {
             opacity: 0;
             transform: translate3d(0, 22px, 0);
@@ -395,6 +460,9 @@
                 transition-duration: 0.01ms !important;
                 opacity: 1;
                 transform: none;
+            }
+            html.nl-book-active .nl-book__viewport--stacked > .nl-book__page {
+                transition-duration: 0.01ms !important;
             }
             .nl-source-card {
                 transition: none;
@@ -447,8 +515,11 @@
     <main id="newsletter" class="pb-20 px-4 sm:px-5">
         <a id="nl-screen-cta" class="nl-screen-cta bg-cyber-red text-white px-4 py-3 rounded-md text-sm font-semibold hover:bg-red-700 transition" href="#nl-cyber-digest">Read more</a>
         <div class="nl-panel mx-auto">
+            <div class="nl-book">
+            <div class="nl-book__viewport" id="nl-book-viewport" data-page="0" aria-live="polite">
 
             <!-- 头部：主视觉 + 红区正文 + 月度提示与配图 -->
+            <div class="nl-book__page">
             <header class="nl-section nl-head">
                 <h1 class="nl-masthead">Newsletter</h1>
                 <div class="nl-hero">
@@ -482,8 +553,10 @@
                     </div>
                 </div>
             </header>
+            </div>
 
             <!-- 中部：日期栏 + 红横幅 + 多信息源摘要（交错排版） -->
+            <div class="nl-book__page">
             <section id="nl-cyber-digest" class="nl-section nl-mid" aria-labelledby="nl-digest-title">
                 <div class="nl-mid__bar">
                     <time datetime="2026-02-20">February 20, 2026</time>
@@ -551,8 +624,10 @@
                     </div>
                 </div>
             </section>
+            </div>
 
             <!-- 尾部：与头部呼应的法案导语 -->
+            <div class="nl-book__page">
             <footer id="nl-critical-bill-tail" class="nl-section nl-tail">
                 <div class="nl-red-block animate-on-scroll">
                     <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
@@ -561,6 +636,10 @@
                     </div>
                 </div>
             </footer>
+            </div>
+
+            </div>
+            </div>
 
         </div>
 
@@ -637,8 +716,11 @@
             });
         }
 
-        // scroll animation using intersection observer (pure vanilla)
-        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        const bookViewport = document.getElementById('nl-book-viewport');
+        const bookPages = bookViewport ? Array.from(bookViewport.querySelectorAll(':scope > .nl-book__page')) : [];
+        const allAnimated = document.querySelectorAll('.animate-on-scroll');
+        const animatedElements = Array.from(allAnimated).filter((el) => !(bookViewport && bookViewport.contains(el)));
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if(entry.isIntersecting) {
@@ -649,7 +731,6 @@
         }, { threshold: 0.15 });
         animatedElements.forEach(el => observer.observe(el));
 
-        // manually trigger visible for any element already in view (just in case)
         document.addEventListener('DOMContentLoaded', () => {
             animatedElements.forEach(el => {
                 const rect = el.getBoundingClientRect();
@@ -660,13 +741,22 @@
             });
         });
 
-        // Floating CTA: first click → cyber digest, second phase → bill closing, then back to top
+        function revealBookPageAnimates(pageEl) {
+            if (!pageEl) return;
+            pageEl.querySelectorAll('.animate-on-scroll').forEach((el) => {
+                el.classList.add('visible');
+            });
+        }
+
+        // Book turns + floating CTA (scroll fallback when book layout is unavailable)
         (function () {
             const cta = document.getElementById('nl-screen-cta');
             const main = document.getElementById('newsletter');
             const mid = document.getElementById('nl-cyber-digest');
             const tail = document.getElementById('nl-critical-bill-tail');
             if (!cta || !main || !mid || !tail) return;
+
+            const bookEnabled = Boolean(bookViewport && bookPages.length === 3);
 
             function navOffset() {
                 const pad = getComputedStyle(main).paddingTop;
@@ -679,7 +769,61 @@
                 return r.top + window.scrollY;
             }
 
+            function applyBookInert(index) {
+                bookPages.forEach((page, i) => {
+                    if (i === index) page.removeAttribute('inert');
+                    else page.setAttribute('inert', '');
+                });
+            }
+
+            function setBookPage(index, { syncHash = true, scrollHost = true } = {}) {
+                if (!bookEnabled || !bookViewport) return;
+                const i = Math.max(0, Math.min(2, index));
+                bookViewport.dataset.page = String(i);
+                applyBookInert(i);
+                revealBookPageAnimates(bookPages[i]);
+                if (syncHash) {
+                    const h = i === 0 ? '' : i === 1 ? '#nl-cyber-digest' : '#nl-critical-bill-tail';
+                    const url = h ? `${location.pathname}${location.search}${h}` : `${location.pathname}${location.search}`;
+                    history.replaceState(null, '', url);
+                }
+                if (scrollHost && main) {
+                    const top = main.getBoundingClientRect().top + window.scrollY - 8;
+                    window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+                }
+                updateFloatingCta();
+            }
+
+            function initBookFromHash() {
+                const h = (location.hash || '').replace(/^#/, '');
+                if (h === 'nl-cyber-digest') setBookPage(1, { syncHash: false, scrollHost: true });
+                else if (h === 'nl-critical-bill-tail') setBookPage(2, { syncHash: false, scrollHost: true });
+                else setBookPage(0, { syncHash: false, scrollHost: false });
+            }
+
+            function currentBookPage() {
+                if (!bookEnabled || !bookViewport) return 0;
+                return Math.max(0, Math.min(2, parseInt(bookViewport.dataset.page, 10) || 0));
+            }
+
             function updateFloatingCta() {
+                if (bookEnabled) {
+                    const p = currentBookPage();
+                    if (p === 0) {
+                        cta.setAttribute('href', '#nl-cyber-digest');
+                        cta.textContent = 'Read more';
+                        cta.setAttribute('aria-label', 'Turn page to cybersecurity news digest');
+                    } else if (p === 1) {
+                        cta.setAttribute('href', '#nl-critical-bill-tail');
+                        cta.textContent = 'Continue reading';
+                        cta.setAttribute('aria-label', 'Turn page to Critical Infrastructure Bill closing section');
+                    } else {
+                        cta.setAttribute('href', '#newsletter');
+                        cta.textContent = 'Back to top';
+                        cta.setAttribute('aria-label', 'Return to first page of newsletter');
+                    }
+                    return;
+                }
                 const y = window.scrollY + navOffset();
                 const midY = docY(mid);
                 const tailY = docY(tail);
@@ -698,9 +842,37 @@
                 }
             }
 
-            window.addEventListener('scroll', updateFloatingCta, { passive: true });
-            window.addEventListener('resize', updateFloatingCta, { passive: true });
-            updateFloatingCta();
+            if (bookEnabled) {
+                document.documentElement.classList.add('nl-book-active');
+                bookViewport.classList.add('nl-book__viewport--stacked');
+                initBookFromHash();
+                revealBookPageAnimates(bookPages[currentBookPage()]);
+                applyBookInert(currentBookPage());
+
+                cta.addEventListener('click', (e) => {
+                    const href = cta.getAttribute('href') || '';
+                    const p = currentBookPage();
+                    if (href === '#nl-cyber-digest' && p === 0) {
+                        e.preventDefault();
+                        setBookPage(1);
+                    } else if (href === '#nl-critical-bill-tail' && p === 1) {
+                        e.preventDefault();
+                        setBookPage(2);
+                    } else if (href === '#newsletter' && p === 2) {
+                        e.preventDefault();
+                        setBookPage(0, { scrollHost: false });
+                        main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+
+                window.addEventListener('hashchange', () => {
+                    initBookFromHash();
+                });
+            } else {
+                window.addEventListener('scroll', updateFloatingCta, { passive: true });
+                window.addEventListener('resize', updateFloatingCta, { passive: true });
+                updateFloatingCta();
+            }
         })();
 
     </script>
