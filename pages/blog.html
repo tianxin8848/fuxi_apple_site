@@ -63,15 +63,55 @@
             max-width: 56rem;
         }
 
+        /* Wider, tighter-gutter band for the newsletter masthead only */
+        .nl-head__wrap {
+            max-width: min(92rem, 100%);
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        /* Was `.nl-section + .nl-section` when head lived inside `.nl-panel` */
+        .nl-head + .nl-panel {
+            margin-top: 3.5rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(230, 61, 61, 0.35);
+        }
+
         .nl-section + .nl-section {
             margin-top: 3.5rem;
             padding-top: 3rem;
             border-top: 1px solid rgba(230, 61, 61, 0.35);
         }
 
+        /* Compact hero + 3:1 main/aside; head uses `.nl-head__wrap` for width */
+        .nl-head__layout {
+            display: grid;
+            gap: 0;
+            align-items: start;
+        }
+
+        @media (min-width: 900px) {
+            .nl-head__layout {
+                grid-template-columns: 3fr 1fr;
+                gap: 0;
+            }
+        }
+
+        .nl-head__main {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            min-width: 0;
+        }
+
+        /* Full-width title row; two columns below align hero | tips */
         .nl-masthead {
-            margin: 0 0 1.5rem;
-            font-size: clamp(2.5rem, 10vw, 4.25rem);
+            margin: 0;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: clamp(1.85rem, 5.5vw, 3.25rem);
             font-weight: 800;
             letter-spacing: 0.04em;
             text-transform: uppercase;
@@ -79,17 +119,26 @@
             color: #fff;
         }
 
+        @media (min-width: 900px) {
+            .nl-head__aside .nl-tips {
+                border-top: none;
+            }
+        }
+
         .nl-hero {
             display: grid;
-            grid-template-columns: 1fr minmax(2.5rem, 4.5rem);
+            grid-template-columns: 1fr minmax(2rem, 3rem);
             gap: 0;
-            min-height: 12rem;
+            height: clamp(7.5rem, 22vw, 11.5rem);
+            max-height: min(12rem, 28vw);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: none;
         }
         .nl-hero__media {
             position: relative;
             background: #111;
-            min-height: 11rem;
+            min-height: 0;
+            min-width: 0;
         }
         .nl-hero__media img {
             width: 100%;
@@ -102,60 +151,55 @@
             min-height: 100%;
         }
 
-        .nl-head__grid {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        @media (min-width: 900px) {
-            .nl-head__grid {
-                grid-template-columns: 1.15fr 0.85fr;
-                align-items: stretch;
-            }
-        }
-
         .nl-red-block {
             background: var(--nl-red);
             color: #fff;
-            padding: 1.5rem 1.35rem 1.75rem;
+            padding: 0;
             box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-top: none;
         }
         .nl-red-block h2 {
             margin: 0;
-            font-size: clamp(1.35rem, 3.5vw, 1.85rem);
+            padding: 0.65rem 0.75rem 0;
+            font-size: clamp(1.2rem, 3.2vw, 1.65rem);
             font-weight: 800;
             line-height: 1.2;
             letter-spacing: -0.02em;
         }
         .nl-red-block .nl-byline {
-            margin-top: 1rem;
-            font-size: 0.9375rem;
+            margin: 0;
+            padding: 0.45rem 0.75rem 0;
+            font-size: 0.875rem;
             font-weight: 600;
             opacity: 0.95;
         }
         .nl-red-block .nl-prose {
-            margin-top: 1.125rem;
-            font-size: 0.9375rem;
-            line-height: 1.65;
+            margin: 0;
+            padding: 0.5rem 0.75rem 0.65rem;
+            font-size: 0.875rem;
+            line-height: 1.6;
             font-weight: 500;
         }
         .nl-red-block .nl-prose p + p {
-            margin-top: 0.85rem;
+            margin-top: 0.5rem;
         }
 
         .nl-head__aside {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 0;
+            min-width: 0;
         }
         .nl-tips {
-            padding: 1.25rem 1.15rem;
+            padding: 0;
             border: 1px solid rgba(230, 61, 61, 0.35);
             background: rgba(20, 20, 20, 0.95);
         }
         .nl-tips h3 {
-            margin: 0 0 0.85rem;
-            font-size: 0.8125rem;
+            margin: 0;
+            padding: 0.55rem 0.65rem 0.35rem;
+            font-size: 0.75rem;
             font-weight: 800;
             letter-spacing: 0.06em;
             text-transform: uppercase;
@@ -163,25 +207,39 @@
         }
         .nl-tips ul {
             margin: 0;
-            padding-left: 1.1rem;
-            font-size: 0.875rem;
-            line-height: 1.55;
+            padding: 0 0.65rem 0.55rem 1.35rem;
+            font-size: 0.8125rem;
+            line-height: 1.45;
             color: rgba(235, 235, 235, 0.92);
         }
         .nl-tips li + li {
-            margin-top: 0.5rem;
+            margin-top: 0.3rem;
         }
         .nl-head__figure {
             margin: 0;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
             overflow: hidden;
             background: #111;
+            height: 8.5rem;
+            max-height: 8.5rem;
         }
         .nl-head__figure img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
             display: block;
             vertical-align: middle;
+        }
+        @media (min-width: 900px) {
+            .nl-head__figure {
+                height: min(9.5rem, 20vh);
+                max-height: min(9.5rem, 20vh);
+            }
+            .nl-head__figure img {
+                height: 100%;
+                object-fit: cover;
+            }
         }
 
         /* —— Middle: digest rail —— */
@@ -392,26 +450,26 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
-    <main id="newsletter" class="pt-32 pb-20 px-4 sm:px-5">
-        <div class="nl-panel mx-auto">
-
-            <!-- 头部：主视觉 + 红区正文 + 月度提示与配图 -->
-            <header class="nl-section nl-head">
+    <main id="newsletter" class="pb-20" style="padding-top: 4rem;">
+        <!-- 头部：加宽、减少左右留白；主视觉略增高 -->
+        <header class="nl-section nl-head">
+            <div class="nl-head__wrap">
                 <h1 class="nl-masthead">Newsletter</h1>
-                <div class="nl-hero">
-                    <div class="nl-hero__media">
-                        <img src="/img/newsletterspic/blog1.png" alt="Newsletter hero: critical infrastructure and cybersecurity visual" width="1200" height="800" decoding="async" fetchpriority="high">
-                    </div>
-                    <div class="nl-hero__accent" role="presentation"></div>
-                </div>
-
-                <div class="nl-head__grid">
-                    <div class="nl-red-block animate-on-scroll">
-                        <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
-                        <p class="nl-byline">Written by: Chu Wai Lam <span class="opacity-90">@ Alpacian</span></p>
-                        <div class="nl-prose">
-                            <p>Welcome to the inaugural issue of our newsletter, where we aim to enlighten our readers about the ever-changing landscape of technology, cybersecurity, and digital safety.</p>
-                            <p>Today, we will briefly talk about the <strong>Protection of Critical Infrastructures (Computer Systems) Ordinance</strong> (Cap. 653) and why we should care.</p>
+                <div class="nl-head__layout">
+                    <div class="nl-head__main">
+                        <div class="nl-hero">
+                            <div class="nl-hero__media">
+                                <img src="/img/newsletterspic/blog1.png" alt="Newsletter hero: critical infrastructure and cybersecurity visual" width="1200" height="800" decoding="async" fetchpriority="high">
+                            </div>
+                            <div class="nl-hero__accent" role="presentation"></div>
+                        </div>
+                        <div class="nl-red-block animate-on-scroll">
+                            <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
+                            <p class="nl-byline">Written by: Chu Wai Lam <span class="opacity-90">@ Alpacian</span></p>
+                            <div class="nl-prose">
+                                <p>Welcome to the inaugural issue of our newsletter, where we aim to enlighten our readers about the ever-changing landscape of technology, cybersecurity, and digital safety.</p>
+                                <p>Today, we will briefly talk about the <strong>Protection of Critical Infrastructures (Computer Systems) Ordinance</strong> (Cap. 653) and why we should care.</p>
+                            </div>
                         </div>
                     </div>
                     <div class="nl-head__aside">
@@ -428,7 +486,10 @@
                         </figure>
                     </div>
                 </div>
-            </header>
+            </div>
+        </header>
+
+        <div class="nl-panel mx-auto px-4 sm:px-5">
 
             <!-- 中部：日期栏 + 红横幅 + 多信息源摘要（交错排版） -->
             <section class="nl-section nl-mid" aria-labelledby="nl-digest-title">
