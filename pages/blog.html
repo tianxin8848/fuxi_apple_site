@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fuxi Tech Blog | Threat Research & Insights</title>
+    <title>Newsletter | Critical Infrastructure Bill & Cyber Digest</title>
+    <meta name="description" content="Inaugural newsletter: Cap. 653 critical infrastructure law, curated cybersecurity headlines, and monthly security tips.">
     <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
     <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="/img/logimg/image.png">
@@ -45,293 +46,314 @@
     <link rel="stylesheet" href="../css/site-nav.css">
     <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
     <style>
-        /* Editorial layout + card chrome inspired by scroll-carousel reference (typography rhythm, 8:5 media, CTA pills) */
         .blog-page {
-            --blog-space: 1.5rem;
-            --blog-media-aspect: 8 / 5;
-            --blog-media-aspect-sm: 4 / 3;
-            --blog-card-radius: 0.875rem;
-            --blog-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-            --blog-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+            --nl-red: #e63d3d;
+            --nl-red-deep: #b91c1c;
+            --nl-black: #0a0a0a;
+            --nl-paper: #ffffff;
+            --nl-ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /*
-         * At least one full layout viewport: fixed nav does NOT shrink document flow, so subtracting
-         * nav height made main shorter than the visible window and let row 2 peek under the fold.
-         */
-        .blog-above-fold {
-            min-height: 100svh;
-            min-height: 100dvh;
+        .nl-page {
+            background: var(--nl-black);
+            color: #fafafa;
         }
 
-        .btn-primary {
-            transition: all 0.2s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px -6px rgba(230, 61, 61, 0.45);
+        .nl-panel {
+            max-width: 56rem;
         }
 
-        .read-more-arrow {
-            transition: transform 0.25s var(--blog-ease-out);
-        }
-        .group:hover .read-more-arrow {
-            transform: translateX(5px);
+        .nl-section + .nl-section {
+            margin-top: 3.5rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(230, 61, 61, 0.35);
         }
 
-        .blog-hero {
-            position: relative;
-            overflow: hidden;
-        }
-        .blog-hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse 120% 80% at 50% -20%, rgba(230, 61, 61, 0.14), transparent 55%),
-                radial-gradient(ellipse 70% 50% at 100% 40%, rgba(179, 36, 36, 0.08), transparent 50%);
-        }
-        .blog-hero .container {
-            position: relative;
-            z-index: 1;
-        }
-        .blog-hero-kicker {
-            font-size: 0.6875rem;
-            font-weight: 600;
-            letter-spacing: 0.22em;
+        .nl-masthead {
+            margin: 0 0 1.5rem;
+            font-size: clamp(2.5rem, 10vw, 4.25rem);
+            font-weight: 800;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            color: rgba(185, 174, 174, 0.92);
-            margin-bottom: 1rem;
-        }
-        .blog-hero h1 {
-            text-wrap: balance;
-            letter-spacing: -0.02em;
-        }
-        .blog-hero p.text-muted-text {
-            text-wrap: pretty;
-            letter-spacing: 0.02em;
+            line-height: 0.95;
+            color: #fff;
         }
 
-        .category-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 2rem;
-            padding: 0.35rem 0.85rem;
-            border-radius: 9999px;
-            font-size: 0.6875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            border: 1px solid transparent;
-            background: rgba(12, 8, 8, 0.65);
-            color: #a89898;
-            border-color: rgba(230, 61, 61, 0.22);
-            transition: background-color 0.2s var(--blog-ease-soft), color 0.2s var(--blog-ease-soft), border-color 0.2s var(--blog-ease-soft), transform 0.2s var(--blog-ease-soft), box-shadow 0.2s var(--blog-ease-soft);
+        .nl-hero {
+            display: grid;
+            grid-template-columns: 1fr minmax(2.5rem, 4.5rem);
+            gap: 0;
+            min-height: 12rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .category-badge:hover {
-            transform: translateY(-1px);
-            border-color: rgba(255, 122, 110, 0.35);
-            box-shadow: 0 6px 20px -8px rgba(230, 61, 61, 0.35);
-        }
-        .category-badge.is-active {
-            background-color: rgba(230, 61, 61, 0.22);
-            color: #ff8a80;
-            border-color: rgba(255, 122, 110, 0.45);
-        }
-
-        .blog-grid {
-            perspective: 1400px;
-        }
-
-        .blog-card {
-            --blog-card-bg: linear-gradient(165deg, rgba(22, 14, 14, 0.98) 0%, rgba(12, 8, 8, 1) 48%, rgba(8, 5, 5, 1) 100%);
-            background: var(--blog-card-bg);
-            border-radius: var(--blog-card-radius);
-            transform-style: preserve-3d;
-            transition:
-                transform 0.45s var(--blog-ease-out),
-                border-color 0.35s var(--blog-ease-soft),
-                box-shadow 0.45s var(--blog-ease-out);
-            box-shadow:
-                0 0 0 1px rgba(0, 0, 0, 0.35) inset,
-                0 1px 0 rgba(255, 255, 255, 0.04) inset,
-                0 18px 40px -28px rgba(0, 0, 0, 0.85);
-        }
-        .blog-card:hover {
-            transform: translateY(-6px) rotateX(2deg);
-            border-color: var(--color-border-hover);
-            box-shadow:
-                0 0 0 1px rgba(230, 61, 61, 0.12) inset,
-                0 1px 0 rgba(255, 255, 255, 0.06) inset,
-                0 24px 48px -20px rgba(230, 61, 61, 0.2),
-                0 28px 56px -24px rgba(0, 0, 0, 0.9);
-        }
-
-        .blog-card-media {
+        .nl-hero__media {
             position: relative;
-            width: 100%;
-            aspect-ratio: var(--blog-media-aspect);
-            overflow: hidden;
-            background: #1a1010;
-            border-radius: var(--blog-card-radius) var(--blog-card-radius) 0 0;
+            background: #111;
+            min-height: 11rem;
         }
-        .blog-card-media::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: linear-gradient(to top, rgba(7, 5, 5, 0.55) 0%, transparent 42%);
-            opacity: 0.85;
-            transition: opacity 0.4s var(--blog-ease-out);
-        }
-        .blog-card:hover .blog-card-media::after {
-            opacity: 0.65;
-        }
-        .blog-card-media img {
+        .nl-hero__media img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: 50% 50%;
-            transform: scale(1.02);
-            transition: transform 0.65s var(--blog-ease-out);
+            display: block;
         }
-        .blog-card:hover .blog-card-media img {
-            transform: scale(1.06);
+        .nl-hero__accent {
+            background: var(--nl-red);
+            min-height: 100%;
         }
 
-        .blog-card-body {
-            position: relative;
-            padding: var(--blog-space);
+        .nl-head__grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
-        .blog-card-body h3 {
-            letter-spacing: -0.015em;
-            line-height: 1.25;
+        @media (min-width: 900px) {
+            .nl-head__grid {
+                grid-template-columns: 1.15fr 0.85fr;
+                align-items: stretch;
+            }
         }
-        .blog-card-body p {
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
-            line-clamp: 3;
+
+        .nl-red-block {
+            background: var(--nl-red);
+            color: #fff;
+            padding: 1.5rem 1.35rem 1.75rem;
+            box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55);
+        }
+        .nl-red-block h2 {
+            margin: 0;
+            font-size: clamp(1.35rem, 3.5vw, 1.85rem);
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .nl-red-block .nl-byline {
+            margin-top: 1rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+        .nl-red-block .nl-prose {
+            margin-top: 1.125rem;
+            font-size: 0.9375rem;
+            line-height: 1.65;
+            font-weight: 500;
+        }
+        .nl-red-block .nl-prose p + p {
+            margin-top: 0.85rem;
+        }
+
+        .nl-head__aside {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .nl-tips {
+            padding: 1.25rem 1.15rem;
+            border: 1px solid rgba(230, 61, 61, 0.35);
+            background: rgba(20, 20, 20, 0.95);
+        }
+        .nl-tips h3 {
+            margin: 0 0 0.85rem;
+            font-size: 0.8125rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #fff;
+        }
+        .nl-tips ul {
+            margin: 0;
+            padding-left: 1.1rem;
+            font-size: 0.875rem;
+            line-height: 1.55;
+            color: rgba(235, 235, 235, 0.92);
+        }
+        .nl-tips li + li {
+            margin-top: 0.5rem;
+        }
+        .nl-head__figure {
+            margin: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
+            background: #111;
+        }
+        .nl-head__figure img {
+            width: 100%;
+            height: auto;
+            display: block;
+            vertical-align: middle;
+        }
+
+        /* —— Middle: digest rail —— */
+        .nl-mid__bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 0.85rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 3px solid var(--nl-red);
+            font-size: 0.8125rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+        .nl-mid__bar time {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .nl-mid__bar a {
+            color: #e8e8e8;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: none;
+        }
+        .nl-mid__bar a:hover {
+            color: var(--nl-red);
+        }
+
+        .nl-mid__banner {
+            background: var(--nl-red);
+            color: #fff;
+            padding: 1.35rem 1.25rem 1.5rem;
+            margin-bottom: 2.25rem;
+        }
+        .nl-mid__banner h2 {
+            margin: 0;
+            font-size: clamp(1.25rem, 3.2vw, 1.65rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .nl-mid__banner p {
+            margin: 0.85rem 0 0;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            font-weight: 500;
+            max-width: 52rem;
+        }
+
+        .nl-digest-row {
+            display: grid;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+        @media (min-width: 768px) {
+            .nl-digest-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+            .nl-digest-row--reverse .nl-digest__text {
+                order: 2;
+            }
+            .nl-digest-row--reverse .nl-digest__card {
+                order: 1;
+            }
+        }
+        .nl-digest__text h3 {
+            margin: 0 0 0.65rem;
+            font-size: 1.125rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        .nl-digest__text p {
+            margin: 0;
+            font-size: 0.9375rem;
+            line-height: 1.65;
+            color: rgba(220, 218, 218, 0.95);
+        }
+
+        .nl-source-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--nl-paper);
+            color: #111;
+            text-decoration: none;
+            border-radius: 2px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65);
+            transition: transform 0.25s var(--nl-ease), box-shadow 0.25s var(--nl-ease);
+        }
+        .nl-source-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 22px 50px -12px rgba(230, 61, 61, 0.25);
+        }
+        .nl-source-card:focus-visible {
+            outline: 2px solid var(--nl-red);
+            outline-offset: 3px;
+        }
+        .nl-source-card__media {
+            aspect-ratio: 16 / 10;
+            background: #e5e5e5;
+            overflow: hidden;
+        }
+        .nl-source-card__media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .nl-source-card__body {
+            padding: 0.75rem 1rem 0.65rem;
+            flex: 1;
+        }
+        .nl-source-card__meta {
+            font-size: 0.6875rem;
+            color: #555;
+            font-weight: 600;
             letter-spacing: 0.02em;
         }
-
-        /* CTA row — reference cta-button: bordered pill, invert on hover */
-        .blog-card-cta {
-            display: inline-flex;
-            align-items: center;
-            margin-top: 1.25rem;
-            padding: 0.3rem 0.55rem 0.3rem 0.65rem;
-            min-height: 2rem;
+        .nl-source-card__headline {
+            margin: 0.4rem 0 0;
+            font-size: 0.9375rem;
+            font-weight: 800;
+            line-height: 1.35;
+            color: #0a0a0a;
+        }
+        .nl-source-card__foot {
+            margin-top: auto;
+            padding: 0.55rem 1rem;
+            background: var(--nl-red);
+            color: #fff;
             font-size: 0.8125rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: rgba(255, 200, 196, 0.95);
-            text-decoration: none;
-            border: 1px solid rgba(230, 61, 61, 0.42);
-            background: rgba(230, 61, 61, 0.1);
-            border-radius: 0.25rem;
-            transition: background-color 0.2s var(--blog-ease-soft), color 0.2s var(--blog-ease-soft), border-color 0.2s var(--blog-ease-soft), box-shadow 0.25s var(--blog-ease-out);
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 3px;
         }
-        .blog-card-cta:hover {
-            color: #0a0606;
-            background: rgba(255, 138, 128, 0.95);
-            border-color: rgba(255, 180, 170, 0.95);
-            box-shadow: 0 8px 24px -10px rgba(230, 61, 61, 0.55);
-        }
-        .blog-card-cta:focus-visible {
-            outline: 2px solid rgba(255, 138, 128, 0.9);
-            outline-offset: 2px;
+
+        .nl-tail .nl-red-block h2 {
+            max-width: 22em;
         }
 
         .animate-on-scroll {
             opacity: 0;
-            transform: translate3d(0, 28px, 0);
-            transition: opacity 0.85s var(--blog-ease-soft), transform 0.85s var(--blog-ease-soft);
-            will-change: opacity, transform;
+            transform: translate3d(0, 22px, 0);
+            transition: opacity 0.75s var(--nl-ease), transform 0.75s var(--nl-ease);
         }
         .animate-on-scroll.visible {
             opacity: 1;
             transform: translate3d(0, 0, 0);
-            will-change: auto;
-        }
-
-        @media (max-width: 51.25em) {
-            .blog-card-media {
-                aspect-ratio: var(--blog-media-aspect-sm);
-            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .blog-card,
-            .blog-card-media img,
-            .category-badge,
             .animate-on-scroll {
                 transition-duration: 0.01ms !important;
-            }
-            .blog-card:hover {
-                transform: translateY(-4px);
-            }
-            .animate-on-scroll {
-                transform: none;
                 opacity: 1;
+                transform: none;
             }
-        }
-
-        @media (min-width: 1024px) {
-            .blog-above-fold {
-                display: flex;
-                flex-direction: column;
+            .nl-source-card {
+                transition: none;
             }
-            .blog-hero {
-                padding-top: 5.25rem;
-                padding-bottom: 1.25rem;
-            }
-            .blog-hero p {
-                margin-top: 0.875rem;
-            }
-            .blog-grid-section {
-                padding-top: 1rem;
-            }
-            .blog-grid-section-primary {
-                padding-top: 0.75rem;
-                padding-bottom: 1rem;
-                flex: 1 1 auto;
-                display: flex;
-                align-items: flex-end;
-            }
-            .blog-grid-section-primary .container {
-                width: 100%;
-            }
-            .blog-grid-section-secondary {
-                padding-top: 1.5rem;
-            }
-            .blog-grid .blog-card-primary .blog-card-media {
-                min-height: 10.5rem;
-                aspect-ratio: var(--blog-media-aspect);
-            }
-            .blog-grid .blog-card-primary .blog-card-body {
-                padding: 1rem;
-            }
-            .blog-grid .blog-card-primary h3 {
-                font-size: 1.125rem;
-                line-height: 1.3;
-            }
-            .blog-grid .blog-card-primary p {
-                margin-top: 0.5rem;
-                line-height: 1.45;
-            }
-            .blog-grid .blog-card-primary .blog-card-cta {
-                margin-top: 0.75rem;
+            .nl-source-card:hover {
+                transform: none;
             }
         }
     </style>
 </head>
-<body class="font-sans text-white bg-dark-bg blog-page">
+<body class="font-sans text-white bg-dark-bg blog-page nl-page">
 
     <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
@@ -370,141 +392,127 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
-    <main class="blog-above-fold">
-        <!-- Page Header -->
-        <section class="pt-32 pb-16 px-5 bg-dark-bg blog-hero">
-            <div class="container mx-auto text-center">
-                <div class="animate-[fadeUp_0.8s_ease-out]">
-                    <p class="blog-hero-kicker">Fuxi Labs · Newsletters</p>
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                        Fuxi <span class="text-cyber-red">Threat Research</span> & Insights
-                    </h1>
-                    <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
-                        Latest threat intelligence, SOC strategies, and product news from Fuxi Labs.
-                    </p>
-                    <div class="mt-10 flex flex-wrap justify-center gap-3">
-                        <button type="button" class="category-badge is-active border border-theme-subtle" data-blog-category="All">All Posts</button>
-                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Threat Research">Threat Research</button>
-                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Events">Events</button>
-                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Whitepaper">Whitepaper</button>
-                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Technology">Technology</button>
-                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Education">Education</button>
-                        <button type="button" class="category-badge border border-theme-subtle" data-blog-category="Threat Alert">Threat Alert</button>
+    <main id="newsletter" class="pt-24 md:pt-28 pb-20 px-4 sm:px-5">
+        <div class="nl-panel mx-auto">
+
+            <!-- 头部：主视觉 + 红区正文 + 月度提示与配图 -->
+            <header class="nl-section nl-head">
+                <h1 class="nl-masthead">Newsletter</h1>
+                <div class="nl-hero">
+                    <div class="nl-hero__media">
+                        <img src="/img/newsletterspic/blog1.png" alt="Newsletter hero: critical infrastructure and cybersecurity visual" width="1200" height="800" decoding="async" fetchpriority="high">
+                    </div>
+                    <div class="nl-hero__accent" role="presentation"></div>
+                </div>
+
+                <div class="nl-head__grid">
+                    <div class="nl-red-block animate-on-scroll">
+                        <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
+                        <p class="nl-byline">Written by: Chu Wai Lam <span class="opacity-90">@ Alpacian</span></p>
+                        <div class="nl-prose">
+                            <p>Welcome to the inaugural issue of our newsletter, where we aim to enlighten our readers about the ever-changing landscape of technology, cybersecurity, and digital safety.</p>
+                            <p>Today, we will briefly talk about the <strong>Protection of Critical Infrastructures (Computer Systems) Ordinance</strong> (Cap. 653) and why we should care.</p>
+                        </div>
+                    </div>
+                    <div class="nl-head__aside">
+                        <div class="nl-tips animate-on-scroll" aria-labelledby="nl-tips-h">
+                            <h3 id="nl-tips-h">Monthly Cybersecurity Tips</h3>
+                            <ul>
+                                <li>Always lock your phone, tablet, and computer when not in use.</li>
+                                <li>Consider using a password manager to store all your passwords safely.</li>
+                                <li>Adjust privacy settings on social media to limit what the public can see online.</li>
+                            </ul>
+                        </div>
+                        <figure class="nl-head__figure animate-on-scroll">
+                            <img src="/img/newsletterspic/blog2.png" alt="Legal and digital infrastructure theme illustration" width="900" height="600" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                 </div>
-            </div>
-        </section>
+            </header>
 
-        <!-- Blog Grid Section (First row only) -->
-        <section class="py-16 px-5 bg-dark-bg blog-grid-section blog-grid-section-primary">
-            <div class="container mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 blog-grid">
-                <!-- Blog Card 1: Threat Research -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card blog-card-primary group animate-on-scroll" data-blog-category="Threat Research">
-                    <div class="blog-card-media">
-                        <img src="/img/cyber-security-concept-digital-art_23-2151637760.avif" alt="AI-Driven Threat Hunting">
+            <!-- 中部：日期栏 + 红横幅 + 多信息源摘要（交错排版） -->
+            <section class="nl-section nl-mid" aria-labelledby="nl-digest-title">
+                <div class="nl-mid__bar">
+                    <time datetime="2026-02-20">February 20, 2026</time>
+                    <a href="https://www.alpacian.com" rel="noopener noreferrer" target="_blank">www.alpacian.com</a>
+                </div>
+                <div class="nl-mid__banner animate-on-scroll">
+                    <h2 id="nl-digest-title">The Latest News in Cyber Security</h2>
+                    <p>The prevalence of cybersecurity incidents around the world is nothing to scoff at. This month, we have selected the following news articles that we deemed worthy of your attention. Stay informed, and stay protected.</p>
+                </div>
+
+                <div class="nl-digest-row animate-on-scroll">
+                    <div class="nl-digest__text">
+                        <h3>Terra Holdings Data Breach</h3>
+                        <p>An investigation is underway after sensitive corporate data may have been exposed. Early reporting points to a third-party integration as the initial access vector, with regulators monitoring disclosure timelines and customer notification obligations.</p>
                     </div>
-                    <div class="blog-card-body">
-                        <h3 class="text-xl font-bold">AI-Driven Threat Hunting</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
-                            How our new correlation engine reduces alert fatigue by 60% using behavioral baselining.
-                        </p>
-                        <a href="/" class="blog-card-cta">
-                            Read Report <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
+                    <div class="nl-digest__card">
+                        <a class="nl-source-card" href="#" aria-label="Read source: Strauss Borrelli on Terra Holdings">
+                            <div class="nl-source-card__media">
+                                <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="City skyline, news card thumbnail" width="800" height="500" loading="lazy" decoding="async">
+                            </div>
+                            <div class="nl-source-card__body">
+                                <p class="nl-source-card__meta">Strauss Borrelli · February 16, 2026</p>
+                                <p class="nl-source-card__headline">Terra Holdings Data Breach Investigation</p>
+                            </div>
+                            <span class="nl-source-card__foot">Strauss Borrelli</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- Blog Card 2: Events -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card blog-card-primary group animate-on-scroll" style="transition-delay: 0.1s;" data-blog-category="Events">
-                    <div class="blog-card-media">
-                        <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="Fuxi at CyberSec 2026">
+                <div class="nl-digest-row nl-digest-row--reverse animate-on-scroll">
+                    <div class="nl-digest__text">
+                        <h3>Ransomware Attack Strikes Hotel</h3>
+                        <p>Operations at a major hospitality property were disrupted after encryption impacted reservations and back-office systems. Incident response teams are coordinating with vendors to restore services while assessing whether guest data was affected.</p>
                     </div>
-                    <div class="blog-card-body">
-                        <h3 class="text-xl font-bold">Fuxi at CyberSec 2026</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
-                            Join our experts in Shenzhen for live demos of the new portable SIEM appliance.
-                        </p>
-                        <a href="/" class="blog-card-cta">
-                            Event Details <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
+                    <div class="nl-digest__card">
+                        <a class="nl-source-card" href="#" aria-label="Read source: Cyber Press on Washington hotel ransomware">
+                            <div class="nl-source-card__media">
+                                <img src="/img/screenshot-event.png" alt="Cybersecurity news website preview" width="800" height="500" loading="lazy" decoding="async">
+                            </div>
+                            <div class="nl-source-card__body">
+                                <p class="nl-source-card__meta">Cyber Press · February 14, 2026</p>
+                                <p class="nl-source-card__headline">Washington Hotel Suffers Ransomware Attack, Systems Disrupted</p>
+                            </div>
+                            <span class="nl-source-card__foot">Cyber Press</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- Blog Card 3: Whitepaper -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card blog-card-primary group animate-on-scroll" style="transition-delay: 0.2s;" data-blog-category="Whitepaper">
-                    <div class="blog-card-media">
-                        <img src="/img/960x0.jpg" alt="The Portable SOC Guide">
+                <div class="nl-digest-row animate-on-scroll">
+                    <div class="nl-digest__text">
+                        <h3>Akira Strikes Again</h3>
+                        <p>The ransomware group continues to target property-management and professional-services firms. Analysts highlight repeat use of VPN and firewall edge devices for footholds, underscoring the need for timely patching and segmented backups.</p>
                     </div>
-                    <div class="blog-card-body">
-                        <h3 class="text-xl font-bold">The Portable SOC Guide</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
-                            Best practices for deploying rapid-response security kits in remote locations.
-                        </p>
-                        <a href="/" class="blog-card-cta">
-                            Download Guide <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
+                    <div class="nl-digest__card">
+                        <a class="nl-source-card" href="#" aria-label="Read source: Hook Phish on Akira activity">
+                            <div class="nl-source-card__media">
+                                <img src="/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="Ransomware awareness graphic" width="800" height="500" loading="lazy" decoding="async">
+                            </div>
+                            <div class="nl-source-card__body">
+                                <p class="nl-source-card__meta">Hook Phish · January 29, 2026</p>
+                                <p class="nl-source-card__headline">Ransomware Group Akira Hits Community Property Management</p>
+                            </div>
+                            <span class="nl-source-card__foot">Hook Phish</span>
                         </a>
                     </div>
                 </div>
+            </section>
+
+            <!-- 尾部：与头部呼应的法案导语 -->
+            <footer class="nl-section nl-tail">
+                <div class="nl-red-block animate-on-scroll">
+                    <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
+                    <div class="nl-prose">
+                        <p>As cyberattacks continue to emerge, the essential services of cities and countries are prone to becoming targets. As such, Hong Kong has taken a proactive step and enacted the city&rsquo;s first dedicated cybersecurity law.</p>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </footer>
+
+        </div>
     </main>
 
-    <!-- Blog Grid Section (Remaining cards) -->
-    <section class="py-16 px-5 bg-dark-bg blog-grid-section blog-grid-section-secondary border-t border-theme-subtle">
-        <div class="container mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 blog-grid">
-                <!-- Blog Card 4: Technology -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card group animate-on-scroll" style="transition-delay: 0.3s;" data-blog-category="Technology">
-                    <div class="blog-card-media">
-                        <img src="/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="The Future of AI in Cyber Defense">
-                    </div>
-                    <div class="blog-card-body">
-                        <h3 class="text-xl font-bold">The Future of AI in Cyber Defense</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
-                            Predictive analytics are changing how we defend against zero-day exploits.
-                        </p>
-                        <a href="/" class="blog-card-cta">
-                            Read Article <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
 
-                <!-- Blog Card 5: Education -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card group animate-on-scroll" style="transition-delay: 0.4s;" data-blog-category="Education">
-                    <div class="blog-card-media">
-                        <img src="/img/computer-science-degree.jpg" alt="Closing the Skills Gap">
-                    </div>
-                    <div class="blog-card-body">
-                        <h3 class="text-xl font-bold">Closing the Skills Gap</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
-                            How Fuxi's training mode helps junior analysts become threat hunters faster.
-                        </p>
-                        <a href="/" class="blog-card-cta">
-                            Learn More <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Blog Card 6: Threat Alert -->
-                <div class="bg-card-bg border border-theme-subtle rounded-xl blog-card group animate-on-scroll" style="transition-delay: 0.5s;" data-blog-category="Threat Alert">
-                    <div class="blog-card-media">
-                        <img src="/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="2026 Ransomware Trends">
-                    </div>
-                    <div class="blog-card-body">
-                        <h3 class="text-xl font-bold">2026 Ransomware Trends</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
-                            New double-extortion tactics targeting critical infrastructure in Asia.
-                        </p>
-                        <a href="/" class="blog-card-cta">
-                            Read Analysis <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Footer (Tailwind only) -->
     <footer class="bg-dark-bg relative py-12 px-5">
@@ -596,36 +604,6 @@
             });
         });
 
-        // Category filter (uses data-blog-category on cards and buttons)
-        const categoryButtons = document.querySelectorAll('.category-badge[data-blog-category]');
-        const blogCards = document.querySelectorAll('.blog-card[data-blog-category]');
-
-        categoryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                categoryButtons.forEach(btn => btn.classList.remove('is-active'));
-                button.classList.add('is-active');
-
-                const selected = button.getAttribute('data-blog-category') || 'All';
-
-                blogCards.forEach(card => {
-                    const cat = card.getAttribute('data-blog-category') || '';
-                    const match = selected === 'All' || cat === selected;
-                    if (match) {
-                        card.style.removeProperty('display');
-                        requestAnimationFrame(() => {
-                            card.style.removeProperty('opacity');
-                            card.style.removeProperty('transform');
-                        });
-                    } else {
-                        card.style.opacity = '0';
-                        card.style.transform = 'translateY(12px)';
-                        setTimeout(() => {
-                            card.style.display = 'none';
-                        }, 280);
-                    }
-                });
-            });
-        });
     </script>
 </body>
 </html>

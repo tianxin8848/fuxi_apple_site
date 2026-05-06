@@ -12,7 +12,7 @@
     --color-cyber-red: var(--color-accent);
 
     --color-dark-bg: #323030; /* rgb(50, 48, 48) */
-    --color-card-bg: #0f0a0a;
+    --color-card-bg: #323030; /* rgb(50, 48, 48) */
     --color-muted-text: #b9aeae;
 
     --color-border-subtle: rgba(230, 61, 61, 0.32);
