@@ -1,70 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Viewer</title>
     <style>
-        *, *::before, *::after {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        html {
-            background-color: #0a0a0a !important;
-            min-height: 100% !important;
-        }
-
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            min-height: 100vh !important;
-            background-color: #0a0a0a !important;
-            overflow: hidden !important;
-            background-image: none !important;
+        /* Match pages/blog.html pdf-hub --pdf-frame-bg */
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            overflow: hidden;
         }
 
         #pdf-container {
-            width: 100% !important;
-            height: 100% !important;
-            min-height: 100vh !important;
-            overflow: auto !important;
-            scrollbar-width: thin !important;
-            scrollbar-color: #333 #0a0a0a !important;
-            background-color: #0a0a0a !important;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            /* Avoid width oscillating when the vertical scrollbar appears (prevents resize→re-render loops). */
+            scrollbar-gutter: stable;
+            padding: 8px 0 16px;
+            scrollbar-width: thin;
+            scrollbar-color: #ff3b3b #0a0a0a;
         }
 
         #pdf-container::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 8px;
+            height: 8px;
         }
 
         #pdf-container::-webkit-scrollbar-track {
-            background: #0a0a0a !important;
+            background: #0a0a0a;
         }
 
         #pdf-container::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 2px;
+            background: linear-gradient(180deg, #ff3b3b, #8b0000);
+            border-radius: 999px;
         }
 
         #pdf-container::-webkit-scrollbar-thumb:hover {
-            background: #444;
+            background: linear-gradient(180deg, #ff4d4d, #9b0000);
         }
 
         .pdf-page {
-            margin: 0 auto !important;
-            display: block !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            margin-bottom: 4px !important;
-            background-color: #0a0a0a !important;
-        }
-
-        canvas {
-            background-color: #0a0a0a !important;
-            display: block !important;
+            margin: 0 auto;
+            display: block;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+            margin-bottom: 10px;
         }
 
         #loading {
@@ -72,62 +60,171 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            background: transparent !important;
+            color: rgba(250, 250, 250, 0.92);
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.875rem;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
-<body style="background-color: #0a0a0a !important;">
-    <div id="loading" style="background-color: transparent !important;">Loading PDF...</div>
-    <div id="pdf-container" style="background-color: #0a0a0a !important;"></div>
+<body>
+    <div id="loading">Loading PDF...</div>
+    <div id="pdf-container"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const params = new URLSearchParams(window.location.search || '');
-            const fromQuery = params.get('url');
-            /** When embedded from /blog, parent passes absolute path like /img/pdf/foo.pdf */
-            const url = fromQuery || '(CML) Newsletter ENG - Feb 21 2026.pdf';
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const fileParam = params.get('file');
+            const defaultPdf = '/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf';
+            const url = fileParam ? decodeURIComponent(fileParam) : defaultPdf;
+
             const container = document.getElementById('pdf-container');
             const loading = document.getElementById('loading');
 
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-            pdfjsLib.getDocument(url).promise.then(function(pdf) {
-                loading.style.display = 'none';
+            /** Logical CSS pixels per PDF point for layout width; sharpness comes from outputScale (DPR). */
+            const H_PAD = 24;
+            const MIN_VIEW_WIDTH = 280;
+            const ZOOM_MIN = 0.5;
+            const ZOOM_MAX = 3;
+            const ZOOM_STEP = 1.12;
 
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    pdf.getPage(i).then(function(page) {
-                        const viewport = page.getViewport({ scale: 1.5 });
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-                        canvas.className = 'pdf-page';
+            let pdfDoc = null;
+            let renderToken = 0;
+            let resizeTimer = null;
+            /** Width used for last successful paint; avoids re-entry when scrollbar/layout nudges by 1px. */
+            let lastRenderedInnerWidth = null;
+            /** Extra multiplier on top of “fit width” (1 = default). */
+            let zoomFactor = 1;
 
-                        context.fillStyle = '#0a0a0a';
-                        context.fillRect(0, 0, canvas.width, canvas.height);
+            function containerInnerWidth() {
+                const w = container.clientWidth - H_PAD;
+                return Math.max(w, MIN_VIEW_WIDTH);
+            }
 
-                        const renderContext = {
-                            canvasContext: context,
-                            viewport: viewport,
-                            background: 'rgb(10, 10, 10)'
-                        };
+            function postZoomStateToParent() {
+                if (!window.parent || window.parent === window) return;
+                try {
+                    window.parent.postMessage(
+                        {
+                            type: 'pdf-zoom-state',
+                            percent: Math.round(zoomFactor * 100),
+                            atMin: zoomFactor <= ZOOM_MIN + 1e-6,
+                            atMax: zoomFactor >= ZOOM_MAX - 1e-6
+                        },
+                        window.location.origin
+                    );
+                } catch (e) {}
+            }
 
-                        const task = page.render(renderContext);
-                        task.promise.then(function() {
-                            context.fillStyle = '#0a0a0a';
-                            context.globalCompositeOperation = 'destination-over';
-                            context.fillRect(0, 0, canvas.width, canvas.height);
-                            context.globalCompositeOperation = 'source-over';
-                            container.appendChild(canvas);
-                        });
-                    });
+            async function renderPages() {
+                if (!pdfDoc) return;
+                const token = ++renderToken;
+                const maxCssWidth = containerInnerWidth();
+                const outputScale = window.devicePixelRatio || 1;
+                const fragment = document.createDocumentFragment();
+
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    if (token !== renderToken) return;
+
+                    const page = await pdfDoc.getPage(i);
+                    if (token !== renderToken) return;
+
+                    const base = page.getViewport({ scale: 1 });
+                    const fitScale = maxCssWidth / base.width;
+                    const userScale = fitScale * zoomFactor;
+                    const viewport = page.getViewport({ scale: userScale });
+
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) continue;
+
+                    canvas.className = 'pdf-page';
+                    canvas.width = Math.floor(viewport.width * outputScale);
+                    canvas.height = Math.floor(viewport.height * outputScale);
+                    canvas.style.width = Math.floor(viewport.width) + 'px';
+                    canvas.style.height = Math.floor(viewport.height) + 'px';
+
+                    const renderContext = {
+                        canvasContext: ctx,
+                        viewport: viewport
+                    };
+                    if (outputScale !== 1) {
+                        renderContext.transform = [outputScale, 0, 0, outputScale, 0, 0];
+                    }
+
+                    await page.render(renderContext).promise;
+                    if (token !== renderToken) return;
+
+                    fragment.appendChild(canvas);
                 }
-            }).catch(function(error) {
+
+                if (token !== renderToken) return;
+                container.replaceChildren(fragment);
+                lastRenderedInnerWidth = maxCssWidth;
+                loading.style.display = 'none';
+                postZoomStateToParent();
+            }
+
+            function scheduleRender(force) {
+                if (!pdfDoc) return;
+                const w = containerInnerWidth();
+                if (
+                    !force &&
+                    lastRenderedInnerWidth != null &&
+                    Math.abs(w - lastRenderedInnerWidth) < 2
+                ) {
+                    return;
+                }
+                window.requestAnimationFrame(function () {
+                    renderPages().catch(function (err) {
+                        loading.textContent = 'Error rendering PDF: ' + (err && err.message ? err.message : String(err));
+                        loading.style.color = '#e63d3d';
+                        loading.style.display = 'block';
+                    });
+                });
+            }
+
+            function debouncedLayoutRender() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    scheduleRender(false);
+                }, 280);
+            }
+
+            pdfjsLib.getDocument(url).promise.then(function (pdf) {
+                pdfDoc = pdf;
+                scheduleRender(true);
+            }).catch(function (error) {
                 loading.textContent = 'Error loading PDF: ' + error.message;
-                loading.style.color = '#ff3b3b';
+                loading.style.color = '#e63d3d';
+            });
+
+            window.addEventListener('resize', debouncedLayoutRender);
+
+            /* Observe iframe viewport size only — not the scroll container (scrollbar toggles otherwise retrigger endlessly). */
+            if (typeof ResizeObserver !== 'undefined') {
+                const ro = new ResizeObserver(debouncedLayoutRender);
+                ro.observe(document.documentElement);
+            }
+
+            window.addEventListener('message', function (ev) {
+                if (ev.origin !== window.location.origin) return;
+                const data = ev.data;
+                if (!data || data.type !== 'pdf-zoom') return;
+                if (!pdfDoc) return;
+
+                if (data.action === 'in') {
+                    zoomFactor = Math.min(ZOOM_MAX, zoomFactor * ZOOM_STEP);
+                } else if (data.action === 'out') {
+                    zoomFactor = Math.max(ZOOM_MIN, zoomFactor / ZOOM_STEP);
+                } else if (data.action === 'reset') {
+                    zoomFactor = 1;
+                } else {
+                    return;
+                }
+                scheduleRender(true);
             });
         });
     </script>

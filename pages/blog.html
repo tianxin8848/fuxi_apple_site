@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Newsletters | PDF editions</title>
     <meta name="description" content="Read and download Fuxi Technology cybersecurity newsletters as PDF.">
     <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
@@ -146,6 +143,32 @@
             outline-offset: 2px;
         }
 
+        button.pdf-toolbar__link {
+            border: 0;
+            background: none;
+            cursor: pointer;
+            font: inherit;
+        }
+        button.pdf-toolbar__link:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+        }
+        button.pdf-toolbar__link:disabled:hover {
+            background: transparent;
+            color: rgba(250, 250, 250, 0.92);
+        }
+
+        .pdf-toolbar__zoom-pct {
+            min-width: 2.75rem;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: rgba(185, 174, 174, 0.95);
+            padding: 0.45rem 0.35rem;
+            user-select: none;
+        }
+
         .pdf-toolbar__icon {
             display: flex;
             width: 1.125rem;
@@ -254,9 +277,8 @@
             width: 100%;
             height: 100%;
             border: 0;
-            background: #0a0a0a !important;
+            background: #111;
             display: block;
-            filter: unset;
         }
 
         .pdf-doc-footnote {
@@ -349,7 +371,7 @@
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
 
-    <section class="pdf-first-screen mt-16 pb-6 pt-10 bg-dark-bg" aria-labelledby="pdf-hub-title">
+    <section class="pdf-first-screen mt-16 pb-6 pt-10 to-black" aria-labelledby="pdf-hub-title">
         <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
                 <div class="pdf-doc-frame__inner">
                     <div class="pdf-toolbar">
@@ -369,6 +391,27 @@
                                         <span class="pdf-toolbar__link-text">Open</span>
                                     </a>
                                 </li>
+                                <li class="pdf-toolbar__action">
+                                    <button type="button" id="pdf-zoom-out" class="pdf-toolbar__link" title="Zoom out" aria-label="Zoom out">
+                                        <span class="pdf-toolbar__icon pdf-toolbar__icon--fa" aria-hidden="true"><i class="fas fa-search-minus"></i></span>
+                                        <span class="pdf-toolbar__link-text">Smaller</span>
+                                    </button>
+                                </li>
+                                <li class="pdf-toolbar__action">
+                                    <span class="pdf-toolbar__zoom-pct" id="pdf-zoom-level" aria-live="polite">100%</span>
+                                </li>
+                                <li class="pdf-toolbar__action">
+                                    <button type="button" id="pdf-zoom-in" class="pdf-toolbar__link" title="Zoom in" aria-label="Zoom in">
+                                        <span class="pdf-toolbar__icon pdf-toolbar__icon--fa" aria-hidden="true"><i class="fas fa-search-plus"></i></span>
+                                        <span class="pdf-toolbar__link-text">Larger</span>
+                                    </button>
+                                </li>
+                                <li class="pdf-toolbar__action">
+                                    <button type="button" id="pdf-zoom-reset" class="pdf-toolbar__link" title="Fit to width" aria-label="Fit to width">
+                                        <span class="pdf-toolbar__icon pdf-toolbar__icon--fa" aria-hidden="true"><i class="fas fa-compress-arrows-alt"></i></span>
+                                        <span class="pdf-toolbar__link-text">Fit width</span>
+                                    </button>
+                                </li>
                             </ul>
                             <div class="pdf-toolbar__selectors dynamic-selectors">
                                 <div class="pdf-selector-wrap">
@@ -383,7 +426,7 @@
                         </div>
                     </div>
                     <div id="pdf-panel" class="pdf-doc-body">
-                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?v=2026050604&amp;url=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
+                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?file=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
                     </div>
 
                 </div>
@@ -491,11 +534,45 @@
             const DEFAULT_SERIES = 'full';
             const DEFAULT_ISSUE = 'feb-21';
 
+            const PDF_VIEWER_PAGE = '/img/pdf/pdf-viewer.html';
+
             const seriesSelect = document.getElementById('select-series');
             const issueSelect = document.getElementById('select-issue');
             const frame = document.getElementById('pdf-frame');
             const downloadLink = document.getElementById('pdf-download');
             const openTabLink = document.getElementById('pdf-open-tab');
+            const zoomLevelEl = document.getElementById('pdf-zoom-level');
+            const zoomInBtn = document.getElementById('pdf-zoom-in');
+            const zoomOutBtn = document.getElementById('pdf-zoom-out');
+            const zoomResetBtn = document.getElementById('pdf-zoom-reset');
+
+            function viewerSrcForPdf(href) {
+                return `${PDF_VIEWER_PAGE}?file=${encodeURIComponent(href)}`;
+            }
+
+            function postPdfViewerZoom(action) {
+                if (!frame || !frame.contentWindow) return;
+                try {
+                    frame.contentWindow.postMessage({ type: 'pdf-zoom', action }, window.location.origin);
+                } catch (e) {}
+            }
+
+            function resetZoomChrome() {
+                if (zoomLevelEl) zoomLevelEl.textContent = '100%';
+                if (zoomInBtn) zoomInBtn.disabled = false;
+                if (zoomOutBtn) zoomOutBtn.disabled = false;
+            }
+
+            window.addEventListener('message', function (ev) {
+                if (ev.origin !== window.location.origin) return;
+                const d = ev.data;
+                if (!d || d.type !== 'pdf-zoom-state') return;
+                if (zoomLevelEl && typeof d.percent === 'number') {
+                    zoomLevelEl.textContent = `${d.percent}%`;
+                }
+                if (zoomOutBtn) zoomOutBtn.disabled = !!d.atMin;
+                if (zoomInBtn) zoomInBtn.disabled = !!d.atMax;
+            });
 
             function getIssue(seriesId, issueId) {
                 const s = PDF_CATALOG[seriesId];
@@ -567,9 +644,8 @@
             function applySelection(seriesId, issueId, { syncHash = true } = {}) {
                 const issue = getIssue(seriesId, issueId);
                 if (!issue || !frame || !downloadLink || !openTabLink) return;
-                frame.src =
-                    '/img/pdf/pdf-viewer.html?v=2026050604&url=' +
-                    encodeURIComponent(issue.href);
+                resetZoomChrome();
+                frame.src = viewerSrcForPdf(issue.href);
                 frame.setAttribute(
                     'title',
                     `PDF: ${PDF_CATALOG[seriesId].label} — ${issue.label}`
@@ -612,6 +688,10 @@
             if (issueSelect) {
                 issueSelect.addEventListener('change', () => syncFromControls());
             }
+
+            if (zoomInBtn) zoomInBtn.addEventListener('click', () => postPdfViewerZoom('in'));
+            if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => postPdfViewerZoom('out'));
+            if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => postPdfViewerZoom('reset'));
 
             window.addEventListener('hashchange', () => {
                 const { seriesId, issueId } = parseHash();
