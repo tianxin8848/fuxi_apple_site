@@ -15,14 +15,14 @@
     --color-card-bg: #323030; /* rgb(50, 48, 48) */
     --color-muted-text: #b9aeae;
 
-    --color-border-subtle: rgba(230, 61, 61, 0.32);
-    --color-border-hover: rgba(255, 122, 110, 0.55);
-    --color-border-nav: rgba(230, 61, 61, 0.45);
-    --color-icon-well: rgba(179, 36, 36, 0.22);
+    --color-border-subtle: rgba(255, 0, 0, 0.32);
+    --color-border-hover: rgba(255, 0, 0, 0.55);
+    --color-border-nav: rgba(255, 0, 0, 0.45);
+    --color-icon-well: rgba(255, 0, 0, 0.22);
 
-    --section-divider-mid: rgba(255, 120, 110, 0.92);
-    --section-divider-side: rgba(230, 61, 61, 0.18);
-    --section-divider-glow: rgba(230, 61, 61, 0.28);
+    /* Solid divider line color (no gradient); glow uses same hue */
+    --section-divider-line: rgb(255, 0, 0);
+    --section-divider-glow: rgb(255, 0, 0);
 }
 
 .border-theme-subtle {
@@ -34,7 +34,7 @@
 }
 
 .hover\:border-theme-accent-soft:hover {
-    border-color: rgba(255, 122, 110, 0.42);
+    border-color: rgba(255, 0, 0, 0.42);
 }
 
 .border-theme-nav {
@@ -48,14 +48,7 @@
 .hr-theme {
     border: 0;
     height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        var(--section-divider-side) 12%,
-        var(--section-divider-mid) 50%,
-        var(--section-divider-side) 88%,
-        transparent
-    );
+    background-color: var(--section-divider-line);
     box-shadow: 0 0 12px var(--section-divider-glow);
 }
 
@@ -69,7 +62,7 @@
 }
 
 .border-cyber-red\/30 {
-    border-color: rgba(230, 61, 61, 0.35);
+    border-color: rgba(255, 0, 0, 0.35);
 }
 
 @keyframes fadeUp {
@@ -108,11 +101,11 @@
 }
 
 .border-cyber-red\/50 {
-    border-color: rgba(230, 61, 61, 0.48);
+    border-color: rgba(255, 0, 0, 0.48);
 }
 
 .hover\:border-cyber-red\/50:hover {
-    border-color: rgba(255, 122, 110, 0.55);
+    border-color: rgba(255, 0, 0, 0.55);
 }
 
 .font-sans {
@@ -147,12 +140,7 @@ section + section::before {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-        90deg,
-        var(--section-divider-side) 0%,
-        var(--section-divider-mid) 50%,
-        var(--section-divider-side) 100%
-    );
+    background-color: var(--section-divider-line);
     box-shadow: 0 0 16px var(--section-divider-glow), 0 1px 0 rgba(0, 0, 0, 0.35);
     pointer-events: none;
     z-index: 1;
@@ -170,12 +158,7 @@ body > footer.bg-dark-bg::before {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(
-        90deg,
-        var(--section-divider-side) 0%,
-        var(--section-divider-mid) 50%,
-        var(--section-divider-side) 100%
-    );
+    background-color: var(--section-divider-line);
     box-shadow: 0 0 16px var(--section-divider-glow);
     pointer-events: none;
 }

@@ -112,7 +112,7 @@
             right: 0;
             height: 2px;
             transform: translateY(-50%);
-            background: linear-gradient(to right, var(--section-divider-side), rgba(230, 61, 61, 0.5), var(--section-divider-side));
+            background-color: rgb(255, 0, 0);
         }
         .timeline-item {
             position: relative;
@@ -130,7 +130,7 @@
             border-radius: 50%;
             background-color: var(--color-accent);
             border: 3px solid var(--color-dark-bg);
-            box-shadow: 0 0 0 3px rgba(230, 61, 61, 0.35);
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.35);
             z-index: 3;
         }
         .timeline-card {
@@ -383,8 +383,9 @@
     </section>
 
     <!-- Footer (Tailwind only) -->
-    <footer class="bg-dark-bg relative py-12 px-5">
-        <div class="container mx-auto">
+    <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">
+        <div class="pointer-events-none absolute inset-0 z-0" style="background-color: rgb(4, 0, 0);" aria-hidden="true"></div>
+        <div class="container mx-auto relative z-10">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-2">
