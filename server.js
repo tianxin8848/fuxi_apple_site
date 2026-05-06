@@ -12,7 +12,7 @@ const publicRoot = process.env.USE_DIST === 'true' && fs.existsSync(distDir)
   : __dirname;
 
 // Serve media assets with backward-compatible URL prefixes.
-app.use('/img', express.static(path.join(__dirname, 'img', 'img')));
+app.use('/img', express.static(path.join(__dirname, 'img')));
 app.use('/img/img', express.static(path.join(__dirname, 'img', 'img')));
 // 静态文件服务（关闭默认 index，避免 "/" 被 index.html 抢先命中）
 app.use(express.static(publicRoot, { index: false }));
