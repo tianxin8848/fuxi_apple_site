@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newsletter | Critical Infrastructure Bill & Cyber Digest</title>
-    <meta name="description" content="Inaugural newsletter: Cap. 653 critical infrastructure law, curated cybersecurity headlines, and monthly security tips.">
+    <title>Newsletters | PDF editions</title>
+    <meta name="description" content="Read and download Fuxi Technology cybersecurity newsletters as PDF.">
     <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
     <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="/img/logimg/image.png">
-    <!-- Tailwind CSS v3 + Font Awesome (for icons) - Local versions -->
     <link rel="stylesheet" href="../css/vendor/tailwind.css">
-    <!-- Custom Tailwind config override for modern dark/cyber theme -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         'cyber-red': '#e63d3d',
-                        'dark-bg': '#323030', /* rgb(50,48,48) */
+                        'dark-bg': '#323030',
                         'card-bg': '#0f0a0a',
                         'muted-text': '#b9aeae',
                         'border-glow': 'rgba(230, 61, 61, 0.28)',
@@ -46,409 +44,207 @@
     <link rel="stylesheet" href="../css/site-nav.css">
     <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
     <style>
-        .blog-page {
-            --nl-red: #e63d3d;
-            --nl-red-deep: #b91c1c;
-            --nl-black: #0a0a0a;
-            --nl-paper: #ffffff;
-            --nl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        /* Layout inspired by doc viewer toolbars (e.g. selector + actions + full-width iframe) */
+        .pdf-hub {
+            --pdf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --pdf-toolbar-bg: #1c1a1a;
+            --pdf-toolbar-border: rgba(230, 61, 61, 0.38);
+            --pdf-frame-bg: #0a0a0a;
         }
 
-        .nl-page {
-            background:#323030;
-            color: #fafafa;
-        }
-
-        /* Vendor tailwind.css is a subset (no pt-16): set top pad here + reuse for first-fold math */
-        #newsletter {
-            --newsletter-nav-pad: max(4rem, calc(var(--nav-bottom, 48px) + 2px + env(safe-area-inset-top, 0px)));
-            padding-top: var(--newsletter-nav-pad);
-        }
-
-        .nl-panel {
-            max-width: 56rem;
-        }
-
-        /* Fixed to viewport right (outside newsletter column), below site nav z-index */
-        .nl-screen-cta {
-            position: fixed;
-            right: max(1rem, env(safe-area-inset-right, 0px));
-            z-index: 40;
-            text-decoration: none;
-            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
-        }
-        @media (min-width: 768px) {
-            .nl-screen-cta {
-                top: calc(var(--newsletter-nav-pad, 4rem) + 38svh);
-                transform: translateY(-50%);
-            }
-        }
-        @media (max-width: 767.98px) {
-            .nl-screen-cta {
-                top: auto;
-                bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
-                transform: none;
-            }
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        #nl-cyber-digest,
-        #nl-critical-bill-tail {
-            scroll-margin-top: var(--newsletter-nav-pad, 4rem);
-        }
-
-        .nl-section + .nl-section {
-            margin-top: 3.5rem;
-            padding-top: 3rem;
-            border-top: 1px solid rgba(230, 61, 61, 0.35);
-        }
-
-        .nl-masthead {
-            margin: 0 0 1.5rem;
-            font-size: clamp(2.5rem, 10vw, 4.25rem);
-            font-weight: 800;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            line-height: 0.95;
-            color: #fff;
-        }
-
-        .nl-hero {
-            display: grid;
-            grid-template-columns: 1fr minmax(2.5rem, 4.5rem);
-            gap: 0;
-            min-height: 12rem;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .nl-hero__media {
-            position: relative;
-            background: #111;
-            min-height: 11rem;
-        }
-        .nl-hero__media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .nl-hero__accent {
-            background: var(--nl-red);
-            min-height: 100%;
-        }
-
-        .nl-head__grid {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        @media (min-width: 800px) {
-            .nl-head__grid {
-                grid-template-columns: 1.15fr 0.85fr;
-                align-items: stretch;
-            }
-        }
-
-        .nl-red-block {
-            background: var(--nl-red);
-            color: #fff;
-            padding: 1.05rem 1.2rem 1.15rem;
-            box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55);
-        }
-        .nl-red-block h2 {
-            margin: 0;
-            font-size: clamp(1.35rem, 3.5vw, 1.85rem);
-            font-weight: 800;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-        }
-        .nl-red-block .nl-byline {
-            margin-top: 0.65rem;
-            font-size: 0.9375rem;
-            font-weight: 600;
-            opacity: 0.95;
-        }
-        .nl-red-block .nl-prose {
-            margin-top: 0.85rem;
-            font-size: 0.9375rem;
-            line-height: 1.65;
-            font-weight: 500;
-        }
-        .nl-red-block .nl-prose p + p {
-            margin-top: 0.65rem;
-        }
-
-        .nl-head__aside {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-        .nl-tips {
-            padding: 1.25rem 1.15rem;
+        .pdf-doc-frame {
             border: 1px solid rgba(230, 61, 61, 0.35);
-            background: rgba(20, 20, 20, 0.95);
-        }
-        .nl-tips h3 {
-            margin: 0 0 0.85rem;
-            font-size: 0.8125rem;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: #fff;
-        }
-        .nl-tips ul {
-            margin: 0;
-            padding-left: 1.1rem;
-            font-size: 0.875rem;
-            line-height: 1.55;
-            color: rgba(235, 235, 235, 0.92);
-        }
-        .nl-tips li + li {
-            margin-top: 0.5rem;
-        }
-        .nl-head__figure {
-            margin: 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
             overflow: hidden;
-            background: #111;
-        }
-        .nl-head__figure img {
-            width: 100%;
-            height: auto;
-            display: block;
-            vertical-align: middle;
+            background: var(--pdf-frame-bg);
+            box-shadow:
+                0 28px 56px -24px rgba(0, 0, 0, 0.72),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
         }
 
-        /* First fold: hero strip stays short; header fills one viewport below main top padding */
-        .nl-head {
+        .pdf-doc-frame__inner {
             display: flex;
             flex-direction: column;
-            min-height: calc(100svh - var(--newsletter-nav-pad, 4rem));
+            min-height: min(82vh, 960px);
         }
-        .nl-head .nl-hero {
+
+        .pdf-toolbar {
             flex: 0 0 auto;
-            min-height: 0;
-            max-height: clamp(8.5rem, 22svh, 12.5rem);
-            height: clamp(8.5rem, 22svh, 12.5rem);
+            background: var(--pdf-toolbar-bg);
+            border-bottom: 1px solid var(--pdf-toolbar-border);
         }
-        .nl-head .nl-hero__media {
-            min-height: 0;
-        }
-        /* —— Middle: digest rail —— */
-        .nl-mid__bar {
+
+        .pdf-toolbar__primary {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            gap: 0.75rem;
-            padding-bottom: 0.85rem;
-            margin-bottom: 1.25rem;
-            border-bottom: 3px solid var(--nl-red);
-            font-size: 0.8125rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-        }
-        .nl-mid__bar time {
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .nl-mid__bar a {
-            color: #e8e8e8;
-            text-decoration: none;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            text-transform: none;
-        }
-        .nl-mid__bar a:hover {
-            color: var(--nl-red);
+            gap: 0.75rem 1.25rem;
+            padding: 0.55rem 0.85rem 0.65rem;
         }
 
-        .nl-mid__banner {
-            background: var(--nl-red);
-            color: #fff;
-            padding: 1.35rem 1.25rem 1.5rem;
-            margin-bottom: 2.25rem;
-        }
-        .nl-mid__banner h2 {
-            margin: 0;
-            font-size: clamp(1.25rem, 3.2vw, 1.65rem);
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            line-height: 1.2;
-        }
-        .nl-mid__banner p {
-            margin: 0.85rem 0 0;
-            font-size: 0.9375rem;
-            line-height: 1.6;
-            font-weight: 500;
-            max-width: 52rem;
-        }
-
-        .nl-digest-row {
-            display: grid;
-            gap: 1.5rem;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
         @media (min-width: 768px) {
-            .nl-digest-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 2rem;
+            .pdf-toolbar__primary {
+                padding: 0.6rem 1rem 0.7rem;
             }
-            .nl-digest-row--reverse .nl-digest__text {
-                order: 2;
-            }
-            .nl-digest-row--reverse .nl-digest__card {
-                order: 1;
-            }
-        }
-        .nl-digest__text h3 {
-            margin: 0 0 0.65rem;
-            font-size: 1.125rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: #fff;
-        }
-        .nl-digest__text p {
-            margin: 0;
-            font-size: 0.9375rem;
-            line-height: 1.65;
-            color: rgba(220, 218, 218, 0.95);
         }
 
-        .nl-source-card {
+        .pdf-toolbar__actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.15rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .pdf-toolbar__link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.65rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: rgba(250, 250, 250, 0.92);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: background 0.2s var(--pdf-ease), color 0.2s var(--pdf-ease);
+        }
+        .pdf-toolbar__link:hover {
+            background: rgba(230, 61, 61, 0.18);
+            color: #fff;
+        }
+        .pdf-toolbar__link:focus-visible {
+            outline: 2px solid #e63d3d;
+            outline-offset: 2px;
+        }
+
+        .pdf-toolbar__icon {
+            display: flex;
+            width: 1.125rem;
+            height: 1.125rem;
+            flex-shrink: 0;
+            opacity: 0.95;
+        }
+        .pdf-toolbar__icon svg {
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+        }
+        .pdf-toolbar__icon--fa {
+            font-size: 0.875rem;
+            line-height: 1;
+            width: 1.125rem;
+            justify-content: center;
+        }
+
+        .pdf-doc-footnote code {
+            font-size: 0.7rem;
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(230, 61, 61, 0.22);
+        }
+
+        .pdf-toolbar__selectors {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 0.65rem 1.1rem;
+        }
+
+        .pdf-selector-wrap {
             display: flex;
             flex-direction: column;
-            height: 100%;
-            background: var(--nl-paper);
-            color: #111;
-            text-decoration: none;
-            border-radius: 2px;
-            overflow: hidden;
-            box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.65);
-            transition: transform 0.25s var(--nl-ease), box-shadow 0.25s var(--nl-ease);
-        }
-        .nl-source-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 22px 50px -12px rgba(230, 61, 61, 0.25);
-        }
-        .nl-source-card:focus-visible {
-            outline: 2px solid var(--nl-red);
-            outline-offset: 3px;
-        }
-        .nl-source-card__media {
-            aspect-ratio: 16 / 10;
-            background: #e5e5e5;
-            overflow: hidden;
-        }
-        .nl-source-card__media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .nl-source-card__body {
-            padding: 0.75rem 1rem 0.65rem;
-            flex: 1;
-        }
-        .nl-source-card__meta {
-            font-size: 0.6875rem;
-            color: #555;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-        .nl-source-card__headline {
-            margin: 0.4rem 0 0;
-            font-size: 0.9375rem;
-            font-weight: 800;
-            line-height: 1.35;
-            color: #0a0a0a;
-        }
-        .nl-source-card__foot {
-            margin-top: auto;
-            padding: 0.55rem 1rem;
-            background: var(--nl-red);
-            color: #fff;
-            font-size: 0.8125rem;
-            font-weight: 700;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-        }
-
-        .nl-tail .nl-red-block h2 {
-            max-width: 22em;
-        }
-
-        /* Book-style horizontal page turns (enabled via html.nl-book-active + JS)
-           Only the active page stays in normal flow so document height matches one
-           “spread”; other pages are absolutely stacked (no triple-height blank gap). */
-        html.nl-book-active .nl-book__viewport--stacked {
-            display: block;
-            position: relative;
-            overflow-x: clip;
-            overflow-y: clip;
-        }
-        html.nl-book-active .nl-book__viewport--stacked > .nl-book__page {
+            gap: 0.2rem;
             min-width: 0;
+        }
+
+        .pdf-selector-label {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(185, 174, 174, 0.95);
+        }
+
+        .pdf-selector {
+            min-width: 11.5rem;
+            max-width: 100%;
+            padding: 0.4rem 2rem 0.4rem 0.55rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #fafafa;
+            background: #0f0c0c;
+            border: 1px solid rgba(230, 61, 61, 0.35);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e63d3d' d='M1.4 0L6 4.6 10.6 0 12 1.4l-6 6-6-6z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+        }
+        .pdf-selector:hover {
+            border-color: rgba(230, 61, 61, 0.55);
+        }
+        .pdf-selector:focus {
+            outline: none;
+            border-color: #e63d3d;
+            box-shadow: 0 0 0 2px rgba(230, 61, 61, 0.25);
+        }
+
+        .pdf-doc-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            background: var(--pdf-frame-bg);
+        }
+
+        .pdf-doc-body iframe {
+            flex: 1 1 auto;
             width: 100%;
-            transition: transform 0.68s var(--nl-ease);
-            will-change: transform;
+            min-height: min(72vh, 820px);
+            border: 0;
+            background: #111;
+            display: block;
         }
-        /* Active page sets viewport height */
-        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(1),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(2),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(3) {
-            position: relative;
-            z-index: 3;
+
+        .pdf-doc-footnote {
+            margin: 0;
+            padding: 0.5rem 0.85rem 0.65rem;
+            font-size: 0.75rem;
+            line-height: 1.45;
+            color: rgba(185, 174, 174, 0.88);
+            background: rgba(0, 0, 0, 0.35);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(2),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(3),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(1),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(3),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(1),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(2) {
-            position: absolute;
-            inset: 0;
-            /* Fill viewport sized by the in-flow page only — no min-height (content would stretch scroll) */
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(1) {
-            transform: translateX(0);
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(2),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="0"] > .nl-book__page:nth-child(3) {
-            transform: translateX(100%);
-            z-index: 1;
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(1) {
-            transform: translateX(-100%);
-            z-index: 1;
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(2) {
-            transform: translateX(0);
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="1"] > .nl-book__page:nth-child(3) {
-            transform: translateX(100%);
-            z-index: 2;
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(1),
-        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(2) {
-            transform: translateX(-100%);
-            z-index: 1;
-        }
-        html.nl-book-active .nl-book__viewport--stacked[data-page="2"] > .nl-book__page:nth-child(3) {
-            transform: translateX(0);
-        }
-        html.nl-book-active .nl-book__viewport--stacked > .nl-book__page[inert] {
-            user-select: none;
+
+        @media (max-width: 639.98px) {
+            .pdf-toolbar__primary {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pdf-toolbar__actions {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                padding-bottom: 0.5rem;
+            }
+            .pdf-toolbar__selectors {
+                width: 100%;
+            }
+            .pdf-selector-wrap {
+                flex: 1 1 auto;
+            }
+            .pdf-selector {
+                width: 100%;
+            }
         }
 
         .animate-on-scroll {
             opacity: 0;
-            transform: translate3d(0, 22px, 0);
-            transition: opacity 0.75s var(--nl-ease), transform 0.75s var(--nl-ease);
+            transform: translate3d(0, 18px, 0);
+            transition: opacity 0.7s var(--pdf-ease), transform 0.7s var(--pdf-ease);
         }
         .animate-on-scroll.visible {
             opacity: 1;
@@ -461,19 +257,14 @@
                 opacity: 1;
                 transform: none;
             }
-            html.nl-book-active .nl-book__viewport--stacked > .nl-book__page {
-                transition-duration: 0.01ms !important;
-            }
-            .nl-source-card {
+            .pdf-toolbar__link,
+            .pdf-selector {
                 transition: none;
-            }
-            .nl-source-card:hover {
-                transform: none;
             }
         }
     </style>
 </head>
-<body class="font-sans text-white bg-dark-bg blog-page nl-page">
+<body class="font-sans text-white bg-dark-bg pdf-hub">
 
     <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
@@ -498,7 +289,6 @@
                 </button>
             </div>
         </div>
-        <!-- mobile menu (simple) -->
         <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-theme-nav px-5 py-4 flex flex-col space-y-3">
             <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
             <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
@@ -511,145 +301,65 @@
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
 
-
-    <main id="newsletter" class="pb-20 px-4 sm:px-5">
-        <a id="nl-screen-cta" class="nl-screen-cta bg-cyber-red text-white px-4 py-3 rounded-md text-sm font-semibold hover:bg-red-700 transition" href="#nl-cyber-digest">Read more</a>
-        <div class="nl-panel mx-auto">
-            <div class="nl-book">
-            <div class="nl-book__viewport" id="nl-book-viewport" data-page="0" aria-live="polite">
-
-            <!-- 头部：主视觉 + 红区正文 + 月度提示与配图 -->
-            <div class="nl-book__page">
-            <header class="nl-section nl-head">
-                <h1 class="nl-masthead">Newsletter</h1>
-                <div class="nl-hero">
-                    <div class="nl-hero__media">
-                        <img src="/img/newsletterspic/blog1.png" alt="Newsletter hero: critical infrastructure and cybersecurity visual" width="1200" height="800" decoding="async" fetchpriority="high">
-                    </div>
-                    <div class="nl-hero__accent" role="presentation"></div>
-                </div>
-
-                <div class="nl-head__grid">
-                    <div class="nl-red-block animate-on-scroll">
-                        <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
-                        <p class="nl-byline">Written by: Chu Wai Lam <span class="opacity-90">@ Alpacian</span></p>
-                        <div class="nl-prose">
-                            <p>Welcome to the inaugural issue of our newsletter, where we aim to enlighten our readers about the ever-changing landscape of technology, cybersecurity, and digital safety.</p>
-                            <p>Today, we will briefly talk about the <strong>Protection of Critical Infrastructures (Computer Systems) Ordinance</strong> (Cap. 653) and why we should care.</p>
-                        </div>
-                    </div>
-                    <div class="nl-head__aside">
-                        <div class="nl-tips animate-on-scroll" aria-labelledby="nl-tips-h">
-                            <h3 id="nl-tips-h">Monthly Cybersecurity Tips</h3>
-                            <ul>
-                                <li>Always lock your phone, tablet, and computer when not in use.</li>
-                                <li>Consider using a password manager to store all your passwords safely.</li>
-                                <li>Adjust privacy settings on social media to limit what the public can see online.</li>
-                            </ul>
-                        </div>
-                        <figure class="nl-head__figure animate-on-scroll">
-                            <img src="/img/newsletterspic/blog2.png" alt="Legal and digital infrastructure theme illustration" width="900" height="600" loading="lazy" decoding="async">
-                        </figure>
-                    </div>
-                </div>
+    <section class="mt-16 px-5 lg:px-8 pb-6 pt-10 bg-gradient-to-b from-dark-bg to-black min-h-[calc(100dvh-4rem)]" aria-labelledby="pdf-hub-title">
+        <div class="container mx-auto max-w-6xl">
+            <header class="mb-8 md:mb-10 animate-on-scroll">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-cyber-red mb-2">Newsletters</p>
+                <h1 id="pdf-hub-title" class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+                    Cyber digest <span class="text-cyber-red">PDF editions</span>
+                </h1>
+                <p class="mt-4 text-muted-text text-base md:text-lg max-w-2xl leading-relaxed">
+                    Pick a <strong class="text-gray-200 font-semibold">series</strong> and <strong class="text-gray-200 font-semibold">issue</strong> in the bar (same pattern as a product document viewer), then read inline or download. If the preview is blank on your device, use <em class="not-italic text-gray-300">Open</em>.
+                </p>
             </header>
+
+            <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
+                <div class="pdf-doc-frame__inner">
+                    <div class="pdf-toolbar">
+                        <div class="pdf-toolbar__primary">
+                            <ul class="pdf-toolbar__actions">
+                                <li class="pdf-toolbar__action">
+                                    <a id="pdf-download" class="pdf-toolbar__link" href="/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf" download="(CML) Newsletter ENG - Feb 21 2026.pdf">
+                                        <span class="pdf-toolbar__icon" aria-hidden="true">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" focusable="false" role="presentation"><path d="M480.6,341.4c-11.3,0-20.4,9.1-20.4,20.4v98.4H51.8v-98.4c0-11.3-9.1-20.4-20.4-20.4c-11.3,0-20.4,9.1-20.4,20.4v118.8 c0,11.3,9.1,20.4,20.4,20.4h449.2c11.3,0,20.4-9.1,20.4-20.4V361.8C501,350.5,491.9,341.4,480.6,341.4z"/><path d="m241,365.6c11.5,11.6 25.6,5.2 29.9,0l117.3-126.2c7.7-8.3 7.2-21.2-1.1-28.9-8.3-7.7-21.2-7.2-28.8,1.1l-81.9,88.1v-265.2c0-11.3-9.1-20.4-20.4-20.4-11.3,0-20.4,9.1-20.4,20.4v265.3l-81.9-88.1c-7.7-8.3-20.6-8.7-28.9-1.1-8.3,7.7-8.7,20.6-1.1,28.9l117.3,126.1z"/></svg>
+                                        </span>
+                                        <span class="pdf-toolbar__link-text">Download</span>
+                                    </a>
+                                </li>
+                                <li class="pdf-toolbar__action">
+                                    <a id="pdf-open-tab" class="pdf-toolbar__link" href="/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf" target="_blank" rel="noopener noreferrer">
+                                        <span class="pdf-toolbar__icon pdf-toolbar__icon--fa" aria-hidden="true"><i class="fas fa-external-link-alt"></i></span>
+                                        <span class="pdf-toolbar__link-text">Open</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="pdf-toolbar__selectors dynamic-selectors">
+                                <div class="pdf-selector-wrap">
+                                    <label for="select-series" class="pdf-selector-label">系列 · Series</label>
+                                    <select id="select-series" class="pdf-selector" aria-describedby="series-hint"></select>
+                                </div>
+                                <div class="pdf-selector-wrap">
+                                    <label for="select-issue" class="pdf-selector-label">期号 · Issue</label>
+                                    <select id="select-issue" class="pdf-selector"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pdf-panel" class="pdf-doc-body">
+                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
+                    </div>
+                    <p id="series-hint" class="pdf-doc-footnote">
+                        <span class="text-cyber-red font-semibold">Tip:</span> “Full digest” lists every English issue; “CML &amp; legal spotlight” only carries the CML-focused edition. Share a view with <code class="text-gray-300">#series/issue</code> in the URL (e.g. <code class="text-gray-300">#full/feb-21</code>).
+                    </p>
+                </div>
             </div>
-
-            <!-- 中部：日期栏 + 红横幅 + 多信息源摘要（交错排版） -->
-            <div class="nl-book__page">
-            <section id="nl-cyber-digest" class="nl-section nl-mid" aria-labelledby="nl-digest-title">
-                <div class="nl-mid__bar">
-                    <time datetime="2026-02-20">February 20, 2026</time>
-                    <a href="https://www.alpacian.com" rel="noopener noreferrer" target="_blank">www.alpacian.com</a>
-                </div>
-                <div class="nl-mid__banner animate-on-scroll">
-                    <h2 id="nl-digest-title">The Latest News in Cyber Security</h2>
-                    <p>The prevalence of cybersecurity incidents around the world is nothing to scoff at. This month, we have selected the following news articles that we deemed worthy of your attention. Stay informed, and stay protected.</p>
-                </div>
-
-                <div class="nl-digest-row animate-on-scroll">
-                    <div class="nl-digest__text">
-                        <h3>Terra Holdings Data Breach</h3>
-                        <p>An investigation is underway after sensitive corporate data may have been exposed. Early reporting points to a third-party integration as the initial access vector, with regulators monitoring disclosure timelines and customer notification obligations.</p>
-                    </div>
-                    <div class="nl-digest__card">
-                        <a class="nl-source-card" href="#" aria-label="Read source: Strauss Borrelli on Terra Holdings">
-                            <div class="nl-source-card__media">
-                                <img src="/img/Cover-Cyber-Security-1-1600x600.jpg" alt="City skyline, news card thumbnail" width="800" height="500" loading="lazy" decoding="async">
-                            </div>
-                            <div class="nl-source-card__body">
-                                <p class="nl-source-card__meta">Strauss Borrelli · February 16, 2026</p>
-                                <p class="nl-source-card__headline">Terra Holdings Data Breach Investigation</p>
-                            </div>
-                            <span class="nl-source-card__foot">Strauss Borrelli</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="nl-digest-row nl-digest-row--reverse animate-on-scroll">
-                    <div class="nl-digest__text">
-                        <h3>Ransomware Attack Strikes Hotel</h3>
-                        <p>Operations at a major hospitality property were disrupted after encryption impacted reservations and back-office systems. Incident response teams are coordinating with vendors to restore services while assessing whether guest data was affected.</p>
-                    </div>
-                    <div class="nl-digest__card">
-                        <a class="nl-source-card" href="#" aria-label="Read source: Cyber Press on Washington hotel ransomware">
-                            <div class="nl-source-card__media">
-                                <img src="/img/screenshot-event.png" alt="Cybersecurity news website preview" width="800" height="500" loading="lazy" decoding="async">
-                            </div>
-                            <div class="nl-source-card__body">
-                                <p class="nl-source-card__meta">Cyber Press · February 14, 2026</p>
-                                <p class="nl-source-card__headline">Washington Hotel Suffers Ransomware Attack, Systems Disrupted</p>
-                            </div>
-                            <span class="nl-source-card__foot">Cyber Press</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="nl-digest-row animate-on-scroll">
-                    <div class="nl-digest__text">
-                        <h3>Akira Strikes Again</h3>
-                        <p>The ransomware group continues to target property-management and professional-services firms. Analysts highlight repeat use of VPN and firewall edge devices for footholds, underscoring the need for timely patching and segmented backups.</p>
-                    </div>
-                    <div class="nl-digest__card">
-                        <a class="nl-source-card" href="#" aria-label="Read source: Hook Phish on Akira activity">
-                            <div class="nl-source-card__media">
-                                <img src="/img/Ransomware-Protection-Keep-Your-Data-Safe.jpg" alt="Ransomware awareness graphic" width="800" height="500" loading="lazy" decoding="async">
-                            </div>
-                            <div class="nl-source-card__body">
-                                <p class="nl-source-card__meta">Hook Phish · January 29, 2026</p>
-                                <p class="nl-source-card__headline">Ransomware Group Akira Hits Community Property Management</p>
-                            </div>
-                            <span class="nl-source-card__foot">Hook Phish</span>
-                        </a>
-                    </div>
-                </div>
-            </section>
-            </div>
-
-            <!-- 尾部：与头部呼应的法案导语 -->
-            <div class="nl-book__page">
-            <footer id="nl-critical-bill-tail" class="nl-section nl-tail">
-                <div class="nl-red-block animate-on-scroll">
-                    <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
-                    <div class="nl-prose">
-                        <p>As cyberattacks continue to emerge, the essential services of cities and countries are prone to becoming targets. As such, Hong Kong has taken a proactive step and enacted the city&rsquo;s first dedicated cybersecurity law.</p>
-                    </div>
-                </div>
-            </footer>
-            </div>
-
-            </div>
-            </div>
-
+            <p class="mt-4 text-sm text-muted-text text-center md:text-left">
+                <i class="fas fa-info-circle text-cyber-red mr-1" style="opacity:0.85" aria-hidden="true"></i>
+                Inline preview uses your browser PDF viewer; layout can differ on phones and tablets.
+            </p>
         </div>
+    </section>
 
-       
-
-    </main>
-
-
-
-    <!-- Footer (Tailwind only) -->
     <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">
         <div class="pointer-events-none absolute inset-0 z-0" style="background-color: rgb(4, 0, 0);" aria-hidden="true"></div>
         <div class="container mx-auto relative z-10">
@@ -706,176 +416,200 @@
         </div>
     </footer>
 
-    <!-- Simple Intersection Observer for scroll animations (lightweight) -->
     <script>
-        // mobile menu toggle
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if(menuBtn && mobileMenu) {
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-        const bookViewport = document.getElementById('nl-book-viewport');
-        const bookPages = bookViewport ? Array.from(bookViewport.querySelectorAll(':scope > .nl-book__page')) : [];
-        const allAnimated = document.querySelectorAll('.animate-on-scroll');
-        const animatedElements = Array.from(allAnimated).filter((el) => !(bookViewport && bookViewport.contains(el)));
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-        animatedElements.forEach(el => observer.observe(el));
-
-        document.addEventListener('DOMContentLoaded', () => {
-            animatedElements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if(rect.top < window.innerHeight - 100) {
-                    el.classList.add('visible');
-                    observer.unobserve(el);
-                }
-            });
-        });
-
-        function revealBookPageAnimates(pageEl) {
-            if (!pageEl) return;
-            pageEl.querySelectorAll('.animate-on-scroll').forEach((el) => {
-                el.classList.add('visible');
-            });
-        }
-
-        // Book turns + floating CTA (scroll fallback when book layout is unavailable)
         (function () {
-            const cta = document.getElementById('nl-screen-cta');
-            const main = document.getElementById('newsletter');
-            const mid = document.getElementById('nl-cyber-digest');
-            const tail = document.getElementById('nl-critical-bill-tail');
-            if (!cta || !main || !mid || !tail) return;
-
-            const bookEnabled = Boolean(bookViewport && bookPages.length === 3);
-
-            function navOffset() {
-                const pad = getComputedStyle(main).paddingTop;
-                const n = parseFloat(pad);
-                return Number.isFinite(n) ? n + 12 : 80;
-            }
-
-            function docY(el) {
-                const r = el.getBoundingClientRect();
-                return r.top + window.scrollY;
-            }
-
-            function applyBookInert(index) {
-                bookPages.forEach((page, i) => {
-                    if (i === index) page.removeAttribute('inert');
-                    else page.setAttribute('inert', '');
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
                 });
             }
 
-            function setBookPage(index, { syncHash = true, scrollHost = true } = {}) {
-                if (!bookEnabled || !bookViewport) return;
-                const i = Math.max(0, Math.min(2, index));
-                bookViewport.dataset.page = String(i);
-                applyBookInert(i);
-                revealBookPageAnimates(bookPages[i]);
-                if (syncHash) {
-                    const h = i === 0 ? '' : i === 1 ? '#nl-cyber-digest' : '#nl-critical-bill-tail';
-                    const url = h ? `${location.pathname}${location.search}${h}` : `${location.pathname}${location.search}`;
-                    history.replaceState(null, '', url);
-                }
-                if (scrollHost && main) {
-                    const top = main.getBoundingClientRect().top + window.scrollY - 8;
-                    window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
-                }
-                updateFloatingCta();
+            /** Each series lists issues (like product line + version selector in the reference HTML). */
+            const PDF_CATALOG = {
+                full: {
+                    label: 'English · Full digest',
+                    issues: [
+                        {
+                            id: 'feb-21',
+                            label: 'Feb 21, 2026 (CML)',
+                            href: '/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf',
+                            downloadName: '(CML) Newsletter ENG - Feb 21 2026.pdf',
+                        },
+                        {
+                            id: 'feb-20',
+                            label: 'Feb 20, 2026',
+                            href: '/img/pdf/Newsletter%20ENG%20-%20Feb%2020%202026.pdf',
+                            downloadName: 'Newsletter ENG - Feb 20 2026.pdf',
+                        },
+                    ],
+                },
+                cml: {
+                    label: 'English · CML & legal spotlight',
+                    issues: [
+                        {
+                            id: 'feb-21',
+                            label: 'Feb 21, 2026 (CML)',
+                            href: '/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf',
+                            downloadName: '(CML) Newsletter ENG - Feb 21 2026.pdf',
+                        },
+                    ],
+                },
+            };
+
+            const DEFAULT_SERIES = 'full';
+            const DEFAULT_ISSUE = 'feb-21';
+
+            const seriesSelect = document.getElementById('select-series');
+            const issueSelect = document.getElementById('select-issue');
+            const frame = document.getElementById('pdf-frame');
+            const downloadLink = document.getElementById('pdf-download');
+            const openTabLink = document.getElementById('pdf-open-tab');
+
+            function getIssue(seriesId, issueId) {
+                const s = PDF_CATALOG[seriesId];
+                if (!s) return null;
+                return s.issues.find((x) => x.id === issueId) || null;
             }
 
-            function initBookFromHash() {
-                const h = (location.hash || '').replace(/^#/, '');
-                if (h === 'nl-cyber-digest') setBookPage(1, { syncHash: false, scrollHost: true });
-                else if (h === 'nl-critical-bill-tail') setBookPage(2, { syncHash: false, scrollHost: true });
-                else setBookPage(0, { syncHash: false, scrollHost: false });
+            function firstIssueId(seriesId) {
+                const s = PDF_CATALOG[seriesId];
+                return s && s.issues[0] ? s.issues[0].id : null;
             }
 
-            function currentBookPage() {
-                if (!bookEnabled || !bookViewport) return 0;
-                return Math.max(0, Math.min(2, parseInt(bookViewport.dataset.page, 10) || 0));
+            function fillSeriesSelect() {
+                if (!seriesSelect) return;
+                seriesSelect.innerHTML = '';
+                Object.keys(PDF_CATALOG).forEach((id) => {
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.textContent = PDF_CATALOG[id].label;
+                    seriesSelect.appendChild(opt);
+                });
             }
 
-            function updateFloatingCta() {
-                if (bookEnabled) {
-                    const p = currentBookPage();
-                    if (p === 0) {
-                        cta.setAttribute('href', '#nl-cyber-digest');
-                        cta.textContent = 'Read more';
-                        cta.setAttribute('aria-label', 'Turn page to cybersecurity news digest');
-                    } else if (p === 1) {
-                        cta.setAttribute('href', '#nl-critical-bill-tail');
-                        cta.textContent = 'Continue reading';
-                        cta.setAttribute('aria-label', 'Turn page to Critical Infrastructure Bill closing section');
-                    } else {
-                        cta.setAttribute('href', '#newsletter');
-                        cta.textContent = 'Back to top';
-                        cta.setAttribute('aria-label', 'Return to first page of newsletter');
+            function fillIssueSelect(seriesId, preferredIssueId) {
+                if (!issueSelect) return;
+                const s = PDF_CATALOG[seriesId];
+                issueSelect.innerHTML = '';
+                if (!s) return;
+                let chosen = preferredIssueId;
+                if (!getIssue(seriesId, chosen)) chosen = firstIssueId(seriesId);
+                s.issues.forEach((iss) => {
+                    const opt = document.createElement('option');
+                    opt.value = iss.id;
+                    opt.textContent = iss.label;
+                    issueSelect.appendChild(opt);
+                });
+                if (chosen) issueSelect.value = chosen;
+            }
+
+            function parseHash() {
+                const raw = (location.hash || '').replace(/^#/, '').trim();
+                if (!raw) return { seriesId: DEFAULT_SERIES, issueId: DEFAULT_ISSUE };
+                const parts = raw.split('/').map((p) => p.trim()).filter(Boolean);
+                if (parts.length === 1) {
+                    const token = parts[0];
+                    if (token in PDF_CATALOG) {
+                        return { seriesId: token, issueId: firstIssueId(token) || DEFAULT_ISSUE };
                     }
-                    return;
-                }
-                const y = window.scrollY + navOffset();
-                const midY = docY(mid);
-                const tailY = docY(tail);
-                if (y < midY) {
-                    cta.setAttribute('href', '#nl-cyber-digest');
-                    cta.textContent = 'Read more';
-                    cta.setAttribute('aria-label', 'Jump to cybersecurity news digest');
-                } else if (y < tailY) {
-                    cta.setAttribute('href', '#nl-critical-bill-tail');
-                    cta.textContent = 'Continue reading';
-                    cta.setAttribute('aria-label', 'Jump to Critical Infrastructure Bill closing section');
-                } else {
-                    cta.setAttribute('href', '#newsletter');
-                    cta.textContent = 'Back to top';
-                    cta.setAttribute('aria-label', 'Back to top of newsletter');
-                }
-            }
-
-            if (bookEnabled) {
-                document.documentElement.classList.add('nl-book-active');
-                bookViewport.classList.add('nl-book__viewport--stacked');
-                initBookFromHash();
-                revealBookPageAnimates(bookPages[currentBookPage()]);
-                applyBookInert(currentBookPage());
-
-                cta.addEventListener('click', (e) => {
-                    const href = cta.getAttribute('href') || '';
-                    const p = currentBookPage();
-                    if (href === '#nl-cyber-digest' && p === 0) {
-                        e.preventDefault();
-                        setBookPage(1);
-                    } else if (href === '#nl-critical-bill-tail' && p === 1) {
-                        e.preventDefault();
-                        setBookPage(2);
-                    } else if (href === '#newsletter' && p === 2) {
-                        e.preventDefault();
-                        setBookPage(0, { scrollHost: false });
-                        main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    /* Legacy deep links from the previous tab-only UI (#feb-21 / #feb-20) */
+                    if (token === 'feb-21' || token === 'feb-20') {
+                        const issueId = getIssue('full', token) ? token : DEFAULT_ISSUE;
+                        return { seriesId: 'full', issueId };
                     }
-                });
-
-                window.addEventListener('hashchange', () => {
-                    initBookFromHash();
-                });
-            } else {
-                window.addEventListener('scroll', updateFloatingCta, { passive: true });
-                window.addEventListener('resize', updateFloatingCta, { passive: true });
-                updateFloatingCta();
+                    return { seriesId: DEFAULT_SERIES, issueId: DEFAULT_ISSUE };
+                }
+                const seriesId = parts[0] in PDF_CATALOG ? parts[0] : DEFAULT_SERIES;
+                let issueId = parts[1];
+                if (!getIssue(seriesId, issueId)) issueId = firstIssueId(seriesId) || DEFAULT_ISSUE;
+                return { seriesId, issueId };
             }
+
+            function setHash(seriesId, issueId, { replace = true } = {}) {
+                const next = `${location.pathname}${location.search}#${seriesId}/${issueId}`;
+                if (location.hash === `#${seriesId}/${issueId}`) return;
+                if (replace) history.replaceState(null, '', next);
+                else history.pushState(null, '', next);
+            }
+
+            function applySelection(seriesId, issueId, { syncHash = true } = {}) {
+                const issue = getIssue(seriesId, issueId);
+                if (!issue || !frame || !downloadLink || !openTabLink) return;
+                frame.src = issue.href;
+                frame.setAttribute(
+                    'title',
+                    `PDF: ${PDF_CATALOG[seriesId].label} — ${issue.label}`
+                );
+                downloadLink.href = issue.href;
+                downloadLink.setAttribute('download', issue.downloadName);
+                openTabLink.href = issue.href;
+                if (seriesSelect) seriesSelect.value = seriesId;
+                fillIssueSelect(seriesId, issueId);
+                if (syncHash) setHash(seriesId, issue.id);
+            }
+
+            function syncFromControls() {
+                const sid = (seriesSelect && seriesSelect.value) || DEFAULT_SERIES;
+                let iid = (issueSelect && issueSelect.value) || '';
+                if (!getIssue(sid, iid)) iid = firstIssueId(sid) || DEFAULT_ISSUE;
+                fillIssueSelect(sid, iid);
+                applySelection(sid, iid, { syncHash: true });
+            }
+
+            fillSeriesSelect();
+            const initial = parseHash();
+            fillIssueSelect(initial.seriesId, initial.issueId);
+            if (seriesSelect) seriesSelect.value = initial.seriesId;
+            if (issueSelect) issueSelect.value = initial.issueId;
+            applySelection(initial.seriesId, initial.issueId, { syncHash: false });
+            if (location.hash !== `#${initial.seriesId}/${initial.issueId}`) {
+                setHash(initial.seriesId, initial.issueId, { replace: true });
+            }
+
+            if (seriesSelect) {
+                seriesSelect.addEventListener('change', () => {
+                    const sid = seriesSelect.value;
+                    const current = issueSelect ? issueSelect.value : '';
+                    const nextIssue = getIssue(sid, current) ? current : firstIssueId(sid);
+                    fillIssueSelect(sid, nextIssue || '');
+                    applySelection(sid, nextIssue || firstIssueId(sid), { syncHash: true });
+                });
+            }
+            if (issueSelect) {
+                issueSelect.addEventListener('change', () => syncFromControls());
+            }
+
+            window.addEventListener('hashchange', () => {
+                const { seriesId, issueId } = parseHash();
+                fillIssueSelect(seriesId, issueId);
+                if (seriesSelect) seriesSelect.value = seriesId;
+                if (issueSelect) issueSelect.value = issueId;
+                applySelection(seriesId, issueId, { syncHash: false });
+            });
+
+            const animated = document.querySelectorAll('.animate-on-scroll');
+            const io = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.12 }
+            );
+            animated.forEach((el) => io.observe(el));
+            animated.forEach((el) => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 80) {
+                    el.classList.add('visible');
+                    io.unobserve(el);
+                }
+            });
         })();
-
     </script>
 </body>
 </html>

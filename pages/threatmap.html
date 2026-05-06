@@ -143,7 +143,7 @@
             border-bottom: none;
         }
 
-     
+
 
         .map_control_button {
             width: 22px;
@@ -318,6 +318,7 @@
         let outlineGroup = null;
         let labelGroup = null;
         let oceanSphereMesh = null;
+        let flatBackgroundMesh = null;
         let pointAGroup = null;
         let pointBGroup = null;
         let pointCGroup = null;
@@ -388,6 +389,9 @@
         scene.background = new THREE.Color(0xd8d8d8);
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 5000);
         camera.position.set(0, 0, 620);
+
+        const textureLoader = new THREE.TextureLoader();
+        const earthNightTexture = textureLoader.load('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg');
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -507,6 +511,31 @@
             return ((((lon + 180) % 360) + 360) % 360) - 180;
         }
 
+        function createEquirectangularPlaneGeometry(width, height) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array([
+                -width / 2, -height / 2, 0,
+                 width / 2, -height / 2, 0,
+                 width / 2,  height / 2, 0,
+                -width / 2,  height / 2, 0
+            ]);
+            const latMin = -85;
+            const latMax = 85;
+            const uvTop = (90 - latMax) / 180;
+            const uvBottom = (90 - latMin) / 180;
+            const uvs = new Float32Array([
+                0, uvBottom,
+                1, uvBottom,
+                1, uvTop,
+                0, uvTop
+            ]);
+            const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+            geometry.setIndex(new THREE.Uint16BufferAttribute(indices, 1));
+            return geometry;
+        }
+
         function lonLatToPlane(lon, lat, z = 0) {
             const safeLon = THREE.MathUtils.clamp(Number(lon), -180, 180);
             const safeLat = THREE.MathUtils.clamp(Number(lat), -85, 85);
@@ -610,6 +639,9 @@
 
             if (oceanSphereMesh && oceanSphereMesh.material) {
                 oceanSphereMesh.visible = morphProgress > 0.01;
+            }
+            if (flatBackgroundMesh && flatBackgroundMesh.material) {
+                flatBackgroundMesh.visible = morphProgress < 0.01;
             }
         }
 
@@ -822,6 +854,7 @@
             });
             if (group.parent) group.parent.remove(group);
             oceanSphereMesh = null;
+            flatBackgroundMesh = null;
             pointAGroup = null;
             pointBGroup = null;
             pointCGroup = null;
@@ -855,7 +888,7 @@
             oceanSphereMesh = new THREE.Mesh(
                 new THREE.SphereGeometry(SPHERE_RADIUS - 1.5, 96, 48),
                 new THREE.MeshBasicMaterial({
-                    color: 0x061a1a,
+                    map: earthNightTexture,
                     transparent: false,
                     opacity: 1,
                     side: THREE.FrontSide,
@@ -866,6 +899,21 @@
             oceanSphereMesh.visible = morphProgress > 0.01;
             oceanSphereMesh.renderOrder = 0;
             mapGroup.add(oceanSphereMesh);
+
+            flatBackgroundMesh = new THREE.Mesh(
+                createEquirectangularPlaneGeometry(MAP_WIDTH, MAP_HEIGHT * (180/170)),
+                new THREE.MeshBasicMaterial({
+                    map: earthNightTexture,
+                    transparent: false,
+                    side: THREE.FrontSide,
+                    depthTest: true,
+                    depthWrite: false
+                })
+            );
+            flatBackgroundMesh.position.z = BASE_Z - 1;
+            flatBackgroundMesh.renderOrder = 1;
+            flatBackgroundMesh.visible = morphProgress < 0.01;
+            mapGroup.add(flatBackgroundMesh);
 
             const baseMaterial = new THREE.MeshBasicMaterial({
                 color: targetMorph === 1 ? 0x101416 : 0x111111,
