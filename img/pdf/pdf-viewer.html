@@ -22,10 +22,11 @@
         #pdf-container {
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory;
             /* Avoid width oscillating when the vertical scrollbar appears (prevents resize→re-render loops). */
             scrollbar-gutter: stable;
-            padding: 8px 0 16px;
             scrollbar-width: thin;
             scrollbar-color: #ff3b3b #0a0a0a;
         }
@@ -48,11 +49,23 @@
             background: linear-gradient(180deg, #ff4d4d, #9b0000);
         }
 
+        /* One viewport tall per PDF page; scroll-snap keeps a single page on screen at rest. */
+        .pdf-page-slot {
+            min-height: 100%;
+            box-sizing: border-box;
+            padding: 8px 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+
         .pdf-page {
             margin: 0 auto;
             display: block;
+            flex-shrink: 0;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
-            margin-bottom: 10px;
         }
 
         #loading {
@@ -83,9 +96,11 @@
 
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-            /** Logical CSS pixels per PDF point for layout width; sharpness comes from outputScale (DPR). */
+            /** Logical CSS pixels per PDF point; sharpness comes from outputScale (DPR). */
             const H_PAD = 24;
+            const V_PAD = 24;
             const MIN_VIEW_WIDTH = 280;
+            const MIN_VIEW_HEIGHT = 120;
             const ZOOM_MIN = 0.5;
             const ZOOM_MAX = 3;
             const ZOOM_STEP = 1.12;
@@ -93,14 +108,23 @@
             let pdfDoc = null;
             let renderToken = 0;
             let resizeTimer = null;
-            /** Width used for last successful paint; avoids re-entry when scrollbar/layout nudges by 1px. */
+            /** Layout size used for last successful paint; avoids re-entry when scrollbar/layout nudges by 1px. */
             let lastRenderedInnerWidth = null;
-            /** Extra multiplier on top of “fit width” (1 = default). */
+            let lastRenderedInnerHeight = null;
+            /** Multiplier on top of per-page “fit page” scale (1 = full page visible in one screen). */
             let zoomFactor = 1;
 
             function containerInnerWidth() {
                 const w = container.clientWidth - H_PAD;
                 return Math.max(w, MIN_VIEW_WIDTH);
+            }
+
+            function containerInnerHeight() {
+                let h = container.clientHeight - V_PAD;
+                if (h < MIN_VIEW_HEIGHT) {
+                    h = Math.max(MIN_VIEW_HEIGHT, (window.innerHeight || 600) - V_PAD);
+                }
+                return h;
             }
 
             function postZoomStateToParent() {
@@ -122,6 +146,7 @@
                 if (!pdfDoc) return;
                 const token = ++renderToken;
                 const maxCssWidth = containerInnerWidth();
+                const maxCssHeight = containerInnerHeight();
                 const outputScale = window.devicePixelRatio || 1;
                 const fragment = document.createDocumentFragment();
 
@@ -132,8 +157,10 @@
                     if (token !== renderToken) return;
 
                     const base = page.getViewport({ scale: 1 });
-                    const fitScale = maxCssWidth / base.width;
-                    const userScale = fitScale * zoomFactor;
+                    const fitWidthScale = maxCssWidth / base.width;
+                    const fitHeightScale = maxCssHeight / base.height;
+                    const fitPageScale = Math.min(fitWidthScale, fitHeightScale);
+                    const userScale = fitPageScale * zoomFactor;
                     const viewport = page.getViewport({ scale: userScale });
 
                     const canvas = document.createElement('canvas');
@@ -157,12 +184,16 @@
                     await page.render(renderContext).promise;
                     if (token !== renderToken) return;
 
-                    fragment.appendChild(canvas);
+                    const slot = document.createElement('div');
+                    slot.className = 'pdf-page-slot';
+                    slot.appendChild(canvas);
+                    fragment.appendChild(slot);
                 }
 
                 if (token !== renderToken) return;
                 container.replaceChildren(fragment);
                 lastRenderedInnerWidth = maxCssWidth;
+                lastRenderedInnerHeight = maxCssHeight;
                 loading.style.display = 'none';
                 postZoomStateToParent();
             }
@@ -170,10 +201,13 @@
             function scheduleRender(force) {
                 if (!pdfDoc) return;
                 const w = containerInnerWidth();
+                const h = containerInnerHeight();
                 if (
                     !force &&
                     lastRenderedInnerWidth != null &&
-                    Math.abs(w - lastRenderedInnerWidth) < 2
+                    lastRenderedInnerHeight != null &&
+                    Math.abs(w - lastRenderedInnerWidth) < 2 &&
+                    Math.abs(h - lastRenderedInnerHeight) < 2
                 ) {
                     return;
                 }
