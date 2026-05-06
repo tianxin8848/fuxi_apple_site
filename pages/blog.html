@@ -59,8 +59,45 @@
             color: #fafafa;
         }
 
+        /* Vendor tailwind.css is a subset (no pt-16): set top pad here + reuse for first-fold math */
+        #newsletter {
+            --newsletter-nav-pad: max(4rem, calc(var(--nav-bottom, 48px) + 2px + env(safe-area-inset-top, 0px)));
+            padding-top: var(--newsletter-nav-pad);
+        }
+
         .nl-panel {
             max-width: 56rem;
+        }
+
+        /* Fixed to viewport right (outside newsletter column), below site nav z-index */
+        .nl-screen-cta {
+            position: fixed;
+            right: max(1rem, env(safe-area-inset-right, 0px));
+            z-index: 40;
+            text-decoration: none;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+        }
+        @media (min-width: 768px) {
+            .nl-screen-cta {
+                top: calc(var(--newsletter-nav-pad, 4rem) + 38svh);
+                transform: translateY(-50%);
+            }
+        }
+        @media (max-width: 767.98px) {
+            .nl-screen-cta {
+                top: auto;
+                bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+                transform: none;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        #nl-cyber-digest,
+        #nl-critical-bill-tail {
+            scroll-margin-top: var(--newsletter-nav-pad, 4rem);
         }
 
         .nl-section + .nl-section {
@@ -107,7 +144,7 @@
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
-        @media (min-width: 900px) {
+        @media (min-width: 800px) {
             .nl-head__grid {
                 grid-template-columns: 1.15fr 0.85fr;
                 align-items: stretch;
@@ -117,7 +154,7 @@
         .nl-red-block {
             background: var(--nl-red);
             color: #fff;
-            padding: 1.5rem 1.35rem 1.75rem;
+            padding: 1.05rem 1.2rem 1.15rem;
             box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.55);
         }
         .nl-red-block h2 {
@@ -128,19 +165,19 @@
             letter-spacing: -0.02em;
         }
         .nl-red-block .nl-byline {
-            margin-top: 1rem;
+            margin-top: 0.65rem;
             font-size: 0.9375rem;
             font-weight: 600;
             opacity: 0.95;
         }
         .nl-red-block .nl-prose {
-            margin-top: 1.125rem;
+            margin-top: 0.85rem;
             font-size: 0.9375rem;
             line-height: 1.65;
             font-weight: 500;
         }
         .nl-red-block .nl-prose p + p {
-            margin-top: 0.85rem;
+            margin-top: 0.65rem;
         }
 
         .nl-head__aside {
@@ -184,6 +221,21 @@
             vertical-align: middle;
         }
 
+        /* First fold: hero strip stays short; header fills one viewport below main top padding */
+        .nl-head {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100svh - var(--newsletter-nav-pad, 4rem));
+        }
+        .nl-head .nl-hero {
+            flex: 0 0 auto;
+            min-height: 0;
+            max-height: clamp(8.5rem, 22svh, 12.5rem);
+            height: clamp(8.5rem, 22svh, 12.5rem);
+        }
+        .nl-head .nl-hero__media {
+            min-height: 0;
+        }
         /* —— Middle: digest rail —— */
         .nl-mid__bar {
             display: flex;
@@ -392,7 +444,8 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
-    <main id="newsletter" class="pt-32 pb-20 px-4 sm:px-5">
+    <main id="newsletter" class="pb-20 px-4 sm:px-5">
+        <a id="nl-screen-cta" class="nl-screen-cta bg-cyber-red text-white px-4 py-3 rounded-md text-sm font-semibold hover:bg-red-700 transition" href="#nl-cyber-digest">Read more</a>
         <div class="nl-panel mx-auto">
 
             <!-- 头部：主视觉 + 红区正文 + 月度提示与配图 -->
@@ -431,7 +484,7 @@
             </header>
 
             <!-- 中部：日期栏 + 红横幅 + 多信息源摘要（交错排版） -->
-            <section class="nl-section nl-mid" aria-labelledby="nl-digest-title">
+            <section id="nl-cyber-digest" class="nl-section nl-mid" aria-labelledby="nl-digest-title">
                 <div class="nl-mid__bar">
                     <time datetime="2026-02-20">February 20, 2026</time>
                     <a href="https://www.alpacian.com" rel="noopener noreferrer" target="_blank">www.alpacian.com</a>
@@ -500,7 +553,7 @@
             </section>
 
             <!-- 尾部：与头部呼应的法案导语 -->
-            <footer class="nl-section nl-tail">
+            <footer id="nl-critical-bill-tail" class="nl-section nl-tail">
                 <div class="nl-red-block animate-on-scroll">
                     <h2>The Critical Infrastructure Bill: Why Should We Care</h2>
                     <div class="nl-prose">
@@ -510,6 +563,9 @@
             </footer>
 
         </div>
+
+       
+
     </main>
 
 
@@ -603,6 +659,49 @@
                 }
             });
         });
+
+        // Floating CTA: first click → cyber digest, second phase → bill closing, then back to top
+        (function () {
+            const cta = document.getElementById('nl-screen-cta');
+            const main = document.getElementById('newsletter');
+            const mid = document.getElementById('nl-cyber-digest');
+            const tail = document.getElementById('nl-critical-bill-tail');
+            if (!cta || !main || !mid || !tail) return;
+
+            function navOffset() {
+                const pad = getComputedStyle(main).paddingTop;
+                const n = parseFloat(pad);
+                return Number.isFinite(n) ? n + 12 : 80;
+            }
+
+            function docY(el) {
+                const r = el.getBoundingClientRect();
+                return r.top + window.scrollY;
+            }
+
+            function updateFloatingCta() {
+                const y = window.scrollY + navOffset();
+                const midY = docY(mid);
+                const tailY = docY(tail);
+                if (y < midY) {
+                    cta.setAttribute('href', '#nl-cyber-digest');
+                    cta.textContent = 'Read more';
+                    cta.setAttribute('aria-label', 'Jump to cybersecurity news digest');
+                } else if (y < tailY) {
+                    cta.setAttribute('href', '#nl-critical-bill-tail');
+                    cta.textContent = 'Continue reading';
+                    cta.setAttribute('aria-label', 'Jump to Critical Infrastructure Bill closing section');
+                } else {
+                    cta.setAttribute('href', '#newsletter');
+                    cta.textContent = 'Back to top';
+                    cta.setAttribute('aria-label', 'Back to top of newsletter');
+                }
+            }
+
+            window.addEventListener('scroll', updateFloatingCta, { passive: true });
+            window.addEventListener('resize', updateFloatingCta, { passive: true });
+            updateFloatingCta();
+        })();
 
     </script>
 </body>
