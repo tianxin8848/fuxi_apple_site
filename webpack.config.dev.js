@@ -10,6 +10,7 @@ module.exports = merge(common, {
     open: true,
     static: [
       { directory: './', publicPath: '/' },                 // 根目录
+      { directory: './img/pdf', publicPath: '/img/pdf' },  // 与根目录下 img/pdf 一致，避免与 /img → img/img 冲突时取错文件
       { directory: './pages', publicPath: '/pages' },       // 页面目录
       { directory: './img/img', publicPath: '/img' },       // 统一图片URL前缀
       { directory: './css', publicPath: '/css' },           // CSS目录
