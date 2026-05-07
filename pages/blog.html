@@ -655,7 +655,7 @@
 
             function applySelection(seriesId, issueId, { syncHash = true } = {}) {
                 const issue = getIssue(seriesId, issueId);
-                if (!issue || !frame || !downloadLink || !openTabLink) return;
+                if (!issue || !frame || !downloadLink) return;
                 resetZoomChrome();
                 frame.src = viewerSrcForPdf(issue.href);
                 frame.setAttribute(
@@ -665,7 +665,7 @@
                 const downloadUrl = issue.downloadHref || issue.href;
                 downloadLink.setAttribute('href', downloadUrl);
                 downloadLink.setAttribute('download', issue.downloadName);
-                openTabLink.href = issue.href;
+                if (openTabLink) openTabLink.href = issue.href;
                 if (seriesSelect) seriesSelect.value = seriesId;
                 fillIssueSelect(seriesId, issueId);
                 if (syncHash) setHash(seriesId, issue.id);
