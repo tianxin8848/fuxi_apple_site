@@ -269,6 +269,20 @@
                 } catch (e) {}
             }
 
+            function postPageStateToParent() {
+                if (!window.parent || window.parent === window) return;
+                try {
+                    window.parent.postMessage(
+                        {
+                            type: 'pdf-page-state',
+                            page: activePage,
+                            numPages: pdfDoc ? pdfDoc.numPages : 0
+                        },
+                        window.location.origin
+                    );
+                } catch (e) {}
+            }
+
             function setActiveThumb(pageNum) {
                 const buttons = thumbList.querySelectorAll('.thumb-btn');
                 buttons.forEach(function (btn) {
@@ -294,6 +308,7 @@
                 }
                 activePage = bestPage;
                 setActiveThumb(activePage);
+                postPageStateToParent();
             }
 
             function scrollToPage(pageNum, smooth) {
@@ -307,6 +322,7 @@
                 });
                 activePage = index + 1;
                 setActiveThumb(activePage);
+                postPageStateToParent();
             }
 
             async function renderThumbnails() {
@@ -501,6 +517,18 @@
                 if (data.type === 'pdf-go-to-page') {
                     if (!pdfDoc || typeof data.page !== 'number') return;
                     scrollToPage(data.page, true);
+                    return;
+                }
+
+                if (data.type === 'pdf-page-prev') {
+                    if (!pdfDoc || !pageSlots.length) return;
+                    scrollToPage(activePage - 1, true);
+                    return;
+                }
+
+                if (data.type === 'pdf-page-next') {
+                    if (!pdfDoc || !pageSlots.length) return;
+                    scrollToPage(activePage + 1, true);
                     return;
                 }
 

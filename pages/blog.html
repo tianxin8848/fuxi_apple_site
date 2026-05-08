@@ -254,22 +254,64 @@
 
 
         @media (max-width: 639.98px) {
-            .pdf-toolbar__primary {
-                flex-direction: column;
-                align-items: stretch;
+            .pdf-toolbar {
+                display: none;
             }
-            .pdf-toolbar__actions {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-                padding-bottom: 0.5rem;
+
+            .pdf-mobile-page-bar {
+                flex: 0 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
+                padding: 0.55rem 0.75rem;
+                padding-bottom: max(0.55rem, env(safe-area-inset-bottom));
+                background: var(--pdf-toolbar-bg);
+                border-top: 1px solid var(--pdf-toolbar-border);
             }
-            .pdf-toolbar__selectors {
-                width: 100%;
+
+            .pdf-mobile-page-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.35rem;
+                min-height: 2.75rem;
+                padding: 0.4rem 0.75rem;
+                flex: 1 1 0;
+                max-width: 42%;
+                font-size: 0.8125rem;
+                font-weight: 600;
+                color: rgba(250, 250, 250, 0.95);
+                background: rgba(230, 61, 61, 0.14);
+                border: 1px solid rgba(230, 61, 61, 0.45);
+                border-radius: 0.35rem;
+                cursor: pointer;
             }
-            .pdf-selector-wrap {
-                flex: 1 1 auto;
+            .pdf-mobile-page-btn:focus-visible {
+                outline: 2px solid #e63d3d;
+                outline-offset: 2px;
             }
-            .pdf-selector {
-                width: 100%;
+            .pdf-mobile-page-btn:disabled {
+                opacity: 0.38;
+                cursor: not-allowed;
+            }
+
+            .pdf-mobile-page-indicator {
+                flex: 0 0 auto;
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: rgba(185, 174, 174, 0.98);
+                white-space: nowrap;
+                min-width: 4.5rem;
+                text-align: center;
+                user-select: none;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .pdf-mobile-page-bar {
+                display: none !important;
             }
         }
 
@@ -393,6 +435,17 @@
                     <div id="pdf-panel" class="pdf-doc-body">
                         <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?file=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
                     </div>
+                    <div class="pdf-mobile-page-bar" role="toolbar" aria-label="PDF 翻页">
+                        <button type="button" id="pdf-page-prev" class="pdf-mobile-page-btn" aria-label="上一页" disabled>
+                            <span class="pdf-mobile-page-btn__icon" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                            <span>上一页</span>
+                        </button>
+                        <div id="pdf-page-indicator" class="pdf-mobile-page-indicator" aria-live="polite">— / —</div>
+                        <button type="button" id="pdf-page-next" class="pdf-mobile-page-btn" aria-label="下一页" disabled>
+                            <span>下一页</span>
+                            <span class="pdf-mobile-page-btn__icon" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                    </div>
 
                 </div>
             </div>
@@ -514,6 +567,9 @@
             const zoomOutBtn = document.getElementById('pdf-zoom-out');
             const zoomResetBtn = document.getElementById('pdf-zoom-reset');
             const thumbToggleBtn = document.getElementById('pdf-toggle-thumbs');
+            const pdfPagePrevBtn = document.getElementById('pdf-page-prev');
+            const pdfPageNextBtn = document.getElementById('pdf-page-next');
+            const pdfPageIndicator = document.getElementById('pdf-page-indicator');
 
             function viewerSrcForPdf(href) {
                 return `${PDF_VIEWER_PAGE}?file=${encodeURIComponent(href)}`;
@@ -531,6 +587,20 @@
                 try {
                     frame.contentWindow.postMessage({ type: 'pdf-sidebar-toggle' }, window.location.origin);
                 } catch (e) {}
+            }
+
+            function postPdfViewerPageNav(direction) {
+                if (!frame || !frame.contentWindow) return;
+                const type = direction === 'prev' ? 'pdf-page-prev' : 'pdf-page-next';
+                try {
+                    frame.contentWindow.postMessage({ type }, window.location.origin);
+                } catch (e) {}
+            }
+
+            function resetMobilePageChrome() {
+                if (pdfPageIndicator) pdfPageIndicator.textContent = '— / —';
+                if (pdfPagePrevBtn) pdfPagePrevBtn.disabled = true;
+                if (pdfPageNextBtn) pdfPageNextBtn.disabled = true;
             }
 
             function resetZoomChrome() {
@@ -579,6 +649,16 @@
                 if (d.type === 'pdf-sidebar-state' && thumbToggleBtn) {
                     const open = !!d.open;
                     thumbToggleBtn.setAttribute('aria-pressed', open ? 'true' : 'false');
+                    return;
+                }
+                if (d.type === 'pdf-page-state') {
+                    const page = typeof d.page === 'number' ? d.page : 0;
+                    const numPages = typeof d.numPages === 'number' ? d.numPages : 0;
+                    if (pdfPageIndicator) {
+                        pdfPageIndicator.textContent = numPages ? `${page} / ${numPages}` : '— / —';
+                    }
+                    if (pdfPagePrevBtn) pdfPagePrevBtn.disabled = !numPages || page <= 1;
+                    if (pdfPageNextBtn) pdfPageNextBtn.disabled = !numPages || page >= numPages;
                 }
             });
 
@@ -653,6 +733,7 @@
                 const issue = getIssue(seriesId, issueId);
                 if (!issue || !frame || !downloadLink) return;
                 resetZoomChrome();
+                resetMobilePageChrome();
                 if (thumbToggleBtn) {
                     thumbToggleBtn.setAttribute('aria-pressed', 'false');
                 }
@@ -705,6 +786,8 @@
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => postPdfViewerZoom('out'));
             if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => postPdfViewerZoom('reset'));
             if (thumbToggleBtn) thumbToggleBtn.addEventListener('click', () => postPdfViewerToggleSidebar());
+            if (pdfPagePrevBtn) pdfPagePrevBtn.addEventListener('click', () => postPdfViewerPageNav('prev'));
+            if (pdfPageNextBtn) pdfPageNextBtn.addEventListener('click', () => postPdfViewerPageNav('next'));
 
             if (downloadLink) {
                 downloadLink.addEventListener('click', function (e) {
