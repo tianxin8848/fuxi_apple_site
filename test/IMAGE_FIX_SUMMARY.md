@@ -61,7 +61,7 @@ dist/
 │   ├── Ransomware-Protection-Keep-Your-Data-Safe.jpg
 │   ├── cyber-security-concept-digital-art_23-2151637760.avif
 │   ├── Advantages-and-Disadvantages-of-LAN-1024x576.jpg
-│   ├── computer-science-degree.jpg
+│   ├── xsiem-cyberseg-2-low.jpg.pagespeed.ic.xsZZtm8Sd-.webp
 │   └── screenshot-event.png
 └── pages/
     └── products.html  ← 使用 ../img/ 路径引用图片
