@@ -347,6 +347,11 @@
                                         <span class="pdf-toolbar__link-text">Download</span>
                                     </a>
                                 </li>
+                                <li class="pdf-toolbar__action">
+                                    <button type="button" id="pdf-toggle-thumbs" class="pdf-toolbar__link" aria-label="Show thumbnail sidebar" aria-pressed="false">
+                                        <span class="pdf-toolbar__link-text">Thumbnails</span>
+                                    </button>
+                                </li>
                                 <!-- <li class="pdf-toolbar__action">
                                     <a id="pdf-open-tab" class="pdf-toolbar__link" href="/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf" target="_blank" rel="noopener noreferrer">
                                         <span class="pdf-toolbar__icon pdf-toolbar__icon--fa" aria-hidden="true"><i class="fas fa-external-link-alt"></i></span>
@@ -377,11 +382,9 @@
                             </ul>
                             <div class="pdf-toolbar__selectors dynamic-selectors">
                                 <div class="pdf-selector-wrap">
-                                    <label for="select-series" class="pdf-selector-label">Series</label>
                                     <select id="select-series" class="pdf-selector" aria-describedby="series-hint"></select>
                                 </div>
                                 <div class="pdf-selector-wrap">
-                                    <label for="select-issue" class="pdf-selector-label">Issue</label>
                                     <select id="select-issue" class="pdf-selector"></select>
                                 </div>
                             </div>
@@ -510,6 +513,7 @@
             const zoomInBtn = document.getElementById('pdf-zoom-in');
             const zoomOutBtn = document.getElementById('pdf-zoom-out');
             const zoomResetBtn = document.getElementById('pdf-zoom-reset');
+            const thumbToggleBtn = document.getElementById('pdf-toggle-thumbs');
 
             function viewerSrcForPdf(href) {
                 return `${PDF_VIEWER_PAGE}?file=${encodeURIComponent(href)}`;
@@ -519,6 +523,13 @@
                 if (!frame || !frame.contentWindow) return;
                 try {
                     frame.contentWindow.postMessage({ type: 'pdf-zoom', action }, window.location.origin);
+                } catch (e) {}
+            }
+
+            function postPdfViewerToggleSidebar() {
+                if (!frame || !frame.contentWindow) return;
+                try {
+                    frame.contentWindow.postMessage({ type: 'pdf-sidebar-toggle' }, window.location.origin);
                 } catch (e) {}
             }
 
@@ -556,12 +567,19 @@
             window.addEventListener('message', function (ev) {
                 if (ev.origin !== window.location.origin) return;
                 const d = ev.data;
-                if (!d || d.type !== 'pdf-zoom-state') return;
-                if (zoomLevelEl && typeof d.percent === 'number') {
-                    zoomLevelEl.textContent = `${d.percent}%`;
+                if (!d) return;
+                if (d.type === 'pdf-zoom-state') {
+                    if (zoomLevelEl && typeof d.percent === 'number') {
+                        zoomLevelEl.textContent = `${d.percent}%`;
+                    }
+                    if (zoomOutBtn) zoomOutBtn.disabled = !!d.atMin;
+                    if (zoomInBtn) zoomInBtn.disabled = !!d.atMax;
+                    return;
                 }
-                if (zoomOutBtn) zoomOutBtn.disabled = !!d.atMin;
-                if (zoomInBtn) zoomInBtn.disabled = !!d.atMax;
+                if (d.type === 'pdf-sidebar-state' && thumbToggleBtn) {
+                    const open = !!d.open;
+                    thumbToggleBtn.setAttribute('aria-pressed', open ? 'true' : 'false');
+                }
             });
 
             function getIssue(seriesId, issueId) {
@@ -635,6 +653,9 @@
                 const issue = getIssue(seriesId, issueId);
                 if (!issue || !frame || !downloadLink) return;
                 resetZoomChrome();
+                if (thumbToggleBtn) {
+                    thumbToggleBtn.setAttribute('aria-pressed', 'false');
+                }
                 frame.src = viewerSrcForPdf(issue.href);
                 frame.setAttribute(
                     'title',
@@ -683,6 +704,7 @@
             if (zoomInBtn) zoomInBtn.addEventListener('click', () => postPdfViewerZoom('in'));
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => postPdfViewerZoom('out'));
             if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => postPdfViewerZoom('reset'));
+            if (thumbToggleBtn) thumbToggleBtn.addEventListener('click', () => postPdfViewerToggleSidebar());
 
             if (downloadLink) {
                 downloadLink.addEventListener('click', function (e) {
