@@ -11,9 +11,11 @@ const publicRoot = process.env.USE_DIST === 'true' && fs.existsSync(distDir)
   ? distDir
   : __dirname;
 
-// Serve media assets with backward-compatible URL prefixes.
+// Serve media assets. Production build copies img/img/ → dist/img/, so match
+// that locally: serve img/img/ at /img/ first, then fall through to img/ for
+// sub-directories like /img/logimg/ and /img/pdf/.
+app.use('/img', express.static(path.join(__dirname, 'img', 'img')));
 app.use('/img', express.static(path.join(__dirname, 'img')));
-app.use('/img/img', express.static(path.join(__dirname, 'img', 'img')));
 // 静态文件服务（关闭默认 index，避免 "/" 被 index.html 抢先命中）
 app.use(express.static(publicRoot, { index: false }));
 
