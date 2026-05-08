@@ -40,13 +40,6 @@
         .feature-img-hover:hover {
             transform: scale(1.03);
         }
-        .btn-primary {
-            transition: all 0.2s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px -6px rgba(230, 61, 61, 0.45);
-        }
         .nav-dropdown-backdrop {
             position: fixed;
             top: var(--nav-bottom);
@@ -533,8 +526,6 @@
         const navDropdownInner = document.getElementById('apple-nav-dropdown-inner');
         const navMenuItems = navDropdownInner ? navDropdownInner.querySelectorAll('.apple-menu-item') : [];
         const navBackdrop = document.getElementById('nav-dropdown-backdrop');
-        // Debug switch: keep mega menu always open for element inspection.
-        const DEBUG_KEEP_NAV_DROPDOWN_OPEN = false;
         const NAV_OPEN_DELAY_MS = 120;
         let navDropdownCloseTimer = null;
         let navDropdownOpenTimer = null;
@@ -586,17 +577,12 @@
             }
         };
         const scheduleOpenNavDropdown = () => {
-            if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) {
-                openNavDropdown();
-                return;
-            }
             clearTimeout(navDropdownCloseTimer);
             clearTimeout(navDropdownOpenTimer);
             navDropdownOpenTimer = setTimeout(openNavDropdown, NAV_OPEN_DELAY_MS);
         };
 
         const scheduleCloseNavDropdown = () => {
-            if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) return;
             clearTimeout(navDropdownOpenTimer);
             clearTimeout(navDropdownCloseTimer);
             clearTimeout(navDropdownFinalizeCloseTimer);
@@ -626,9 +612,6 @@
                 item.style.setProperty('--menu-delay', `${index * 55}ms`);
                 item.style.setProperty('--menu-out-delay', `${Math.max((navMenuItems.length - index - 1) * 26, 0)}ms`);
             });
-            if (DEBUG_KEEP_NAV_DROPDOWN_OPEN) {
-                openNavDropdown();
-            }
             navTriggers.forEach(trigger => {
                 trigger.addEventListener('mouseenter', scheduleOpenNavDropdown);
                 trigger.addEventListener('focus', scheduleOpenNavDropdown);
