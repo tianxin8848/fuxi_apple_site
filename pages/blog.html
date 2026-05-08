@@ -53,12 +53,20 @@
         }
 
         .pdf-doc-frame {
-            border-radius: 0.375rem;
+            border-radius: 0;
             overflow: hidden;
             background: var(--pdf-frame-bg);
             box-shadow:
                 0 28px 56px -24px rgba(0, 0, 0, 0.72),
                 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .pdf-reader-shell {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 15rem minmax(0, 1fr) 0.55rem;
+            background: #050505;
         }
 
         /* First screen below nav: fill viewport so footer starts after scroll */
@@ -96,13 +104,14 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 0.75rem 1.25rem;
-            padding: 0.55rem 0.85rem 0.65rem;
+            gap: 0.45rem 0.9rem;
+            min-height: 3rem;
+            padding: 0.35rem 0.7rem;
         }
 
         @media (min-width: 768px) {
             .pdf-toolbar__primary {
-                padding: 0.6rem 1rem 0.7rem;
+                padding: 0.35rem 0.85rem;
             }
         }
 
@@ -119,9 +128,9 @@
         .pdf-toolbar__link {
             display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
-            padding: 0.45rem 0.65rem;
-            font-size: 0.8125rem;
+            gap: 0.35rem;
+            padding: 0.35rem 0.5rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: rgba(250, 250, 250, 0.92);
             text-decoration: none;
@@ -144,13 +153,13 @@
         }
 
         .pdf-toolbar__zoom-pct {
-            min-width: 2.75rem;
+            min-width: 2.5rem;
             text-align: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 0.04em;
             color: rgba(185, 174, 174, 0.95);
-            padding: 0.45rem 0.35rem;
+            padding: 0.35rem 0.25rem;
             user-select: none;
         }
 
@@ -189,7 +198,7 @@
         }
 
         .pdf-selector-label {
-            font-size: 0.6875rem;
+            font-size: 0.625rem;
             font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -197,10 +206,10 @@
         }
 
         .pdf-selector {
-            min-width: 11.5rem;
+            min-width: 10rem;
             max-width: 100%;
-            padding: 0.4rem 2rem 0.4rem 0.55rem;
-            font-size: 0.8125rem;
+            padding: 0.32rem 1.75rem 0.32rem 0.5rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #fafafa;
             background: #0f0c0c;
@@ -216,6 +225,176 @@
             outline: none;
             border-color: #e63d3d;
             box-shadow: 0 0 0 2px rgba(230, 61, 61, 0.25);
+        }
+
+        .pdf-sidebar {
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(230, 61, 61, 0.2);
+            background:
+                linear-gradient(180deg, rgba(230, 61, 61, 0.08), transparent 12rem),
+                #0c0909;
+        }
+
+        .pdf-sidebar__tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.25rem;
+            padding: 0.55rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .pdf-sidebar__tab {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(250, 250, 250, 0.72);
+            border-radius: 0.25rem;
+            padding: 0.35rem 0.25rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pdf-sidebar__tab.is-active {
+            color: #fff;
+            border-color: rgba(230, 61, 61, 0.55);
+            background: rgba(230, 61, 61, 0.16);
+            box-shadow: 0 0 16px rgba(230, 61, 61, 0.12);
+        }
+
+        .pdf-sidebar__panel {
+            display: none;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 0.7rem;
+            scrollbar-width: thin;
+            scrollbar-color: #8b0000 #0c0909;
+        }
+
+        .pdf-sidebar__panel.is-active {
+            display: block;
+        }
+
+        .pdf-sidebar__heading {
+            margin: 0 0 0.55rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(185, 174, 174, 0.88);
+        }
+
+        .pdf-outline,
+        .pdf-bookmarks {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .pdf-outline__item,
+        .pdf-bookmark__item,
+        .pdf-thumb {
+            width: 100%;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.035);
+            color: rgba(250, 250, 250, 0.86);
+            border-radius: 0.32rem;
+            padding: 0.5rem 0.55rem;
+            cursor: pointer;
+        }
+
+        .pdf-outline__item:hover,
+        .pdf-bookmark__item:hover,
+        .pdf-thumb:hover {
+            border-color: rgba(230, 61, 61, 0.45);
+            background: rgba(230, 61, 61, 0.1);
+        }
+
+        .pdf-outline__page,
+        .pdf-bookmark__page,
+        .pdf-thumb__page {
+            display: block;
+            margin-bottom: 0.18rem;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: #ff5a5a;
+        }
+
+        .pdf-outline__title,
+        .pdf-bookmark__title,
+        .pdf-thumb__title {
+            display: block;
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .pdf-thumb-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem;
+        }
+
+        .pdf-thumb {
+            min-height: 5.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+                #120f0f;
+        }
+
+        .pdf-bookmark-add {
+            width: 100%;
+            margin-bottom: 0.65rem;
+            border: 1px solid rgba(230, 61, 61, 0.45);
+            background: rgba(230, 61, 61, 0.12);
+            color: #fff;
+            border-radius: 0.3rem;
+            padding: 0.5rem 0.55rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .pdf-empty-state {
+            margin: 0;
+            font-size: 0.76rem;
+            line-height: 1.5;
+            color: rgba(185, 174, 174, 0.82);
+        }
+
+        .pdf-progress-rail {
+            position: relative;
+            background: #080808;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pdf-progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, #ff5a5a, #9b0000);
+            box-shadow: 0 0 14px rgba(255, 0, 0, 0.55);
+            transition: height 0.12s linear;
+        }
+
+        .pdf-progress-text {
+            position: absolute;
+            right: 0.75rem;
+            bottom: 0.7rem;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 0.64rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: rgba(250, 250, 250, 0.66);
+            white-space: nowrap;
         }
 
         .pdf-doc-body {
@@ -271,6 +450,25 @@
             .pdf-selector {
                 width: 100%;
             }
+            .pdf-reader-shell {
+                grid-template-columns: minmax(0, 1fr) 0.45rem;
+            }
+            .pdf-sidebar {
+                display: none;
+            }
+        }
+
+        
+        @media (min-width: 640px) and (max-width: 1023.98px) {
+            .pdf-reader-shell {
+                grid-template-columns: 12.5rem minmax(0, 1fr) 0.5rem;
+            }
+            .pdf-toolbar__link-text {
+                display: none;
+            }
+            .pdf-selector {
+                min-width: 8.5rem;
+            }
         }
 
         .animate-on-scroll {
@@ -300,8 +498,8 @@
 
     <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
-      <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
-        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
+<nav class="sticky top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
+         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
                 <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
             </a>
@@ -333,7 +531,7 @@
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
 
-    <section class="pdf-first-screen mt-16 pb-6 pt-10 to-black" aria-labelledby="pdf-hub-title">
+    <section class="pdf-first-screen mt-0 pb-0 pt-0 to-black" aria-labelledby="pdf-hub-title">
         <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
                 <div class="pdf-doc-frame__inner">
                     <div class="pdf-toolbar">
@@ -387,8 +585,49 @@
                             </div>
                         </div>
                     </div>
-                    <div id="pdf-panel" class="pdf-doc-body">
-                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?file=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
+                    <div class="pdf-reader-shell">
+                        <aside class="pdf-sidebar" aria-label="PDF reading navigation">
+                            <div class="pdf-sidebar__tabs" role="tablist" aria-label="PDF navigation tabs">
+                                <button type="button" class="pdf-sidebar__tab is-active" data-pdf-tab="outline" role="tab" aria-selected="true">Outline</button>
+                                <button type="button" class="pdf-sidebar__tab" data-pdf-tab="pages" role="tab" aria-selected="false">Pages</button>
+                                <button type="button" class="pdf-sidebar__tab" data-pdf-tab="bookmarks" role="tab" aria-selected="false">Bookmarks</button>
+                            </div>
+                            <div class="pdf-sidebar__panel is-active" data-pdf-panel="outline" role="tabpanel">
+                                <h2 class="pdf-sidebar__heading">Document outline</h2>
+                                <div class="pdf-outline">
+                                    <button type="button" class="pdf-outline__item" data-pdf-page="1"><span class="pdf-outline__page">PAGE 01</span><span class="pdf-outline__title">Cover & featured brief</span></button>
+                                    <button type="button" class="pdf-outline__item" data-pdf-page="2"><span class="pdf-outline__page">PAGE 02</span><span class="pdf-outline__title">Cybersecurity headlines</span></button>
+                                    <button type="button" class="pdf-outline__item" data-pdf-page="4"><span class="pdf-outline__page">PAGE 04</span><span class="pdf-outline__title">Threat intelligence highlights</span></button>
+                                    <button type="button" class="pdf-outline__item" data-pdf-page="6"><span class="pdf-outline__page">PAGE 06</span><span class="pdf-outline__title">Vulnerability analysis</span></button>
+                                    <button type="button" class="pdf-outline__item" data-pdf-page="8"><span class="pdf-outline__page">PAGE 08</span><span class="pdf-outline__title">Security recommendations</span></button>
+                                </div>
+                            </div>
+                            <div class="pdf-sidebar__panel" data-pdf-panel="pages" role="tabpanel">
+                                <h2 class="pdf-sidebar__heading">Quick pages</h2>
+                                <div class="pdf-thumb-grid">
+                                    <button type="button" class="pdf-thumb" data-pdf-page="1"><span class="pdf-thumb__page">01</span><span class="pdf-thumb__title">Cover</span></button>
+                                    <button type="button" class="pdf-thumb" data-pdf-page="2"><span class="pdf-thumb__page">02</span><span class="pdf-thumb__title">News</span></button>
+                                    <button type="button" class="pdf-thumb" data-pdf-page="4"><span class="pdf-thumb__page">04</span><span class="pdf-thumb__title">Threats</span></button>
+                                    <button type="button" class="pdf-thumb" data-pdf-page="6"><span class="pdf-thumb__page">06</span><span class="pdf-thumb__title">Vulns</span></button>
+                                    <button type="button" class="pdf-thumb" data-pdf-page="8"><span class="pdf-thumb__page">08</span><span class="pdf-thumb__title">Advice</span></button>
+                                    <button type="button" class="pdf-thumb" data-pdf-page="10"><span class="pdf-thumb__page">10</span><span class="pdf-thumb__title">Appendix</span></button>
+                                </div>
+                            </div>
+                            <div class="pdf-sidebar__panel" data-pdf-panel="bookmarks" role="tabpanel">
+                                <h2 class="pdf-sidebar__heading">Reading bookmarks</h2>
+                                <button type="button" class="pdf-bookmark-add" id="pdf-add-bookmark">☆ Add current view</button>
+                                <div class="pdf-bookmarks" id="pdf-bookmark-list">
+                                    <p class="pdf-empty-state">No bookmarks yet. Add one while reading and it will stay in this browser.</p>
+                                </div>
+                            </div>
+                        </aside>
+                        <div id="pdf-panel" class="pdf-doc-body">
+                            <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?file=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
+                        </div>
+                        <div class="pdf-progress-rail" aria-label="Reading progress">
+                            <div class="pdf-progress-bar" id="pdf-progress-bar"></div>
+                            <span class="pdf-progress-text" id="pdf-progress-text">0%</span>
+                        </div>
                     </div>
 
                 </div>
@@ -510,6 +749,15 @@
             const zoomInBtn = document.getElementById('pdf-zoom-in');
             const zoomOutBtn = document.getElementById('pdf-zoom-out');
             const zoomResetBtn = document.getElementById('pdf-zoom-reset');
+            const pdfPanel = document.getElementById('pdf-panel');
+            const progressBar = document.getElementById('pdf-progress-bar');
+            const progressText = document.getElementById('pdf-progress-text');
+            const sidebarTabs = document.querySelectorAll('[data-pdf-tab]');
+            const sidebarPanels = document.querySelectorAll('[data-pdf-panel]');
+            const pageJumpButtons = document.querySelectorAll('[data-pdf-page]');
+            const addBookmarkBtn = document.getElementById('pdf-add-bookmark');
+            const bookmarkList = document.getElementById('pdf-bookmark-list');
+            const BOOKMARK_KEY = 'fuxi-newsletter-bookmarks';
 
             function viewerSrcForPdf(href) {
                 return `${PDF_VIEWER_PAGE}?file=${encodeURIComponent(href)}`;
@@ -520,6 +768,59 @@
                 try {
                     frame.contentWindow.postMessage({ type: 'pdf-zoom', action }, window.location.origin);
                 } catch (e) {}
+            }
+
+            function postPdfViewerPage(page) {
+                if (!frame || !frame.contentWindow || !page) return;
+                try {
+                    frame.contentWindow.postMessage({ type: 'pdf-page', page: Number(page) }, window.location.origin);
+                } catch (e) {}
+            }
+
+            function updateReadingProgress() {
+                if (!pdfPanel || !progressBar || !progressText) return;
+                const max = pdfPanel.scrollHeight - pdfPanel.clientHeight;
+                const pct = max > 0 ? Math.min(100, Math.max(0, Math.round((pdfPanel.scrollTop / max) * 100))) : 0;
+                progressBar.style.height = `${pct}%`;
+                progressText.textContent = `${pct}%`;
+            }
+
+            function readBookmarks() {
+                try {
+                    const raw = localStorage.getItem(BOOKMARK_KEY);
+                    const parsed = raw ? JSON.parse(raw) : [];
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function writeBookmarks(items) {
+                try {
+                    localStorage.setItem(BOOKMARK_KEY, JSON.stringify(items));
+                } catch (e) {}
+            }
+
+            function renderBookmarks() {
+                if (!bookmarkList) return;
+                const items = readBookmarks();
+                if (!items.length) {
+                    bookmarkList.innerHTML = '<p class="pdf-empty-state">No bookmarks yet. Add one while reading and it will stay in this browser.</p>';
+                    return;
+                }
+                bookmarkList.innerHTML = '';
+                items.forEach((item) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'pdf-bookmark__item';
+                    btn.dataset.scrollTop = String(item.scrollTop || 0);
+                    btn.innerHTML = `<span class="pdf-bookmark__page">${item.percent || 0}%</span><span class="pdf-bookmark__title">${item.title || 'Saved reading position'}</span>`;
+                    btn.addEventListener('click', () => {
+                        if (pdfPanel) pdfPanel.scrollTop = Number(btn.dataset.scrollTop || 0);
+                        updateReadingProgress();
+                    });
+                    bookmarkList.appendChild(btn);
+                });
             }
 
             function resetZoomChrome() {
@@ -635,6 +936,8 @@
                 const issue = getIssue(seriesId, issueId);
                 if (!issue || !frame || !downloadLink) return;
                 resetZoomChrome();
+                if (pdfPanel) pdfPanel.scrollTop = 0;
+                updateReadingProgress();
                 frame.src = viewerSrcForPdf(issue.href);
                 frame.setAttribute(
                     'title',
@@ -683,6 +986,48 @@
             if (zoomInBtn) zoomInBtn.addEventListener('click', () => postPdfViewerZoom('in'));
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => postPdfViewerZoom('out'));
             if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => postPdfViewerZoom('reset'));
+
+            if (pdfPanel) {
+                pdfPanel.addEventListener('scroll', updateReadingProgress, { passive: true });
+                window.addEventListener('resize', updateReadingProgress);
+                updateReadingProgress();
+            }
+
+            sidebarTabs.forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    const name = tab.getAttribute('data-pdf-tab');
+                    sidebarTabs.forEach((item) => {
+                        const active = item === tab;
+                        item.classList.toggle('is-active', active);
+                        item.setAttribute('aria-selected', active ? 'true' : 'false');
+                    });
+                    sidebarPanels.forEach((panel) => {
+                        panel.classList.toggle('is-active', panel.getAttribute('data-pdf-panel') === name);
+                    });
+                });
+            });
+
+            pageJumpButtons.forEach((btn) => {
+                btn.addEventListener('click', () => postPdfViewerPage(btn.getAttribute('data-pdf-page')));
+            });
+
+            if (addBookmarkBtn) {
+                addBookmarkBtn.addEventListener('click', () => {
+                    if (!pdfPanel) return;
+                    const max = pdfPanel.scrollHeight - pdfPanel.clientHeight;
+                    const percent = max > 0 ? Math.round((pdfPanel.scrollTop / max) * 100) : 0;
+                    const items = readBookmarks();
+                    items.unshift({
+                        title: `Saved position · ${percent}%`,
+                        percent,
+                        scrollTop: pdfPanel.scrollTop,
+                        savedAt: Date.now(),
+                    });
+                    writeBookmarks(items.slice(0, 8));
+                    renderBookmarks();
+                });
+            }
+            renderBookmarks();
 
             if (downloadLink) {
                 downloadLink.addEventListener('click', function (e) {
