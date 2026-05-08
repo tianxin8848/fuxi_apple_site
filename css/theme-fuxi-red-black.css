@@ -147,38 +147,3 @@ body {
 section {
     border: 0;
 }
-
-section + section {
-    position: relative;
-    border-top: 0;
-}
-
-section + section::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: var(--section-divider-line);
-    box-shadow: 0 0 16px var(--section-divider-glow), 0 1px 0 rgba(0, 0, 0, 0.35);
-    pointer-events: none;
-    z-index: 1;
-}
-
-body > footer.bg-dark-bg {
-    position: relative;
-    border-top-width: 0;
-}
-
-body > footer.bg-dark-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: var(--section-divider-line);
-    box-shadow: 0 0 16px var(--section-divider-glow);
-    pointer-events: none;
-}

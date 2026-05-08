@@ -244,14 +244,19 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
+  <!-- 背景图包装器 - 所有 section 共享 -->
+<div class="bg-cover bg-center bg-fixed bg-no-repeat"
+     style="background-image: url('/img/img/background.png');">
+
     <!-- Page Header -->
-    <section class="pt-20  px-5 bg-gradient-to-b from-dark-bg to-black">
-        <div class="container mx-auto text-center">
+    <section class="pt-20 px-5 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
+        <div class="relative z-10 container mx-auto text-center">
             <div class="animate-[fadeUp_0.8s_ease-out]">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
                     About <span class="text-cyber-red">Fuxi Technology</span>
                 </h1>
-                <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
+                <p class="text-lg md:text-xl text-gray-200 mt-6 max-w-3xl mx-auto leading-relaxed">
                     Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.
                 </p>
             </div>
@@ -259,8 +264,9 @@
     </section>
 
     <!-- Milestones Timeline -->
-    <section class="py-16 px-5 bg-dark-bg">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="text-center animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Our <span class="text-cyber-red">Milestones</span></h2>
             </div>
@@ -268,10 +274,10 @@
                 <!-- Milestone 1 -->
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-card bg-card-bg border border-theme-subtle rounded-xl p-6">
+                    <div class="timeline-card bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl p-6">
                         <div class="text-cyber-red font-bold text-lg mb-2">2026-3</div>
-                        <h3 class="text-xl font-bold mb-2">Foundation</h3>
-                        <p class="text-muted-text">
+                        <h3 class="text-xl font-bold mb-2 text-white">Foundation</h3>
+                        <p class="text-gray-300">
                             Fuxi Technology was founded in Shenzhen with a mission to revolutionize network security.
                         </p>
                     </div>
@@ -279,10 +285,10 @@
                 <!-- Milestone 2 -->
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-card bg-card-bg border border-theme-subtle rounded-xl p-6">
+                    <div class="timeline-card bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl p-6">
                         <div class="text-cyber-red font-bold text-lg mb-2">2026-7</div>
-                        <h3 class="text-xl font-bold mb-2">FuxiOS Launch</h3>
-                        <p class="text-muted-text">
+                        <h3 class="text-xl font-bold mb-2 text-white">FuxiOS Launch</h3>
+                        <p class="text-gray-300">
                             Released our flagship operating system, setting a new benchmark for integrated security.
                         </p>
                     </div>
@@ -292,15 +298,16 @@
     </section>
 
     <!-- About Us - Text Left, Image Right -->
-    <section class="py-16 px-5">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="flex flex-col lg:flex-row items-center gap-12">
                 <div class="lg:w-1/2 animate-on-scroll">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">About Us</h2>
-                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
                         Fuxi Technology is a global leader in next-generation cybersecurity solutions. We empower organizations to embrace digital transformation securely by providing a unified security fabric that protects data, devices, and applications across all environments.
                     </p>
-                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
                         From cloud security to endpoint protection, our comprehensive portfolio ensures your business stays resilient in an ever-evolving threat landscape.
                     </p>
                 </div>
@@ -314,15 +321,16 @@
     </section>
 
     <!-- Mission - Image Left, Text Right -->
-    <section class="py-16 px-5 bg-dark-bg">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="flex flex-col lg:flex-row-reverse items-center gap-12">
                 <div class="lg:w-1/2 animate-on-scroll">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Our Mission</h2>
-                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
                         Founded in Shenzhen in 2020, Fuxi Technology delivers enterprise-grade cybersecurity everywhere you need it.
                     </p>
-                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
                         The Fuxi Security Fabric enables automated protection, detection, and response along with consolidated visibility across both Fuxi solutions and a broad ecosystem of third-party integrations. We are dedicated to organic innovation that delivers industry-leading cybersecurity and networking solutions.
                     </p>
                 </div>
@@ -336,50 +344,53 @@
     </section>
 
     <!-- Vision & Values -->
-    <section class="py-16 px-5">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="text-center mb-14 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Our <span class="text-cyber-red">Vision</span></h2>
-                <p class="text-muted-text mt-3 max-w-2xl mx-auto text-lg">
+                <p class="text-gray-300 mt-3 max-w-2xl mx-auto text-lg">
                     To build a safer digital world where trust is the foundation of every interaction. We strive to secure the digital future of China and beyond through relentless innovation and unwavering commitment to excellence.
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Value Card 1 -->
-                <div class="bg-card-bg rounded-xl p-8 value-card animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 value-card animate-on-scroll border border-white/10">
                     <div class="icon-container">
                         <i class="fas fa-shield text-3xl text-cyber-red"></i>
                     </div>
-                    <h3 class="text-xl font-bold">Security First</h3>
-                    <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                    <h3 class="text-xl font-bold text-white">Security First</h3>
+                    <p class="text-gray-300 mt-3 text-sm leading-relaxed">
                         Prioritizing the safety and integrity of our clients' data above all else.
                     </p>
                 </div>
 
                 <!-- Value Card 2 -->
-                <div class="bg-card-bg rounded-xl p-8 value-card animate-on-scroll" style="transition-delay: 0.1s;">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 value-card animate-on-scroll border border-white/10" style="transition-delay: 0.1s;">
                     <div class="icon-container">
                         <i class="fas fa-cloud text-3xl text-cyber-red"></i>
                     </div>
-                    <h3 class="text-xl font-bold">Global Impact</h3>
-                    <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                    <h3 class="text-xl font-bold text-white">Global Impact</h3>
+                    <p class="text-gray-300 mt-3 text-sm leading-relaxed">
                         Delivering world-class solutions that set new standards in the global cybersecurity landscape.
                     </p>
                 </div>
 
                 <!-- Value Card 3 -->
-                <div class="bg-card-bg rounded-xl p-8 value-card animate-on-scroll" style="transition-delay: 0.2s;">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 value-card animate-on-scroll border border-white/10" style="transition-delay: 0.2s;">
                     <div class="icon-container">
                         <i class="fas fa-chart-line text-3xl text-cyber-red"></i>
                     </div>
-                    <h3 class="text-xl font-bold">Customer Success</h3>
-                    <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                    <h3 class="text-xl font-bold text-white">Customer Success</h3>
+                    <p class="text-gray-300 mt-3 text-sm leading-relaxed">
                         Empowering our partners and customers to achieve their goals with confidence.
                     </p>
                 </div>
             </div>
         </div>
     </section>
+
+</div>
 
     <!-- Footer (Tailwind only) -->
     <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">
