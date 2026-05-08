@@ -504,6 +504,22 @@
                 }, 60);
             }, { passive: true });
 
+            const viewerShell = document.getElementById('viewer-shell');
+            let lastInteractionNotify = 0;
+            function notifyParentInteraction() {
+                const now = Date.now();
+                if (now - lastInteractionNotify < 200) return;
+                lastInteractionNotify = now;
+                if (!window.parent || window.parent === window) return;
+                try {
+                    window.parent.postMessage({ type: 'pdf-viewer-interaction' }, window.location.origin);
+                } catch (e) {}
+            }
+            if (viewerShell) {
+                viewerShell.addEventListener('touchstart', notifyParentInteraction, { passive: true });
+                viewerShell.addEventListener('pointerdown', notifyParentInteraction, { passive: true });
+            }
+
             window.addEventListener('message', function (ev) {
                 if (ev.origin !== window.location.origin) return;
                 const data = ev.data;

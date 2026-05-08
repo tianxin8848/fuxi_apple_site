@@ -253,9 +253,82 @@
         }
 
 
+        /* Desktop: wrapper is neutral; mobile styles override below */
+        @media (min-width: 640px) {
+            .pdf-reader-chrome {
+                display: contents;
+            }
+        }
+
         @media (max-width: 639.98px) {
-            .pdf-toolbar {
+            /* Avoid hero animation leaving the PDF invisible on first paint */
+            #pdf-frame-wrapper.animate-on-scroll {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            .pdf-first-screen {
+                min-height: calc(100dvh - 3.5rem);
+                min-height: calc(100svh - 3.5rem);
+            }
+
+            /* Same-origin iframe: touches are notified via postMessage from pdf-viewer */
+            .pdf-reader-chrome {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 45;
+                display: flex;
+                flex-direction: column;
+                background: var(--pdf-toolbar-bg);
+                border-top: 1px solid var(--pdf-toolbar-border);
+                box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.55);
+                transition:
+                    transform 0.38s var(--pdf-ease),
+                    opacity 0.28s ease;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+
+            .pdf-reader-chrome.pdf-reader-chrome--idle {
+                transform: translateY(calc(100% + 12px));
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            body.blog-newsletters-page nav {
+                transition: transform 0.38s var(--pdf-ease);
+            }
+
+            body.blog-newsletters-page.blog-chrome-idle nav {
+                transform: translateY(-108%);
+            }
+
+            .pdf-reader-chrome .pdf-toolbar {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .pdf-reader-chrome .pdf-toolbar__actions {
                 display: none;
+            }
+
+            .pdf-reader-chrome .pdf-toolbar__primary {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.65rem;
+                padding: 0.55rem 0.75rem 0.65rem;
+            }
+
+            .pdf-reader-chrome .pdf-toolbar__selectors {
+                width: 100%;
+            }
+
+            .pdf-reader-chrome .pdf-selector-wrap {
+                flex: 1 1 auto;
+            }
+
+            .pdf-reader-chrome .pdf-selector {
+                width: 100%;
             }
 
             .pdf-mobile-page-bar {
@@ -264,10 +337,10 @@
                 align-items: center;
                 justify-content: space-between;
                 gap: 0.75rem;
-                padding: 0.55rem 0.75rem;
-                padding-bottom: max(0.55rem, env(safe-area-inset-bottom));
-                background: var(--pdf-toolbar-bg);
-                border-top: 1px solid var(--pdf-toolbar-border);
+                padding: 0.5rem 0.75rem 0.65rem;
+                margin: 0;
+                background: transparent;
+                border-top: 0;
             }
 
             .pdf-mobile-page-btn {
@@ -335,10 +408,16 @@
             .pdf-selector {
                 transition: none;
             }
+            .pdf-reader-chrome {
+                transition: none !important;
+            }
+            body.blog-newsletters-page nav {
+                transition: none !important;
+            }
         }
     </style>
 </head>
-<body class="font-sans text-white bg-dark-bg pdf-hub">
+<body class="font-sans text-white bg-dark-bg pdf-hub blog-newsletters-page">
 
     <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
@@ -378,6 +457,7 @@
     <section class="pdf-first-screen mt-0 pb-0 pt-0 to-black" aria-labelledby="pdf-hub-title">
         <div id="pdf-frame-wrapper" class="pdf-doc-frame with-download-selectors animate-on-scroll" aria-label="Newsletter PDF viewer">
                 <div class="pdf-doc-frame__inner">
+                    <div id="pdf-reader-chrome" class="pdf-reader-chrome">
                     <div class="pdf-toolbar">
                         <div class="pdf-toolbar__primary">
                             <ul class="pdf-toolbar__actions">
@@ -432,9 +512,6 @@
                             </div>
                         </div>
                     </div>
-                    <div id="pdf-panel" class="pdf-doc-body">
-                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?file=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
-                    </div>
                     <div class="pdf-mobile-page-bar" role="toolbar" aria-label="PDF 翻页">
                         <button type="button" id="pdf-page-prev" class="pdf-mobile-page-btn" aria-label="上一页" disabled>
                             <span class="pdf-mobile-page-btn__icon" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
@@ -445,6 +522,11 @@
                             <span>下一页</span>
                             <span class="pdf-mobile-page-btn__icon" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
                         </button>
+                    </div>
+                    </div>
+
+                    <div id="pdf-panel" class="pdf-doc-body">
+                        <iframe id="pdf-frame" title="Newsletter PDF" src="/img/pdf/pdf-viewer.html?file=%2Fimg%2Fpdf%2F%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf"></iframe>
                     </div>
 
                 </div>
@@ -514,6 +596,7 @@
             if (menuBtn && mobileMenu) {
                 menuBtn.addEventListener('click', () => {
                     mobileMenu.classList.toggle('hidden');
+                    wakeReaderChrome();
                 });
             }
 
@@ -570,6 +653,40 @@
             const pdfPagePrevBtn = document.getElementById('pdf-page-prev');
             const pdfPageNextBtn = document.getElementById('pdf-page-next');
             const pdfPageIndicator = document.getElementById('pdf-page-indicator');
+            const readerChrome = document.getElementById('pdf-reader-chrome');
+
+            const READER_IDLE_MS = 4500;
+            let readerIdleTimer = null;
+
+            function isMobileReaderLayout() {
+                return window.matchMedia('(max-width: 639.98px)').matches;
+            }
+
+            function scheduleReaderIdle() {
+                clearTimeout(readerIdleTimer);
+                if (!readerChrome || !isMobileReaderLayout()) return;
+                readerIdleTimer = setTimeout(function hideChrome() {
+                    if (!isMobileReaderLayout()) return;
+                    const mm = document.getElementById('mobile-menu');
+                    if (mm && !mm.classList.contains('hidden')) {
+                        readerIdleTimer = setTimeout(hideChrome, READER_IDLE_MS);
+                        return;
+                    }
+                    if (readerChrome.contains(document.activeElement)) {
+                        readerIdleTimer = setTimeout(hideChrome, READER_IDLE_MS);
+                        return;
+                    }
+                    readerChrome.classList.add('pdf-reader-chrome--idle');
+                    document.body.classList.add('blog-chrome-idle');
+                }, READER_IDLE_MS);
+            }
+
+            function wakeReaderChrome() {
+                if (!readerChrome || !isMobileReaderLayout()) return;
+                readerChrome.classList.remove('pdf-reader-chrome--idle');
+                document.body.classList.remove('blog-chrome-idle');
+                scheduleReaderIdle();
+            }
 
             function viewerSrcForPdf(href) {
                 return `${PDF_VIEWER_PAGE}?file=${encodeURIComponent(href)}`;
@@ -659,6 +776,10 @@
                     }
                     if (pdfPagePrevBtn) pdfPagePrevBtn.disabled = !numPages || page <= 1;
                     if (pdfPageNextBtn) pdfPageNextBtn.disabled = !numPages || page >= numPages;
+                    return;
+                }
+                if (d.type === 'pdf-viewer-interaction') {
+                    wakeReaderChrome();
                 }
             });
 
@@ -749,6 +870,7 @@
                 if (seriesSelect) seriesSelect.value = seriesId;
                 fillIssueSelect(seriesId, issueId);
                 if (syncHash) setHash(seriesId, issue.id);
+                if (isMobileReaderLayout()) wakeReaderChrome();
             }
 
             function syncFromControls() {
@@ -786,8 +908,51 @@
             if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => postPdfViewerZoom('out'));
             if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => postPdfViewerZoom('reset'));
             if (thumbToggleBtn) thumbToggleBtn.addEventListener('click', () => postPdfViewerToggleSidebar());
-            if (pdfPagePrevBtn) pdfPagePrevBtn.addEventListener('click', () => postPdfViewerPageNav('prev'));
-            if (pdfPageNextBtn) pdfPageNextBtn.addEventListener('click', () => postPdfViewerPageNav('next'));
+            if (pdfPagePrevBtn) {
+                pdfPagePrevBtn.addEventListener('click', () => {
+                    postPdfViewerPageNav('prev');
+                    wakeReaderChrome();
+                });
+            }
+            if (pdfPageNextBtn) {
+                pdfPageNextBtn.addEventListener('click', () => {
+                    postPdfViewerPageNav('next');
+                    wakeReaderChrome();
+                });
+            }
+
+            if (readerChrome) {
+                ['pointerdown', 'touchstart'].forEach(function (evt) {
+                    readerChrome.addEventListener(
+                        evt,
+                        function () {
+                            wakeReaderChrome();
+                        },
+                        { passive: true }
+                    );
+                });
+                readerChrome.addEventListener('focusout', function () {
+                    window.setTimeout(function () {
+                        if (
+                            readerChrome &&
+                            !readerChrome.contains(document.activeElement) &&
+                            isMobileReaderLayout()
+                        ) {
+                            scheduleReaderIdle();
+                        }
+                    }, 0);
+                });
+            }
+
+            window.addEventListener('resize', function () {
+                if (!isMobileReaderLayout()) {
+                    clearTimeout(readerIdleTimer);
+                    if (readerChrome) readerChrome.classList.remove('pdf-reader-chrome--idle');
+                    document.body.classList.remove('blog-chrome-idle');
+                } else {
+                    scheduleReaderIdle();
+                }
+            });
 
             if (downloadLink) {
                 downloadLink.addEventListener('click', function (e) {
@@ -843,6 +1008,10 @@
                     io.unobserve(el);
                 }
             });
+
+            if (isMobileReaderLayout()) {
+                scheduleReaderIdle();
+            }
         })();
     </script>
 </body>
