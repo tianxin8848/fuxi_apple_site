@@ -129,18 +129,23 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
+    <!-- 背景图包装器 - 所有 section 共享 -->
+<div class="bg-cover bg-center bg-fixed bg-no-repeat"
+     style="background-image: url('/img/img/background.png');">
+
     <!-- Product Introduction -->
-    <section class="mt-16 px-5 flex items-center bg-gradient-to-b from-dark-bg to-black shared-bg relative" style="min-height: calc(100vh - 4rem); min-height: calc(100dvh - 4rem);">
-        <div class="container mx-auto text-center">
+    <section class="mt-16 px-5 flex items-center relative" style="min-height: calc(100vh - 4rem); min-height: calc(100dvh - 4rem);">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
+        <div class="relative z-10 container mx-auto text-center">
             <div class="animate-[fadeUp_0.8s_ease-out]">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
                     FUXI<span class="text-cyber-red"> Security Platform</span>
                 </h1>
-                <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed ">
+                <p class="text-lg md:text-xl text-gray-200 mt-6 max-w-3xl mx-auto leading-relaxed">
                     An Al-enhanced, portable SIEM providing preventive, detective, and corrective security layers for businesses of any scale. Unify your log collection and incident response within a single, multi-layered defense framework
                 </p>
                 <div class="mt-10">
-                    <a href="/contact" class="inline-block bg-cyber-red hover:bg-accent-deep text-white px-8 py-3 rounded-md font-semibold text-lg transition-all shadow-md btn-primary">
+                    <a href="/contact" class="inline-block bg-cyber-red hover:bg-red-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-all shadow-md btn-primary">
                         Talk to an expert
                     </a>
                 </div>
@@ -149,46 +154,47 @@
     </section>
 
     <!-- Features Grid Section -->
-    <section class="py-16 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="text-center mb-14 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold tracking-tight"> <span class="text-cyber-red">Explore FUXI</span></h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Feature Card 1 -->
-                <div class="bg-card-bg rounded-xl overflow-hidden feature-card animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden feature-card animate-on-scroll border border-white/10">
                     <div class="relative h-56 overflow-hidden">
                         <img src="/img/message-online-chat-social-text-concept.avif" alt="Endpoint & Email Security" class="w-full h-full object-cover image-hover">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold">Endpoint & Email Security</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold text-white">Endpoint & Email Security</h3>
+                        <p class="text-gray-300 mt-3 text-sm leading-relaxed">
                             Correlate EDR, email, and network telemetry to stop ransomware and phishing in one place.
                         </p>
                     </div>
                 </div>
 
                 <!-- Feature Card 2 -->
-                <div class="bg-card-bg rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.1s;">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden feature-card animate-on-scroll border border-white/10" style="transition-delay: 0.1s;">
                     <div class="relative h-56 overflow-hidden">
                         <img src="/img/histogram-statistics-graph-bar-chart-concept.avif" alt="Agentic SIEM Analytics" class="w-full h-full object-cover image-hover">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold">Agentic SIEM Analytics</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold text-white">Agentic SIEM Analytics</h3>
+                        <p class="text-gray-300 mt-3 text-sm leading-relaxed">
                             Use AI-assisted correlation and playbooks to triage alerts and drive incident workflows.
                         </p>
                     </div>
                 </div>
 
                 <!-- Feature Card 3 -->
-                <div class="bg-card-bg rounded-xl overflow-hidden feature-card animate-on-scroll" style="transition-delay: 0.2s;">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden feature-card animate-on-scroll border border-white/10" style="transition-delay: 0.2s;">
                     <div class="relative h-56 overflow-hidden">
                         <img src="/img/Advantages-and-Disadvantages-of-LAN-1024x576.jpg" alt="Secure LAN Edge Visibility" class="w-full h-full object-cover image-hover">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold">Secure LAN Edge Visibility</h3>
-                        <p class="text-muted-text mt-3 text-sm leading-relaxed">
+                        <h3 class="text-xl font-bold text-white">Secure LAN Edge Visibility</h3>
+                        <p class="text-gray-300 mt-3 text-sm leading-relaxed">
                             Combine switch, Wi‑Fi, and firewall logs to detect lateral movement across your campus and branches.
                         </p>
                     </div>
@@ -198,8 +204,9 @@
     </section>
 
     <!-- Image Left, Text Right -->
-    <section class="py-16 px-5 bg-black shared-bg relative ">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="flex flex-col lg:flex-row items-center gap-12">
                 <div class="lg:w-1/2 animate-on-scroll">
                     <div class="overflow-hidden rounded-2xl">
@@ -208,7 +215,7 @@
                 </div>
                 <div class="lg:w-1/2 animate-on-scroll" style="transition-delay: 0.2s;">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Built for Security Teams</h2>
-                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
                         Deploy Fuxi SIEM at the edge, in labs, or in the SOC to run full investigations without depending on fragile remote connectivity.
                     </p>
                 </div>
@@ -217,8 +224,9 @@
     </section>
 
     <!-- Text Left, Image Right -->
-    <section class="py-16 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto">
+    <section class="py-16 px-5 relative">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="flex flex-col lg:flex-row-reverse items-center gap-12">
                 <div class="lg:w-1/2 animate-on-scroll">
                     <div class="overflow-hidden rounded-2xl">
@@ -227,7 +235,7 @@
                 </div>
                 <div class="lg:w-1/2 animate-on-scroll" style="transition-delay: 0.2s;">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Designed for China's Enterprises</h2>
-                    <p class="text-muted-text text-lg mt-5 leading-relaxed">
+                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
                         Support local compliance, data residency, and multi-branch architectures while keeping telemetry and alerts under your control.
                     </p>
                 </div>
@@ -235,6 +243,7 @@
         </div>
     </section>
 
+</div>
     <!-- Footer (Tailwind only) -->
     <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">
         <div class="pointer-events-none absolute inset-0 z-0" style="background-color: rgb(4, 0, 0);" aria-hidden="true"></div>

@@ -172,13 +172,7 @@
         .group:hover .read-more-arrow {
             transform: translateX(5px);
         }
-        .shared-bg {
-        background-image: url('/img/img/background.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed; /* 可选：视差效果 */
-    }
+
         .animate-on-scroll {
             opacity: 0;
             filter: blur(8px);
@@ -334,38 +328,43 @@
         </div>
     </section>
 
+   <!-- 背景图包装器 - 所有 section 共享 -->
+<div class="bg-cover bg-center bg-fixed bg-no-repeat"
+     style="background-image: url('/img/img/background.png');">
+
     <!-- Latest News Section -->
-    <section class="py-20 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto">
+    <section class="py-20 px-5 relative">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="text-center mb-14 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold tracking-tight">Latest from <span class="text-cyber-red">Fuxi Tech</span></h2>
-                <p class="text-muted-text mt-3">Product innovations, cybersecurity insights, and events from the Fuxi team.</p>
+                <p class="text-gray-300 mt-3">Product innovations, cybersecurity insights, and events from the Fuxi team.</p>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- card 1 -->
-                <div class="bg-card-bg rounded-xl overflow-hidden transition-all duration-300 group animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 group animate-on-scroll border border-white/10">
                     <img src="/img/diverse-computer-hacking-shoot.avif" alt="threat detection" class="w-full h-56 object-cover">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold">Advanced Threat Detection</h3>
-                        <p class="text-muted-text mt-2 text-sm">Discover how our new AI-driven engine identifies threats faster than ever before.</p>
+                        <h3 class="text-xl font-bold text-white">Advanced Threat Detection</h3>
+                        <p class="text-gray-300 mt-2 text-sm">Discover how our new AI-driven engine identifies threats faster than ever before.</p>
                         <a href="/products" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Read More <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i></a>
                     </div>
                 </div>
                 <!-- card 2 -->
-                <div class="bg-card-bg rounded-xl overflow-hidden transition-all duration-300 group animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 group animate-on-scroll border border-white/10">
                     <img src="/img/business-people-meeting-to-analyse-and-discuss-and-brainstorming-the-financial-report-chart-data-in.avif" alt="cybersec event" class="w-full h-56 object-cover">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold">Fuxi at CyberSec 2026</h3>
-                        <p class="text-muted-text mt-2 text-sm">Join us at the upcoming international cybersecurity conference in Shenzhen.</p>
+                        <h3 class="text-xl font-bold text-white">Fuxi at CyberSec 2026</h3>
+                        <p class="text-gray-300 mt-2 text-sm">Join us at the upcoming international cybersecurity conference in Shenzhen.</p>
                         <a href="/company" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Event Details <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i></a>
                     </div>
                 </div>
                 <!-- card 3 -->
-                <div class="bg-card-bg rounded-xl overflow-hidden transition-all duration-300 group animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 group animate-on-scroll border border-white/10">
                     <img src="/img/hand-with-ai-data-connect-to-social-network-for-libra-bitcoin-money-crypto-currency-trade-business.avif" alt="portable guide" class="w-full h-56 object-cover">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold">Portable Security Guide</h3>
-                        <p class="text-muted-text mt-2 text-sm">Why portability matters in modern incident response strategies.</p>
+                        <h3 class="text-xl font-bold text-white">Portable Security Guide</h3>
+                        <p class="text-gray-300 mt-2 text-sm">Why portability matters in modern incident response strategies.</p>
                         <a href="/blog" class="inline-flex items-center text-cyber-red font-medium mt-4 group-hover:underline">Download Guide <i class="fas fa-arrow-right ml-2 text-xs read-more-arrow"></i></a>
                     </div>
                 </div>
@@ -374,34 +373,36 @@
     </section>
 
     <!-- Explore Fuxi SIEM (3 core features) -->
-    <section class="py-20 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto">
+    <section class="py-20 px-5 relative">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="text-center mb-14 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold">Explore <span class="text-cyber-red">Fuxi SIEM</span></h2>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-7 rounded-xl bg-card-bg transition animate-on-scroll">
-                    <div class="w-16 h-16 bg-accent-glow rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-shield-halved text-3xl text-cyber-red"></i></div>
-                    <h3 class="text-xl font-bold">Endpoint & Email Protection</h3>
-                    <p class="text-muted-text mt-3 text-sm">Strengthen endpoint, server, and email security to defend against ransomware, phishing, and zero-day attacks.</p>
+                <div class="text-center p-7 rounded-xl bg-black/40 backdrop-blur-sm transition animate-on-scroll border border-white/10">
+                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-shield-halved text-3xl text-cyber-red"></i></div>
+                    <h3 class="text-xl font-bold text-white">Endpoint & Email Protection</h3>
+                    <p class="text-gray-300 mt-3 text-sm">Strengthen endpoint, server, and email security to defend against ransomware, phishing, and zero-day attacks.</p>
                 </div>
-                <div class="text-center p-7 rounded-xl bg-card-bg transition animate-on-scroll">
-                    <div class="w-16 h-16 bg-accent-glow rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-robot text-3xl text-cyber-red"></i></div>
-                    <h3 class="text-xl font-bold">AI-powered SOC Automation</h3>
-                    <p class="text-muted-text mt-3 text-sm">Transform alert, event, and ticket workflows with agentic AI to accelerate response and reduce team fatigue.</p>
+                <div class="text-center p-7 rounded-xl bg-black/40 backdrop-blur-sm transition animate-on-scroll border border-white/10">
+                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-robot text-3xl text-cyber-red"></i></div>
+                    <h3 class="text-xl font-bold text-white">AI-powered SOC Automation</h3>
+                    <p class="text-gray-300 mt-3 text-sm">Transform alert, event, and ticket workflows with agentic AI to accelerate response and reduce team fatigue.</p>
                 </div>
-                <div class="text-center p-7 rounded-xl bg-card-bg transition animate-on-scroll">
-                    <div class="w-16 h-16 bg-accent-glow rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-network-wired text-3xl text-cyber-red"></i></div>
-                    <h3 class="text-xl font-bold">Secure LAN & Remote Sites</h3>
-                    <p class="text-muted-text mt-3 text-sm">Converge networking and security for branches, factories, and remote offices with one unified platform. </p>
+                <div class="text-center p-7 rounded-xl bg-black/40 backdrop-blur-sm transition animate-on-scroll border border-white/10">
+                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-5"><i class="fas fa-network-wired text-3xl text-cyber-red"></i></div>
+                    <h3 class="text-xl font-bold text-white">Secure LAN & Remote Sites</h3>
+                    <p class="text-gray-300 mt-3 text-sm">Converge networking and security for branches, factories, and remote offices with one unified platform. </p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Feature 1: Empowering Security Teams -->
-    <section class="py-20 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto flex flex-col lg:flex-row items-center gap-12 ">
+    <section class="py-20 px-5 relative">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="relative z-10 container mx-auto flex flex-col lg:flex-row items-center gap-12">
             <div class="lg:w-1/2 animate-on-scroll">
                 <div class="overflow-hidden rounded-2xl">
                     <img src="/img/23_0127_ecd_ps-cyber_header_1600x600.png" alt="security team" class="w-full h-auto object-cover transition-transform duration-700 feature-img-hover">
@@ -409,14 +410,15 @@
             </div>
             <div class="lg:w-1/2 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Empowering Security Teams</h2>
-                <p class="text-muted-text text-lg mt-5 leading-relaxed">Whether you’re a red teamer who needs a portable rig or a blue teamer securing a remote site, Fuxi SIEM adapts to the mission with no complex cloud setup, just plug and play simplicity.</p>
+                <p class="text-gray-300 text-lg mt-5 leading-relaxed">Whether you're a red teamer who needs a portable rig or a blue teamer securing a remote site, Fuxi SIEM adapts to the mission with no complex cloud setup, just plug and play simplicity.</p>
             </div>
         </div>
     </section>
 
     <!-- Feature 2: Visualize Your Data (reverse order) -->
-    <section class="py-20 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto flex flex-col lg:flex-row-reverse items-center gap-12">
+    <section class="py-20 px-5 relative">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10 container mx-auto flex flex-col lg:flex-row-reverse items-center gap-12">
             <div class="lg:w-1/2 animate-on-scroll">
                 <div class="overflow-hidden rounded-2xl">
                     <img src="/img/cyber-circuit-future-technology-concept-background_42077-11483.jpg" alt="data viz" class="w-full h-auto object-cover feature-img-hover transition-transform duration-700">
@@ -424,38 +426,40 @@
             </div>
             <div class="lg:w-1/2 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Visualize Your Data</h2>
-                <p class="text-muted-text text-lg mt-5 leading-relaxed">Turn raw logs into actionable insights. Our visualization tools help you spot anomalies and trends at a glance, ensuring you never miss a critical security event.</p>
+                <p class="text-gray-300 text-lg mt-5 leading-relaxed">Turn raw logs into actionable insights. Our visualization tools help you spot anomalies and trends at a glance, ensuring you never miss a critical security event.</p>
             </div>
         </div>
     </section>
 
     <!-- Stats Section -->
-    <section class="py-20 px-5 bg-dark-bg shared-bg relative">
-        <div class="container mx-auto">
+    <section class="py-20 px-5 relative">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative z-10 container mx-auto">
             <div class="text-center mb-12 animate-on-scroll">
                 <h2 class="text-3xl md:text-4xl font-bold">Why Customers Choose <span class="text-cyber-red">Fuxi</span></h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="bg-card-bg rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll border border-white/10">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">100%</div>
-                    <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Customer Satisfaction</div>
+                    <div class="text-gray-300 uppercase tracking-wider text-sm mt-2">Customer Satisfaction</div>
                 </div>
-                <div class="bg-card-bg rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll border border-white/10">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">300+</div>
-                    <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Deployments</div>
+                    <div class="text-gray-300 uppercase tracking-wider text-sm mt-2">Deployments</div>
                 </div>
-                <div class="bg-card-bg rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll border border-white/10">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">24x7</div>
-                    <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Security Monitoring</div>
+                    <div class="text-gray-300 uppercase tracking-wider text-sm mt-2">Security Monitoring</div>
                 </div>
-                <div class="bg-card-bg rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll">
+                <div class="bg-black/40 backdrop-blur-sm rounded-xl p-8 text-center stat-hover transition-all duration-300 animate-on-scroll border border-white/10">
                     <div class="text-4xl md:text-5xl font-black text-cyber-red">10k+</div>
-                    <div class="text-muted-text uppercase tracking-wider text-sm mt-2">Protected Identities</div>
+                    <div class="text-gray-300 uppercase tracking-wider text-sm mt-2">Protected Identities</div>
                 </div>
             </div>
         </div>
     </section>
 
+</div>
 
 
     <!-- Footer (Tailwind only) -->
