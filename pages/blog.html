@@ -607,7 +607,7 @@
                     issues: [
                         {
                             id: 'feb-21',
-                            label: 'Feb 21, 2026 (CML)',
+                            label: 'Feb 21, 2026',
                             href: '/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026.pdf',
                             downloadHref: '/img/pdf/%28CML%29%20Newsletter%20ENG%20-%20Feb%2021%202026-watermark.pdf',
                             downloadName: '(CML) Newsletter ENG - Feb 21 2026.pdf',
@@ -954,31 +954,35 @@
                 }
             });
 
-            if (downloadLink) {
-                downloadLink.addEventListener('click', function (e) {
-                    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-                    e.preventDefault();
-                    const sid = (seriesSelect && seriesSelect.value) || DEFAULT_SERIES;
-                    const iid = (issueSelect && issueSelect.value) || DEFAULT_ISSUE;
-                    const issue = getIssue(sid, iid);
-                    const downloadUrl = issue
-                        ? issue.downloadHref || issue.href
-                        : downloadLink.getAttribute('href') || downloadLink.href;
-                    const filename =
-                        (issue && issue.downloadName) || downloadLink.getAttribute('download') || 'newsletter.pdf';
-                    if (!downloadUrl) return;
-                    const url = new URL(downloadUrl, location.origin).href;
-                    savePdfAsFile(url, filename).catch(function () {
-                        const fallback = document.createElement('a');
-                        fallback.href = url;
-                        fallback.target = '_blank';
-                        fallback.rel = 'noopener noreferrer';
-                        document.body.appendChild(fallback);
-                        fallback.click();
-                        fallback.remove();
-                    });
-                });
-            }
+         if (downloadLink) {
+    downloadLink.addEventListener('click', function (e) {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        const sid = (seriesSelect && seriesSelect.value) || DEFAULT_SERIES;
+        const iid = (issueSelect && issueSelect.value) || DEFAULT_ISSUE;
+        const issue = getIssue(sid, iid);
+        const downloadUrl = issue
+            ? issue.downloadHref || issue.href
+            : downloadLink.getAttribute('href') || downloadLink.href;
+        let filename = (issue && issue.downloadName) || downloadLink.getAttribute('download') || 'newsletter.pdf';
+        
+        // ========= 新增：去掉文件名中的 (CML) =========
+        filename = filename.replace(/\(CML\)\s*/g, '');
+        // =============================================
+
+        if (!downloadUrl) return;
+        const url = new URL(downloadUrl, location.origin).href;
+        savePdfAsFile(url, filename).catch(function () {
+            const fallback = document.createElement('a');
+            fallback.href = url;
+            fallback.target = '_blank';
+            fallback.rel = 'noopener noreferrer';
+            document.body.appendChild(fallback);
+            fallback.click();
+            fallback.remove();
+        });
+    });
+}
 
             window.addEventListener('hashchange', () => {
                 const { seriesId, issueId } = parseHash();
