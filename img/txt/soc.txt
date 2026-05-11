@@ -1,0 +1,40 @@
+Security Operation Centre (SOC) Service
+128 Average days needed for an organization to detect an information security breach
+47 Average days needed for an organization to respond to an information security breach
+1M Average expense for building up a Security Operation Centre
+
+ 
+
+ Security Operation Centre can help in
+Promptly detect information security events
+Incident respond by professionals
+Enjoy protection with cost-saving approach
+REF: Cybersecurity Solutions for a Riskier World Report
+
+
+What SOC Can Do?
+1 Proactive Incident Detection and Response
+Real time monitoring and detection
+Automatic respond with multiple channels (Teams / Slack / Email / Åc)
+
+
+128 Average days needed for an organization to detect an information security breach
+47 Average days needed for an organization to respond to an information security breach
+
+2  Professional Incident Response Team
+A full team of Information Security Professionals at your service
+24x7 / 8x5 Service
+No need to worry information security talentsÅf shortage
+
+46% Organization described their organizationÅfs cybersecurity team are understaffed
+56%  Organizations experienced difficulties in retaining qualified cybersecurity professional
+
+3 Compliance in Regulations and Standards
+More and more information security related regulations and standards require monitoring
+
+
+/Users/xi/WebstormProjects/apr21-website/img/img/ppt-picdss.png PCI DSS
+/Users/xi/WebstormProjects/apr21-website/img/img/ppt-ISOIEC27001:2022.png ISO/IEC 27001:2022
+/Users/xi/WebstormProjects/apr21-website/img/img/ppt-NISTCybersecurityFramework 2.0.png NIST Cybersecurity Framework 
+2.0
+ 
