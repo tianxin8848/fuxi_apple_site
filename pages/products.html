@@ -47,7 +47,7 @@
     <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
     <style>
        .shared-bg {
-        background-image: url('/img/img/background.png');
+        background-image: url('/img/background.png');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -88,6 +88,322 @@
         .image-hover:hover {
             transform: scale(1.03);
         }
+
+        /* —— SOC: enterprise-quiet (minimal motion, generous space) —— */
+        .soc-showcase {
+            --soc-red: #e63d3d;
+            --soc-line: rgba(255, 255, 255, 0.06);
+            position: relative;
+            isolation: isolate;
+        }
+        .soc-inner {
+            position: relative;
+            z-index: 2;
+            max-width: 72rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5rem;
+        }
+        @media (min-width: 768px) {
+            .soc-inner { gap: 6.5rem; padding-left: 2rem; padding-right: 2rem; }
+        }
+        @media (min-width: 1024px) {
+            .soc-inner { gap: 8rem; padding-left: 2.5rem; padding-right: 2.5rem; }
+        }
+        .soc-prose {
+            max-width: 38rem;
+        }
+        .soc-prose-wide {
+            max-width: 42rem;
+        }
+        .soc-hud {
+            position: relative;
+            min-height: 260px;
+            border-radius: 1.25rem;
+            border: 1px solid var(--soc-line);
+            background: rgba(12, 10, 10, 0.55);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .soc-hud { min-height: 300px; }
+        }
+        .soc-hud-grid--static {
+            position: absolute;
+            inset: 0;
+            opacity: 0.14;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .soc-live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--soc-red);
+            flex-shrink: 0;
+        }
+        .soc-live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.75);
+            border: 1px solid var(--soc-line);
+            background: rgba(0, 0, 0, 0.25);
+        }
+        .soc-hud-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1.5rem;
+            padding-top: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--soc-line);
+            font-size: 0.875rem;
+        }
+        .soc-hud-stat:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .soc-hud-stat dt {
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 500;
+        }
+        .soc-hud-stat dd {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.92);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        .soc-kpi-strip {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        @media (min-width: 768px) {
+            .soc-kpi-strip {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2.5rem;
+            }
+            .soc-kpi-item + .soc-kpi-item {
+                padding-left: 2.5rem;
+                border-left: 1px solid var(--soc-line);
+            }
+        }
+        .soc-kpi-item {
+            text-align: center;
+            padding: 2rem 1rem 2.5rem;
+        }
+        @media (min-width: 768px) {
+            .soc-kpi-item {
+                text-align: left;
+                padding: 2rem 0 2.5rem;
+            }
+        }
+        .soc-kpi-mega {
+            font-size: clamp(3.5rem, 11vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.045em;
+            line-height: 0.92;
+            color: var(--soc-red);
+        }
+        .soc-kpi-unit {
+            font-size: clamp(1.125rem, 2.8vw, 1.5rem);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.72);
+            margin-left: 0.15em;
+        }
+        .soc-kpi-caption {
+            margin-top: 1.25rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.48);
+            max-width: 15rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (min-width: 768px) {
+            .soc-kpi-caption {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+        .soc-why-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 1.25rem 2rem;
+        }
+        @media (min-width: 768px) {
+            .soc-why-list {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2rem 3rem;
+            }
+        }
+        .soc-why-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.88);
+            line-height: 1.4;
+        }
+        .soc-why-bullet {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--soc-red);
+            margin-top: 0.45rem;
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
+        .soc-section-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.38);
+        }
+        .soc-cap-panel {
+            border-radius: 1.125rem;
+            border: 1px solid var(--soc-line);
+            background: rgba(10, 8, 8, 0.4);
+            padding: 2rem 1.75rem 2.25rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        @media (min-width: 1024px) {
+            .soc-cap-panel { padding: 2.25rem 2rem 2.5rem; }
+        }
+        .soc-cap-accent {
+            width: 2rem;
+            height: 2px;
+            border-radius: 1px;
+            background: var(--soc-red);
+            opacity: 0.85;
+        }
+        .soc-cap-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+            line-height: 1.3;
+        }
+        .soc-cap-body {
+            font-size: 0.9375rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.6;
+            flex: 1;
+            max-width: 22rem;
+        }
+        .soc-pain-line {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.72);
+            padding-top: 0.5rem;
+        }
+        .soc-pain-line span {
+            color: var(--soc-red);
+            font-weight: 700;
+            margin-right: 0.35rem;
+        }
+        .soc-frameworks-inline {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.02em;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+        .soc-compliance-rail {
+            border-top: 1px solid var(--soc-line);
+            padding-top: 3rem;
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .soc-compliance-rail {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 3.5rem;
+            }
+        }
+        .soc-compliance-logos {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem 2.5rem;
+        }
+        .soc-logo-plain {
+            display: block;
+            opacity: 0.55;
+        }
+        .soc-logo-plain img {
+            height: 36px;
+            width: auto;
+            max-width: 140px;
+            object-fit: contain;
+        }
+        @media (min-width: 768px) {
+            .soc-logo-plain img { height: 40px; max-width: 160px; }
+        }
+        .soc-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.875rem 1.75rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: #fff;
+            background-color: #e63d3d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background-color 0.2s ease, opacity 0.2s ease;
+        }
+        .soc-cta:hover {
+            background-color: #c93434;
+        }
+        .soc-cta:focus-visible {
+            outline: 2px solid rgba(230, 61, 61, 0.85);
+            outline-offset: 3px;
+        }
+        .soc-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 5.5rem;
+        }
+        @media (min-width: 768px) {
+            .soc-stack { gap: 7rem; }
+        }
+        @media (min-width: 1024px) {
+            .soc-stack { gap: 8.5rem; }
+        }
+
     </style>
 </head>
 <body class="font-sans text-white bg-dark-bg">
@@ -131,10 +447,10 @@
 
     <!-- 背景图包装器 - 所有 section 共享 -->
 <div class="bg-cover bg-center bg-fixed bg-no-repeat"
-     style="background-image: url('/img/img/background.png');">
+     style="background-image: url('/img/background.png');">
 
     <!-- Product Introduction -->
-    <section class="mt-16 px-5 flex items-center relative" style="min-height: calc(100vh - 4rem); min-height: calc(100dvh - 4rem);">
+    <section class="pt-24 mt-0 pb-0 flex items-center relative" style="min-height: calc(100vh - 4rem); min-height: calc(100dvh - 4rem);">
         <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
         <div class="relative z-10 container mx-auto text-center">
             <div class="animate-[fadeUp_0.8s_ease-out]">
@@ -153,92 +469,118 @@
         </div>
     </section>
 
-    <!-- Features Grid Section -->
-    <section class="py-16 px-5 relative">
-        <div class="absolute inset-0 bg-black/50"></div>
-        <div class="relative z-10 container mx-auto">
-            <div class="text-center mb-14 animate-on-scroll">
-                <h2 class="text-3xl md:text-4xl font-bold tracking-tight"> <span class="text-cyber-red">Explore FUXI</span></h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Feature Card 1 -->
-                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden feature-card animate-on-scroll border border-white/10">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/message-online-chat-social-text-concept.avif" alt="Endpoint & Email Security" class="w-full h-full object-cover image-hover">
+    <!-- SOC — enterprise, minimal -->
+    <section id="soc" class="soc-showcase relative scroll-mt-24 pt-28 pb-28 md:pt-36 md:pb-36 lg:pt-44 lg:pb-40" aria-labelledby="soc-hero-title">
+        <div class="absolute inset-0 bg-black/40 pointer-events-none" aria-hidden="true"></div>
+        <div class="soc-inner relative z-10 pt-6 pb-8 md:pb-14">
+
+            <div class="soc-stack">
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-stretch">
+                    <div class="lg:col-span-5 order-2 lg:order-1">
+                        <div class="soc-hud h-full min-h-[240px] lg:min-h-[280px] flex flex-col">
+                            <div class="soc-hud-grid--static" aria-hidden="true"></div>
+                            <div class="relative z-10 flex flex-col flex-1 p-8 md:p-10">
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="text-xs font-medium text-white/40">Operations</span>
+                                    <span class="soc-live-pill"><span class="soc-live-dot" aria-hidden="true"></span>Live</span>
+                                </div>
+                                <dl class="mt-12 flex-1">
+                                    <div class="soc-hud-stat"><dt>Monitoring window</dt><dd>24×7</dd></div>
+                                    <div class="soc-hud-stat"><dt>Response model</dt><dd>Analyst-led IR</dd></div>
+                                    <div class="soc-hud-stat"><dt>Coverage posture</dt><dd>Active</dd></div>
+                                </dl>
+                            </div>
+                        </div>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-white">Endpoint & Email Security</h3>
-                        <p class="text-gray-300 mt-3 text-sm leading-relaxed">
-                            Correlate EDR, email, and network telemetry to stop ransomware and phishing in one place.
+                    <div class="lg:col-span-7 order-1 lg:order-2 flex flex-col justify-center lg:pl-2">
+                        <h2 id="soc-hero-title" class="text-3xl sm:text-4xl lg:text-[2.65rem] font-semibold tracking-tight text-white leading-[1.15] soc-prose">
+                            Security Operation Centre (SOC)
+                        </h2>
+                        <p class="mt-7 text-lg md:text-xl font-medium text-cyber-red leading-snug soc-prose">
+                            24×7 Threat Monitoring &amp; Incident Response
+                        </p>
+                        <p class="mt-8 text-base md:text-[1.0625rem] font-normal text-gray-300 leading-[1.65] soc-prose-wide">
+                            Reduce detection time, accelerate response, and strengthen enterprise security operations.
                         </p>
                     </div>
                 </div>
 
-                <!-- Feature Card 2 -->
-                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden feature-card animate-on-scroll border border-white/10" style="transition-delay: 0.1s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/histogram-statistics-graph-bar-chart-concept.avif" alt="Agentic SIEM Analytics" class="w-full h-full object-cover image-hover">
+                <div class="soc-kpi-strip" aria-label="Industry benchmark metrics">
+                    <div class="soc-kpi-item">
+                        <div class="flex flex-wrap items-baseline justify-center md:justify-start gap-x-1">
+                            <span class="soc-kpi-mega">128</span>
+                            <span class="soc-kpi-unit">days</span>
+                        </div>
+                        <p class="soc-kpi-caption">Average breach detection time</p>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-white">Agentic SIEM Analytics</h3>
-                        <p class="text-gray-300 mt-3 text-sm leading-relaxed">
-                            Use AI-assisted correlation and playbooks to triage alerts and drive incident workflows.
-                        </p>
+                    <div class="soc-kpi-item">
+                        <div class="flex flex-wrap items-baseline justify-center md:justify-start gap-x-1">
+                            <span class="soc-kpi-mega">47</span>
+                            <span class="soc-kpi-unit">days</span>
+                        </div>
+                        <p class="soc-kpi-caption">Average incident response time</p>
+                    </div>
+                    <div class="soc-kpi-item">
+                        <div class="flex flex-wrap items-baseline justify-center md:justify-start gap-x-1">
+                            <span class="soc-kpi-mega">$1M</span>
+                            <span class="soc-kpi-unit">+</span>
+                        </div>
+                        <p class="soc-kpi-caption">Average cost to build an in-house SOC</p>
                     </div>
                 </div>
 
-                <!-- Feature Card 3 -->
-                <div class="bg-black/40 backdrop-blur-sm rounded-xl overflow-hidden feature-card animate-on-scroll border border-white/10" style="transition-delay: 0.2s;">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="/img/Advantages-and-Disadvantages-of-LAN-1024x576.jpg" alt="Secure LAN Edge Visibility" class="w-full h-full object-cover image-hover">
+                <div aria-labelledby="soc-why-heading">
+                    <h3 id="soc-why-heading" class="sr-only">Why it matters</h3>
+                    <ul class="soc-why-list">
+                        <li><span class="soc-why-bullet" aria-hidden="true"></span>Real-time threat monitoring</li>
+                        <li><span class="soc-why-bullet" aria-hidden="true"></span>Professional incident response</li>
+                        <li><span class="soc-why-bullet" aria-hidden="true"></span>Cost-effective security operations</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="mb-12 md:mb-16 lg:mb-20 max-w-xl">
+                        <p class="soc-section-label">Capabilities</p>
+                        <h3 id="soc-do-heading" class="mt-5 text-2xl md:text-3xl font-semibold text-white tracking-tight">What SOC Can Do</h3>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-white">Secure LAN Edge Visibility</h3>
-                        <p class="text-gray-300 mt-3 text-sm leading-relaxed">
-                            Combine switch, Wi‑Fi, and firewall logs to detect lateral movement across your campus and branches.
-                        </p>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
+                        <article class="soc-cap-panel">
+                            <div class="soc-cap-accent" aria-hidden="true"></div>
+                            <h4 class="soc-cap-title mt-2">Proactive Threat Detection</h4>
+                            <p class="soc-cap-body">Continuous monitoring and automated alerting across Teams, Slack, Email and more.</p>
+                        </article>
+                        <article class="soc-cap-panel">
+                            <div class="soc-cap-accent" aria-hidden="true"></div>
+                            <h4 class="soc-cap-title mt-2">Professional Incident Response</h4>
+                            <p class="soc-cap-body">24×7 security experts ready to investigate and respond rapidly.</p>
+                            <div class="space-y-2 pt-2">
+                                <p class="soc-pain-line"><span>46%</span> understaffed</p>
+                                <p class="soc-pain-line"><span>56%</span> retention difficulty</p>
+                            </div>
+                        </article>
+                        <article class="soc-cap-panel">
+                            <div class="soc-cap-accent" aria-hidden="true"></div>
+                            <h4 class="soc-cap-title mt-2">Compliance &amp; Governance</h4>
+                            <p class="soc-cap-body">Support monitoring requirements across industry regulations and security standards.</p>
+                            <p class="soc-frameworks-inline">PCI DSS · ISO 27001 · NIST CSF 2.0</p>
+                        </article>
                     </div>
+                </div>
+
+                <div class="soc-compliance-rail" aria-labelledby="soc-compliance-heading">
+                    <h3 id="soc-compliance-heading" class="sr-only">Framework references</h3>
+                    <div class="soc-compliance-logos">
+                        <span class="soc-logo-plain" role="img" aria-label="PCI DSS"><img src="/img/img/ppt-picdss.png" alt="PCI DSS" width="160" height="48" loading="lazy" decoding="async"></span>
+                        <span class="soc-logo-plain" role="img" aria-label="ISO 27001"><img src="/img/img/ppt-ISOIEC27001:2022.png" alt="ISO 27001" width="160" height="48" loading="lazy" decoding="async"></span>
+                        <span class="soc-logo-plain" role="img" aria-label="NIST CSF 2.0"><img src="/img/img/ppt-NISTCybersecurityFramework%202.0.png" alt="NIST CSF 2.0" width="160" height="48" loading="lazy" decoding="async"></span>
+                    </div>
+                    <p class="text-xs font-medium text-white/35 text-center md:text-right shrink-0 max-w-xs leading-relaxed">Reference only · Not a certification</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Image Left, Text Right -->
-    <section class="py-16 px-5 relative">
-        <div class="absolute inset-0 bg-black/30"></div>
-        <div class="relative z-10 container mx-auto">
-            <div class="flex flex-col lg:flex-row items-center gap-12">
-                <div class="lg:w-1/2 animate-on-scroll">
-                    <div class="overflow-hidden rounded-2xl">
-                        <img src="/img/xsiem-cyberseg-2-low.jpg.pagespeed.ic.xsZZtm8Sd-.webp" alt="Built for Security Teams" class="w-full h-auto object-cover image-hover">
-                    </div>
-                </div>
-                <div class="lg:w-1/2 animate-on-scroll" style="transition-delay: 0.2s;">
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Built for Security Teams</h2>
-                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
-                        Deploy Fuxi SIEM at the edge, in labs, or in the SOC to run full investigations without depending on fragile remote connectivity.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Text Left, Image Right -->
-    <section class="py-16 px-5 relative">
-        <div class="absolute inset-0 bg-black/40"></div>
-        <div class="relative z-10 container mx-auto">
-            <div class="flex flex-col lg:flex-row-reverse items-center gap-12">
-                <div class="lg:w-1/2 animate-on-scroll">
-                    <div class="overflow-hidden rounded-2xl">
-                        <img src="/img/screenshot-event.png" alt="Designed for China's Enterprises" class="w-full h-auto object-cover image-hover">
-                    </div>
-                </div>
-                <div class="lg:w-1/2 animate-on-scroll" style="transition-delay: 0.2s;">
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-cyber-red">Designed for China's Enterprises</h2>
-                    <p class="text-gray-300 text-lg mt-5 leading-relaxed">
-                        Support local compliance, data residency, and multi-branch architectures while keeping telemetry and alerts under your control.
-                    </p>
-                </div>
+            <div class="text-center pt-10 md:pt-16">
+                <a href="/contact" class="soc-cta no-underline">Talk to Security Experts</a>
             </div>
         </div>
     </section>
