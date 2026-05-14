@@ -8,7 +8,7 @@
     <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
     <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="/img/logimg/image.png">
-    <link rel="stylesheet" href="../css/vendor/tailwind.css">
+    <link rel="stylesheet" href="/css/vendor/tailwind.css">
     <script>
         tailwind.config = {
             theme: {
@@ -38,11 +38,11 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="../css/vendor/google-sans-flex-local.css">
-    <link rel="stylesheet" href="../css/vendor/font-awesome-local.css">
-    <link rel="stylesheet" href="../css/nav-baseline.css">
-    <link rel="stylesheet" href="../css/site-nav.css">
-    <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
+    <link rel="stylesheet" href="/css/vendor/google-sans-flex-local.css">
+    <link rel="stylesheet" href="/css/vendor/font-awesome-local.css">
+    <link rel="stylesheet" href="/css/nav-baseline.css">
+    <link rel="stylesheet" href="/css/site-nav.css">
+    <link rel="stylesheet" href="/css/theme-fuxi-red-black.css">
     <style>
         /* Layout inspired by doc viewer toolbars (e.g. selector + actions + full-width iframe) */
         .pdf-hub {
@@ -965,7 +965,7 @@
             ? issue.downloadHref || issue.href
             : downloadLink.getAttribute('href') || downloadLink.href;
         let filename = (issue && issue.downloadName) || downloadLink.getAttribute('download') || 'newsletter.pdf';
-        
+
         // ========= 新增：去掉文件名中的 (CML) =========
         filename = filename.replace(/\(CML\)\s*/g, '');
         // =============================================
