@@ -413,13 +413,19 @@
                 transition: none !important;
             }
         }
+
+        /* partials/site-nav.html uses position:fixed; Vercel runs inline-partials before build.
+           Without this offset, the first section (PDF) starts at y=0 under the nav. */
+        body.blog-newsletters-page nav.fixed + section.pdf-first-screen {
+            padding-top: calc(var(--nav-bottom) + 1px);
+        }
     </style>
 </head>
 <body class="font-sans text-white bg-dark-bg pdf-hub blog-newsletters-page">
 
-    <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
+    <!-- Navigation: source partials/site-nav.html �? run npm run partials after edits -->
     <!-- SITE_NAV_PARTIAL_BEGIN -->
-      <nav class="sticky top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
+      <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
             <a href="/" class="flex items-center gap-2">
                 <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
@@ -515,7 +521,7 @@
                             <span class="pdf-mobile-page-btn__icon" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
                             <span>上一页</span>
                         </button>
-                        <div id="pdf-page-indicator" class="pdf-mobile-page-indicator" aria-live="polite">— / —</div>
+                        <div id="pdf-page-indicator" class="pdf-mobile-page-indicator" aria-live="polite">�? / �?</div>
                         <button type="button" id="pdf-page-next" class="pdf-mobile-page-btn" aria-label="下一页" disabled>
                             <span>下一页</span>
                             <span class="pdf-mobile-page-btn__icon" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
@@ -713,7 +719,7 @@
             }
 
             function resetMobilePageChrome() {
-                if (pdfPageIndicator) pdfPageIndicator.textContent = '— / —';
+                if (pdfPageIndicator) pdfPageIndicator.textContent = '�? / �?';
                 if (pdfPagePrevBtn) pdfPagePrevBtn.disabled = true;
                 if (pdfPageNextBtn) pdfPageNextBtn.disabled = true;
             }
@@ -770,7 +776,7 @@
                     const page = typeof d.page === 'number' ? d.page : 0;
                     const numPages = typeof d.numPages === 'number' ? d.numPages : 0;
                     if (pdfPageIndicator) {
-                        pdfPageIndicator.textContent = numPages ? `${page} / ${numPages}` : '— / —';
+                        pdfPageIndicator.textContent = numPages ? `${page} / ${numPages}` : '�? / �?';
                     }
                     if (pdfPagePrevBtn) pdfPagePrevBtn.disabled = !numPages || page <= 1;
                     if (pdfPageNextBtn) pdfPageNextBtn.disabled = !numPages || page >= numPages;
@@ -859,7 +865,7 @@
                 frame.src = viewerSrcForPdf(issue.href);
                 frame.setAttribute(
                     'title',
-                    `PDF: ${PDF_CATALOG[seriesId].label} — ${issue.label}`
+                    `PDF: ${PDF_CATALOG[seriesId].label} �? ${issue.label}`
                 );
                 const downloadUrl = issue.downloadHref || issue.href;
                 downloadLink.setAttribute('href', downloadUrl);
@@ -964,7 +970,7 @@
             : downloadLink.getAttribute('href') || downloadLink.href;
         let filename = (issue && issue.downloadName) || downloadLink.getAttribute('download') || 'newsletter.pdf';
 
-        // ========= 新增：去掉文件名中的 (CML) =========
+        // ========= 新增：去掉文件坝中�? (CML) =========
         filename = filename.replace(/\(CML\)\s*/g, '');
         // =============================================
 
