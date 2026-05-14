@@ -168,10 +168,11 @@
             width: 100%;
         }
         @media (min-width: 1024px) {
+            /* min-height (not fixed height) so tall form + footer never clip; overflow visible
+               so the grid is not cut off when content exceeds one viewport */
             .contact-main {
-                height: calc(100vh - 4rem);
-                height: calc(100dvh - 4rem);
-                overflow: hidden;
+                min-height: calc(100vh - 4rem);
+                min-height: calc(100dvh - 4rem);
             }
             .contact-hero {
                 padding-top: 1rem;
@@ -187,7 +188,7 @@
             }
             .contact-content {
                 padding-top: 0.75rem;
-                padding-bottom: 1rem;
+                padding-bottom: clamp(1.5rem, 4vh, 3rem);
                 min-height: 0;
                 flex: 1 1 auto;
             }
@@ -291,15 +292,20 @@
     <!-- SITE_NAV_PARTIAL_END -->
 
 
+   <!-- 背景图包装器 - 所有 section 共享 -->
+<div class="bg-cover bg-center bg-fixed bg-no-repeat"
+     style="background-image: url('/img/background.png');">
+
     <main class="contact-main">
         <!-- Page Header -->
-        <section class="contact-hero bg-gradient-to-b from-dark-bg to-black">
-            <div class="container mx-auto text-center">
+        <section class="contact-hero relative">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
+            <div class="relative z-10 container mx-auto text-center">
                 <div class="animate-[fadeUp_0.8s_ease-out]">
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
                         GET IN <span class="text-cyber-red">TOUCH</span>
                     </h1>
-                    <p class="text-lg md:text-xl text-muted-text mt-6 max-w-3xl mx-auto leading-relaxed">
+                    <p class="text-lg md:text-xl text-gray-200 mt-6 max-w-3xl mx-auto leading-relaxed">
                         Have questions about our products or solutions? We're here to help.
                     </p>
                 </div>
@@ -307,8 +313,9 @@
         </section>
 
         <!-- Three Column Layout -->
-        <section class="contact-content">
-            <div class="container mx-auto contact-content-inner">
+        <section class="contact-content relative">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="relative z-10 container mx-auto contact-content-inner">
                 <div class="contact-content-grid grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left Column: map (CN: AMap JS API 2.0; else Google iframe) -->
                 <div class="lg:col-span-1 animate-on-scroll flex flex-col h-full min-h-[400px] contact-map-col">
@@ -328,8 +335,8 @@
 
                 <!-- Middle Column: Contact Information -->
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.1s;">
-                    <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 h-full contact-card contact-scroll-card">
-                        <h2 class="text-2xl font-bold mb-8">Contact Information</h2>
+                    <div class="bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl p-8 h-full contact-card contact-scroll-card">
+                        <h2 class="text-2xl font-bold mb-8 text-white">Contact Information</h2>
 
                         <!-- Phone -->
                         <div class="flex items-start mb-8">
@@ -337,8 +344,8 @@
                                 <i class="fas fa-phone text-cyber-red text-xl"></i>
                             </div>
                             <div class="ml-4">
-                                <h3 class="font-semibold text-lg">Phone</h3>
-                                <p class="text-muted-text mt-1">+852 3611 9814</p>
+                                <h3 class="font-semibold text-lg text-white">Phone</h3>
+                                <p class="text-gray-300 mt-1">+852 3611 9814</p>
                             </div>
                         </div>
 
@@ -348,8 +355,8 @@
                                 <i class="fas fa-envelope text-cyber-red text-xl"></i>
                             </div>
                             <div class="ml-4">
-                                <h3 class="font-semibold text-lg">Email</h3>
-                                <p class="text-muted-text mt-1">enquiry@alpacian.com</p>
+                                <h3 class="font-semibold text-lg text-white">Email</h3>
+                                <p class="text-gray-300 mt-1">enquiry@alpacian.com</p>
                             </div>
                         </div>
 
@@ -359,26 +366,26 @@
                                 <i class="fas fa-map-marker-alt text-cyber-red text-xl"></i>
                             </div>
                             <div class="ml-4">
-                                <h3 class="font-semibold text-lg">Location</h3>
-                                <p class="text-muted-text mt-1">深圳市南山区前海梦工场一期6栋308</p>
-                                <p class="text-muted-text text-sm mt-1">Shenzhen, Guangdong, China</p>
+                                <h3 class="font-semibold text-lg text-white">Location</h3>
+                                <p class="text-gray-300 mt-1">深圳市南山区前海梦工场一期6栋308</p>
+                                <p class="text-gray-400 text-sm mt-1">Shenzhen, Guangdong, China</p>
                             </div>
                         </div>
 
                         <!-- Business Hours -->
-                        <div class="mt-10 pt-8 border-t border-theme-subtle">
-                            <h3 class="font-semibold text-lg mb-4">Business Hours</h3>
+                        <div class="mt-10 pt-8 border-t border-white/10">
+                            <h3 class="font-semibold text-lg mb-4 text-white">Business Hours</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between">
-                                    <span class="text-muted-text">Monday - Friday</span>
+                                    <span class="text-gray-300">Monday - Friday</span>
                                     <span class="text-white">9:00 AM - 6:00 PM</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-muted-text">Saturday</span>
+                                    <span class="text-gray-300">Saturday</span>
                                     <span class="text-white">10:00 AM - 4:00 PM</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-muted-text">Sunday</span>
+                                    <span class="text-gray-300">Sunday</span>
                                     <span class="text-white">Closed</span>
                                 </div>
                             </div>
@@ -388,18 +395,18 @@
 
                 <!-- Right Column: Contact Form -->
                 <div class="lg:col-span-1 animate-on-scroll" style="transition-delay: 0.2s;">
-                    <div class="bg-card-bg border border-theme-subtle rounded-xl p-8 h-full contact-card contact-scroll-card">
-                        <h2 class="text-2xl font-bold mb-8">Send us a Message</h2>
+                    <div class="bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl p-8 h-full contact-card contact-scroll-card">
+                        <h2 class="text-2xl font-bold mb-8 text-white">Send us a Message</h2>
 
                         <form id="contactForm" class="space-y-6">
                             <!-- Name -->
                             <div>
-                                <label for="name" class="block text-sm font-medium mb-2">Name *</label>
+                                <label for="name" class="block text-sm font-medium mb-2 text-gray-200">Name *</label>
                                 <input
                                     type="text"
                                     id="name"
                                     name="name"
-                                    class="w-full px-4 py-3 rounded-lg form-input"
+                                    class="w-full px-4 py-3 rounded-lg bg-black/30 border border-white/20 text-white placeholder-gray-400 focus:border-cyber-red focus:outline-none"
                                     placeholder="Your full name"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="nameError">Please enter your name</div>
@@ -407,12 +414,12 @@
 
                             <!-- Phone Number -->
                             <div>
-                                <label for="phone" class="block text-sm font-medium mb-2">Phone Number *</label>
+                                <label for="phone" class="block text-sm font-medium mb-2 text-gray-200">Phone Number *</label>
                                 <input
                                     type="tel"
                                     id="phone"
                                     name="phone"
-                                    class="w-full px-4 py-3 rounded-lg form-input"
+                                    class="w-full px-4 py-3 rounded-lg bg-black/30 border border-white/20 text-white placeholder-gray-400 focus:border-cyber-red focus:outline-none"
                                     placeholder="Your phone number"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="phoneError">Please enter a valid phone number</div>
@@ -420,12 +427,12 @@
 
                             <!-- Email -->
                             <div>
-                                <label for="email" class="block text-sm font-medium mb-2">Email *</label>
+                                <label for="email" class="block text-sm font-medium mb-2 text-gray-200">Email *</label>
                                 <input
                                     type="email"
                                     id="email"
                                     name="email"
-                                    class="w-full px-4 py-3 rounded-lg form-input"
+                                    class="w-full px-4 py-3 rounded-lg bg-black/30 border border-white/20 text-white placeholder-gray-400 focus:border-cyber-red focus:outline-none"
                                     placeholder="Your email address"
                                     required>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="emailError">Please enter a valid email address</div>
@@ -433,50 +440,51 @@
 
                             <!-- Country -->
                             <div>
-                                <label for="country" class="block text-sm font-medium mb-2">Country *</label>
-                                <div class="relative">
+                                <label for="country" class="block text-sm font-medium mb-2 text-gray-200">Country *</label>
+                                <div class="relative w-full">
                                     <input
                                         type="text"
                                         id="countryInput"
-                                        class="w-full px-4 py-3 rounded-lg form-input pr-10"
+                                        class="w-full px-4 py-3 rounded-lg bg-black/30 border border-white/20 text-black placeholder-gray-400 pr-10 focus:border-cyber-red focus:outline-none"
                                         placeholder="Select your country"
                                         readonly
-                                        required>
+                                        required
+                                        style="color: black !important;">
                                     <input
                                         type="hidden"
                                         id="country"
                                         name="country"
                                         required>
-                                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-text pointer-events-none">
+                                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </div>
-                                    <div id="countryDropdown" class="country-select-dropdown hidden absolute top-full left-0 mt-1 rounded-lg z-50 overflow-hidden">
+                                    <div id="countryDropdown" class="country-select-dropdown hidden absolute top-full left-0 mt-1 rounded-lg z-50 overflow-hidden bg-black/90 backdrop-blur-sm border border-white/20">
                                         <div class="country-select-search-wrap px-4 py-3">
                                             <input
                                                 type="text"
                                                 id="countrySearch"
-                                                class="w-full px-4 py-2 rounded-lg form-input text-sm"
+                                                class="w-full px-4 py-2 rounded-lg bg-black/50 border border-white/20 text-white placeholder-gray-400 focus:border-cyber-red focus:outline-none text-sm"
                                                 placeholder="Search country..."
                                                 autocomplete="off">
                                         </div>
-                                        <div id="countryList" class="country-select-list">
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="China">China</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="United States">United States</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="United Kingdom">United Kingdom</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Canada">Canada</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Australia">Australia</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Germany">Germany</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="France">France</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Japan">Japan</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="South Korea">South Korea</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Singapore">Singapore</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Hong Kong">Hong Kong</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Taiwan">Taiwan</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="India">India</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Brazil">Brazil</div>
-                                            <div class="country-option px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors" data-value="Other">Other</div>
+                                        <div id="countryList" class="country-select-list max-h-60 overflow-y-auto">
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="China">China</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="United States">United States</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="United Kingdom">United Kingdom</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Canada">Canada</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Australia">Australia</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Germany">Germany</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="France">France</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Japan">Japan</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="South Korea">South Korea</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Singapore">Singapore</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Hong Kong">Hong Kong</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Taiwan">Taiwan</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="India">India</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Brazil">Brazil</div>
+                                            <div class="country-option px-4 py-3 hover:bg-cyber-red/20 cursor-pointer transition-colors text-gray-200" data-value="Other">Other</div>
                                         </div>
                                     </div>
                                 </div>
@@ -485,23 +493,23 @@
 
                             <!-- Message -->
                             <div>
-                                <label for="message" class="block text-sm font-medium mb-2">Message *</label>
+                                <label for="message" class="block text-sm font-medium mb-2 text-gray-200">Message *</label>
                                 <textarea
                                     id="message"
                                     name="message"
                                     rows="4"
-                                    class="w-full px-4 py-3 rounded-lg form-input"
+                                    class="w-full px-4 py-3 rounded-lg bg-black/30 border border-white/20 text-black placeholder-gray-400 focus:border-cyber-red focus:outline-none"
                                     placeholder="Your message..."
-                                    required></textarea>
+                                    required
+                                    style="color: black !important;"></textarea>
                                 <div class="text-red-500 text-sm mt-1 hidden" id="messageError">Please enter your message</div>
                             </div>
-
 
                             <!-- Submit Button -->
                             <button
                                 type="submit"
                                 id="submitBtn"
-                                class="w-full bg-cyber-red hover:bg-accent-deep text-white font-semibold py-3 px-4 rounded-lg transition-all btn-primary">
+                                class="w-full bg-cyber-red hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all btn-primary">
                                 Send Message
                             </button>
 
@@ -514,6 +522,8 @@
             </div>
         </section>
     </main>
+
+</div>
 
     <!-- Footer (Tailwind only) -->
     <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">

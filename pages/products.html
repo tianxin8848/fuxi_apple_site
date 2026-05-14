@@ -6,11 +6,8 @@
     <title>Products | Fuxi SIEM Platform</title>
     <link rel="icon" href="/img/logimg/favicon-32.png?v=1" type="image/png" sizes="32x32">
     <link rel="icon" href="/img/logimg/favicon-64.png?v=1" type="image/png" sizes="64x64">
-    <!-- <link rel="icon" href="/img/logimg/image.png" type="image/png"> -->
     <link rel="apple-touch-icon" href="/img/logimg/image.png">
-    <!-- Tailwind CSS v3 + Font Awesome (for icons) - Local versions -->
     <link rel="stylesheet" href="../css/vendor/tailwind.css">
-    <!-- Custom Tailwind config override for modern dark/cyber theme -->
     <script>
         tailwind.config = {
             theme: {
@@ -51,7 +48,7 @@
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        background-attachment: fixed; /* 可选：视差效果 */
+        background-attachment: fixed;
     }
         .btn-primary {
             transition: all 0.2s ease;
@@ -89,7 +86,6 @@
             transform: scale(1.03);
         }
 
-        /* —— SOC: enterprise-quiet (minimal motion, generous space) —— */
         .soc-showcase {
             --soc-red: #e63d3d;
             --soc-line: rgba(255, 255, 255, 0.06);
@@ -106,19 +102,16 @@
             padding-right: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 5rem;
-        }
-        @media (min-width: 768px) {
-            .soc-inner { gap: 6.5rem; padding-left: 2rem; padding-right: 2rem; }
+            gap: 4rem;
         }
         @media (min-width: 1024px) {
-            .soc-inner { gap: 8rem; padding-left: 2.5rem; padding-right: 2.5rem; }
+            .soc-inner { gap: 5rem; padding-left: 2.5rem; padding-right: 2.5rem; }
         }
         .soc-prose {
             max-width: 38rem;
         }
         .soc-prose-wide {
-            max-width: 42rem;
+            max-width: 52rem;
         }
         .soc-hud {
             position: relative;
@@ -189,72 +182,42 @@
         }
         .soc-kpi-strip {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 0;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-        @media (min-width: 768px) {
-            .soc-kpi-strip {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 2.5rem;
-            }
-            .soc-kpi-item + .soc-kpi-item {
-                padding-left: 2.5rem;
-                border-left: 1px solid var(--soc-line);
-            }
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
         }
         .soc-kpi-item {
-            text-align: center;
-            padding: 2rem 1rem 2.5rem;
-        }
-        @media (min-width: 768px) {
-            .soc-kpi-item {
-                text-align: left;
-                padding: 2rem 0 2.5rem;
-            }
+            text-align: left;
+            padding: 0;
         }
         .soc-kpi-mega {
-            font-size: clamp(3.5rem, 11vw, 6rem);
+            font-size: clamp(2.8rem, 5vw, 4.5rem);
             font-weight: 800;
             letter-spacing: -0.045em;
             line-height: 0.92;
             color: var(--soc-red);
         }
         .soc-kpi-unit {
-            font-size: clamp(1.125rem, 2.8vw, 1.5rem);
+            font-size: clamp(1rem, 2vw, 1.25rem);
             font-weight: 600;
             color: rgba(255, 255, 255, 0.72);
             margin-left: 0.15em;
         }
         .soc-kpi-caption {
-            margin-top: 1.25rem;
-            font-size: 0.8125rem;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            line-height: 1.45;
+            line-height: 1.4;
             color: rgba(255, 255, 255, 0.48);
-            max-width: 15rem;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        @media (min-width: 768px) {
-            .soc-kpi-caption {
-                margin-left: 0;
-                margin-right: 0;
-            }
+            max-width: 100%;
         }
         .soc-why-list {
             list-style: none;
             margin: 0;
             padding: 0;
-            display: grid;
-            gap: 1.25rem 2rem;
-        }
-        @media (min-width: 768px) {
-            .soc-why-list {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 2rem 3rem;
-            }
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
         }
         .soc-why-list li {
             display: flex;
@@ -336,28 +299,25 @@
             padding-top: 0.5rem;
         }
         .soc-compliance-rail {
-            border-top: 1px solid var(--soc-line);
-            padding-top: 3rem;
-            margin-top: 0.5rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--soc-line);
         }
         @media (min-width: 768px) {
             .soc-compliance-rail {
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
-                padding-top: 3.5rem;
             }
         }
         .soc-compliance-logos {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
-            gap: 2rem 2.5rem;
+            gap: 2rem;
         }
         .soc-logo-plain {
             display: block;
@@ -395,61 +355,51 @@
         .soc-stack {
             display: flex;
             flex-direction: column;
-            gap: 5.5rem;
-        }
-        @media (min-width: 768px) {
-            .soc-stack { gap: 7rem; }
+            gap: 4rem;
         }
         @media (min-width: 1024px) {
-            .soc-stack { gap: 8.5rem; }
+            .soc-stack { gap: 5rem; }
         }
 
     </style>
 </head>
 <body class="font-sans text-white bg-dark-bg">
 
-    <!-- Navigation: source partials/site-nav.html — run npm run partials after edits -->
-    <!-- SITE_NAV_PARTIAL_BEGIN -->
-     <nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
-        <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
-            </a>
-            <div class="hidden md:flex items-center space-x-7">
-                <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
-                <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
-                <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
-                <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Newsletters</a>
-                <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
-                <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
-            </div>
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
-                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
-                    <i class="fas fa-bars text-base" aria-hidden="true"></i>
-                    <span>Menu</span>
-                </button>
-            </div>
+<nav class="fixed top-0 left-0 w-full z-50 nav-blur transition-all duration-300">
+    <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
+        <a href="/" class="flex items-center gap-2">
+            <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
+        </a>
+        <div class="hidden md:flex items-center space-x-7">
+            <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
+            <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
+            <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
+            <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Newsletters</a>
+            <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
+            <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
         </div>
-        <!-- mobile menu (simple) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-theme-nav px-5 py-4 flex flex-col space-y-3">
-            <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
-            <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
-            <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
-            <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Newsletters</a>
-            <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
-            <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
-            <a href="/contact" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
+        <div class="flex items-center gap-2 sm:gap-3">
+            <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
+            <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
+                <i class="fas fa-bars text-base" aria-hidden="true"></i>
+                <span>Menu</span>
+            </button>
         </div>
-    </nav>
-    <!-- SITE_NAV_PARTIAL_END -->
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-black/90 backdrop-blur-md border-t border-theme-nav px-5 py-4 flex flex-col space-y-3">
+        <a href="/" class="py-2 text-gray-200 hover:text-cyber-red">Home</a>
+        <a href="/products" class="py-2 text-gray-200 hover:text-cyber-red">Products</a>
+        <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
+        <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Newsletters</a>
+        <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
+        <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
+        <a href="/contact" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
+    </div>
+</nav>
 
-
-    <!-- 背景图包装器 - 所有 section 共享 -->
 <div class="bg-cover bg-center bg-fixed bg-no-repeat"
      style="background-image: url('/img/background.png');">
 
-    <!-- Product Introduction -->
     <section class="pt-24 mt-0 pb-0 flex items-center relative" style="min-height: calc(100vh - 4rem); min-height: calc(100dvh - 4rem);">
         <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
         <div class="relative z-10 container mx-auto text-center">
@@ -469,16 +419,15 @@
         </div>
     </section>
 
-    <!-- SOC — enterprise, minimal -->
     <section id="soc" class="soc-showcase relative scroll-mt-24 pt-28 pb-28 md:pt-36 md:pb-36 lg:pt-44 lg:pb-40" aria-labelledby="soc-hero-title">
         <div class="absolute inset-0 bg-black/40 pointer-events-none" aria-hidden="true"></div>
         <div class="soc-inner relative z-10 pt-6 pb-8 md:pb-14">
-
             <div class="soc-stack">
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-stretch">
-                    <div class="lg:col-span-5 order-2 lg:order-1">
-                        <div class="soc-hud h-full min-h-[240px] lg:min-h-[280px] flex flex-col">
+                <!-- 1: HUD + 文案 + KPI 完全融合 -->
+                <div class="grid lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-5">
+                        <div class="soc-hud h-full min-h-[280px] flex flex-col">
                             <div class="soc-hud-grid--static" aria-hidden="true"></div>
                             <div class="relative z-10 flex flex-col flex-1 p-8 md:p-10">
                                 <div class="flex items-center justify-between gap-4">
@@ -493,189 +442,186 @@
                             </div>
                         </div>
                     </div>
-                    <div class="lg:col-span-7 order-1 lg:order-2 flex flex-col justify-center lg:pl-2">
-                        <h2 id="soc-hero-title" class="text-3xl sm:text-4xl lg:text-[2.65rem] font-semibold tracking-tight text-white leading-[1.15] soc-prose">
+                    <div class="lg:col-span-7">
+                        <h2 id="soc-hero-title" class="text-3xl sm:text-4xl lg:text-[2.65rem] font-semibold tracking-tight text-white leading-[1.15]">
                             Security Operation Centre (SOC)
                         </h2>
-                        <p class="mt-7 text-lg md:text-xl font-medium text-cyber-red leading-snug soc-prose">
-                            24×7 Threat Monitoring &amp; Incident Response
+                        <p class="mt-4 text-lg md:text-xl font-medium text-cyber-red leading-snug">
+                            24×7 Threat Monitoring & Incident Response
                         </p>
-                        <p class="mt-8 text-base md:text-[1.0625rem] font-normal text-gray-300 leading-[1.65] soc-prose-wide">
+                        <p class="mt-4 text-base md:text-[1.0625rem] font-normal text-gray-300 leading-[1.65] soc-prose-wide">
                             Reduce detection time, accelerate response, and strengthen enterprise security operations.
                         </p>
-                    </div>
-                </div>
 
-                <div class="soc-kpi-strip" aria-label="Industry benchmark metrics">
-                    <div class="soc-kpi-item">
-                        <div class="flex flex-wrap items-baseline justify-center md:justify-start gap-x-1">
-                            <span class="soc-kpi-mega">128</span>
-                            <span class="soc-kpi-unit">days</span>
-                        </div>
-                        <p class="soc-kpi-caption">Average breach detection time</p>
-                    </div>
-                    <div class="soc-kpi-item">
-                        <div class="flex flex-wrap items-baseline justify-center md:justify-start gap-x-1">
-                            <span class="soc-kpi-mega">47</span>
-                            <span class="soc-kpi-unit">days</span>
-                        </div>
-                        <p class="soc-kpi-caption">Average incident response time</p>
-                    </div>
-                    <div class="soc-kpi-item">
-                        <div class="flex flex-wrap items-baseline justify-center md:justify-start gap-x-1">
-                            <span class="soc-kpi-mega">$1M</span>
-                            <span class="soc-kpi-unit">+</span>
-                        </div>
-                        <p class="soc-kpi-caption">Average cost to build an in-house SOC</p>
-                    </div>
-                </div>
-
-                <div aria-labelledby="soc-why-heading">
-                    <h3 id="soc-why-heading" class="sr-only">Why it matters</h3>
-                    <ul class="soc-why-list">
-                        <li><span class="soc-why-bullet" aria-hidden="true"></span>Real-time threat monitoring</li>
-                        <li><span class="soc-why-bullet" aria-hidden="true"></span>Professional incident response</li>
-                        <li><span class="soc-why-bullet" aria-hidden="true"></span>Cost-effective security operations</li>
-                    </ul>
-                </div>
-
-                <div>
-                    <div class="mb-12 md:mb-16 lg:mb-20 max-w-xl">
-                        <p class="soc-section-label">Capabilities</p>
-                        <h3 id="soc-do-heading" class="mt-5 text-2xl md:text-3xl font-semibold text-white tracking-tight">What SOC Can Do</h3>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
-                        <article class="soc-cap-panel">
-                            <div class="soc-cap-accent" aria-hidden="true"></div>
-                            <h4 class="soc-cap-title mt-2">Proactive Threat Detection</h4>
-                            <p class="soc-cap-body">Continuous monitoring and automated alerting across Teams, Slack, Email and more.</p>
-                        </article>
-                        <article class="soc-cap-panel">
-                            <div class="soc-cap-accent" aria-hidden="true"></div>
-                            <h4 class="soc-cap-title mt-2">Professional Incident Response</h4>
-                            <p class="soc-cap-body">24×7 security experts ready to investigate and respond rapidly.</p>
-                            <div class="space-y-2 pt-2">
-                                <p class="soc-pain-line"><span>46%</span> understaffed</p>
-                                <p class="soc-pain-line"><span>56%</span> retention difficulty</p>
+                        <!-- KPI 直接内联在这里 -->
+                        <div class="soc-kpi-strip">
+                            <div class="soc-kpi-item">
+                                <div class="flex items-baseline gap-x-1">
+                                    <span class="soc-kpi-mega">128</span>
+                                    <span class="soc-kpi-unit">d</span>
+                                </div>
+                                <p class="soc-kpi-caption">Average Detection</p>
                             </div>
-                        </article>
-                        <article class="soc-cap-panel">
-                            <div class="soc-cap-accent" aria-hidden="true"></div>
-                            <h4 class="soc-cap-title mt-2">Compliance &amp; Governance</h4>
-                            <p class="soc-cap-body">Support monitoring requirements across industry regulations and security standards.</p>
-                            <p class="soc-frameworks-inline">PCI DSS · ISO 27001 · NIST CSF 2.0</p>
-                        </article>
+                            <div class="soc-kpi-item">
+                                <div class="flex items-baseline gap-x-1">
+                                    <span class="soc-kpi-mega">47</span>
+                                    <span class="soc-kpi-unit">d</span>
+                                </div>
+                                <p class="soc-kpi-caption">Response</p>
+                            </div>
+                            <div class="soc-kpi-item">
+                                <div class="flex items-baseline gap-x-1">
+                                    <span class="soc-kpi-mega">$1M</span>
+                                    <span class="soc-kpi-unit">+</span>
+                                </div>
+                                <p class="soc-kpi-caption">SOC Cost</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="soc-compliance-rail" aria-labelledby="soc-compliance-heading">
-                    <h3 id="soc-compliance-heading" class="sr-only">Framework references</h3>
-                    <div class="soc-compliance-logos">
-                        <span class="soc-logo-plain" role="img" aria-label="PCI DSS"><img src="/img/img/ppt-picdss.png" alt="PCI DSS" width="160" height="48" loading="lazy" decoding="async"></span>
-                        <span class="soc-logo-plain" role="img" aria-label="ISO 27001"><img src="/img/img/ppt-ISOIEC27001:2022.png" alt="ISO 27001" width="160" height="48" loading="lazy" decoding="async"></span>
-                        <span class="soc-logo-plain" role="img" aria-label="NIST CSF 2.0"><img src="/img/img/ppt-NISTCybersecurityFramework%202.0.png" alt="NIST CSF 2.0" width="160" height="48" loading="lazy" decoding="async"></span>
+                <!-- 2: Why + Capabilities 左右互锁 -->
+                <div class="grid lg:grid-cols-12 gap-14">
+                    <div class="lg:col-span-4">
+                        <p class="soc-section-label mb-4">Why Choose SOC</p>
+                        <ul class="soc-why-list">
+                            <li><span class="soc-why-bullet" aria-hidden="true"></span>Real-time threat monitoring</li>
+                            <li><span class="soc-why-bullet" aria-hidden="true"></span>Professional incident response</li>
+                            <li><span class="soc-why-bullet" aria-hidden="true"></span>Cost-effective security operations</li>
+                        </ul>
                     </div>
-                    <p class="text-xs font-medium text-white/35 text-center md:text-right shrink-0 max-w-xs leading-relaxed">Reference only · Not a certification</p>
+                    <div class="lg:col-span-8">
+                        <p class="soc-section-label mb-4">Capabilities</p>
+                        <h3 class="mt-1 text-2xl md:text-3xl font-semibold text-white tracking-tight mb-8">What SOC Can Do</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                            <article class="soc-cap-panel">
+                                <div class="soc-cap-accent"></div>
+                                <h4 class="soc-cap-title mt-2">Proactive Threat Detection</h4>
+                                <p class="soc-cap-body">Continuous monitoring and automated alerting across Teams, Slack, Email and more.</p>
+                            </article>
+                            <article class="soc-cap-panel">
+                                <div class="soc-cap-accent"></div>
+                                <h4 class="soc-cap-title mt-2">Professional Incident Response</h4>
+                                <p class="soc-cap-body">24×7 security experts ready to investigate and respond rapidly.</p>
+                                <div class="space-y-2 pt-2">
+                                    <p class="soc-pain-line"><span>46%</span> understaffed</p>
+                                    <p class="soc-pain-line"><span>56%</span> retention difficulty</p>
+                                </div>
+                            </article>
+                            <article class="soc-cap-panel">
+                                <div class="soc-cap-accent"></div>
+                                <h4 class="soc-cap-title mt-2">Compliance & Governance</h4>
+                                <p class="soc-cap-body">Support monitoring requirements across industry regulations and security standards.</p>
+                                <p class="soc-frameworks-inline">PCI DSS · ISO 27001 · NIST CSF 2.0</p>
+                            </article>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="text-center pt-10 md:pt-16">
-                <a href="/contact" class="soc-cta no-underline">Talk to Security Experts</a>
+                <!-- 3: Compliance + CTA 合并为一个视觉区 -->
+                <div class="soc-compliance-rail">
+                    <div class="flex flex-col gap-2">
+                        <div class="soc-compliance-logos">
+                            <span class="soc-logo-plain"><img src="/img/ppt-picdss.png" alt="PCI DSS"></span>
+                            <span class="soc-logo-plain"><img src="/img/ppt-ISOIEC27001:2022.png" alt="ISO 27001"></span>
+                            <span class="soc-logo-plain"><img src="/img/ppt-NISTCybersecurityFramework%202.0.png" alt="NIST CSF 2.0"></span>
+                        </div>
+                        <p class="text-xs text-white/35">Supports enterprise governance and security frameworks</p>
+                    </div>
+                    <a href="/contact" class="soc-cta">Talk to Security Experts</a>
+                </div>
+
             </div>
         </div>
     </section>
 
 </div>
-    <!-- Footer (Tailwind only) -->
-    <footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">
-        <div class="pointer-events-none absolute inset-0 z-0" style="background-color: rgb(4, 0, 0);" aria-hidden="true"></div>
-        <div class="container mx-auto relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-2">
-                        <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
-                    </div>
-                    <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
-                    <div class="flex space-x-4 mt-5">
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
-                        <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
-                    </div>
+
+<footer class="bg-dark-bg relative py-12 px-5 overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 z-0" style="background-color: rgb(4, 0, 0);" aria-hidden="true"></div>
+    <div class="container mx-auto relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+            <div class="md:col-span-2">
+                <div class="flex items-center gap-2">
+                    <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="h-10 w-auto" onerror="this.style.display='none'">
                 </div>
-                <div>
-                    <h5 class="font-semibold text-white">Products</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/products" class="hover:text-cyber-red">Fuxi SIEM</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Endpoint Security</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Network Security</a></li>
-                        <li><a href="/products" class="hover:text-cyber-red">Cloud Security</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Solutions</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/solutions" class="hover:text-cyber-red">Ransomware Defense</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">Zero Trust</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">SOC Modernization</a></li>
-                        <li><a href="/solutions" class="hover:text-cyber-red">Compliance</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-semibold text-white">Company</h5>
-                    <ul class="mt-3 space-y-2 text-muted-text text-sm">
-                        <li><a href="/company" class="hover:text-cyber-red">About Us</a></li>
-                        <li><a href="/company" class="hover:text-cyber-red">Careers</a></li>
-                        <li><a href="/blog" class="hover:text-cyber-red">News</a></li>
-                        <li><a href="/contact" class="hover:text-cyber-red">Contact</a></li>
-                    </ul>
+                <p class="text-muted-text text-sm mt-3 max-w-xs">Pioneering the future of cybersecurity with intelligent, adaptive, and robust defense mechanisms.</p>
+                <div class="flex space-x-4 mt-5">
+                    <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-linkedin"></i></a>
+                    <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-twitter"></i></a>
+                    <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-youtube"></i></a>
+                    <a href="/" class="text-gray-400 hover:text-cyber-red text-xl"><i class="fab fa-github"></i></a>
                 </div>
             </div>
-            <hr class="my-8 hr-theme" aria-hidden="true">
-            <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
-                <p>© 2026 Fuxi Technology. All rights reserved.</p>
-                <div class="flex gap-6 mt-3 md:mt-0">
-                    <a href="/" class="hover:text-cyber-red">Privacy Policy</a>
-                    <a href="/" class="hover:text-cyber-red">Terms of Service</a>
-                    <a href="/" class="hover:text-cyber-red">Cookie Policy</a>
-                </div>
+            <div>
+                <h5 class="font-semibold text-white">Products</h5>
+                <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                    <li><a href="/products" class="hover:text-cyber-red">Fuxi SIEM</a></li>
+                    <li><a href="/products" class="hover:text-cyber-red">Endpoint Security</a></li>
+                    <li><a href="/products" class="hover:text-cyber-red">Network Security</a></li>
+                    <li><a href="/products" class="hover:text-cyber-red">Cloud Security</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-semibold text-white">Solutions</h5>
+                <ul class="mt-3 space-y-2 text-muted-text text-sm">
+                    <li><a href="/solutions" class="hover:text-cyber-red">Ransomware Defense</a></li>
+                    <li><a href="/solutions" class="hover:text-cyber-red">Zero Trust</a></li>
+                    <li><a href="/solutions" class="hover:text-cyber-red">SOC Modernization</a></li>
+                    <li><a href="/solutions" class="hover:text-cyber-red">Compliance</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-semibold text-white">Company</h5>
+                <ul classmt-3 space-y-2 text-muted-text text-sm">
+                    <li><a href="/company" class="hover:text-cyber-red">About Us</a></li>
+                    <li><a href="/company" class="hover:text-cyber-red">Careers</a></li>
+                    <li><a href="/blog" class="hover:text-cyber-red">News</a></li>
+                    <li><a href="/contact" class="hover:text-cyber-red">Contact</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <hr class="my-8 hr-theme" aria-hidden="true">
+        <div class="flex flex-col md:flex-row justify-between items-center text-sm text-muted-text">
+            <p>© 2026 Fuxi Technology. All rights reserved.</p>
+            <div class="flex gap-6 mt-3 md:mt-0">
+                <a href="/" class="hover:text-cyber-red">Privacy Policy</a>
+                <a href="/" class="hover:text-cyber-red">Terms of Service</a>
+                <a href="/" class="hover:text-cyber-red">Cookie Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
 
-    <!-- Simple Intersection Observer for scroll animations (lightweight) -->
-    <script>
-        // mobile menu toggle
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if(menuBtn && mobileMenu) {
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-        // scroll animation using intersection observer (pure vanilla)
-        const animatedElements = document.querySelectorAll('.animate-on-scroll');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-        animatedElements.forEach(el => observer.observe(el));
-
-        // manually trigger visible for any element already in view (just in case)
-        document.addEventListener('DOMContentLoaded', () => {
-            animatedElements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if(rect.top < window.innerHeight - 100) {
-                    el.classList.add('visible');
-                    observer.unobserve(el);
-                }
-            });
+<script>
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if(menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
-    </script>
+    }
+
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    animatedElements.forEach(el => observer.observe(el));
+
+    document.addEventListener('DOMContentLoaded', () => {
+        animatedElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if(rect.top < window.innerHeight - 100) {
+                el.classList.add('visible');
+                observer.unobserve(el);
+            }
+        });
+    });
+</script>
 </body>
 </html>
