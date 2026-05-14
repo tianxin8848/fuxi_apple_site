@@ -321,6 +321,10 @@
         }
         .soc-logo-plain {
             display: block;
+            background-color: #fff;
+        }
+        .soc-logo-plain.soc-logo-transparent {
+            background-color: transparent;
             opacity: 0.55;
         }
         .soc-logo-plain img {
@@ -400,7 +404,7 @@
 <div class="bg-cover bg-center bg-fixed bg-no-repeat"
      style="background-image: url('/img/background.png');">
 
-    <section class="pt-24 mt-0 pb-0 flex items-center relative" style="min-height: calc(100vh - 4rem); min-height: calc(100dvh - 4rem);">
+    <section class="pt-24 mt-0 pb-0 flex items-center relative" style="height: calc(100vh); height: calc(100dvh); overflow: hidden; box-sizing: border-box;">
         <div class="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
         <div class="relative z-10 container mx-auto text-center">
             <div class="animate-[fadeUp_0.8s_ease-out]">
@@ -480,43 +484,81 @@
                     </div>
                 </div>
 
-                <!-- 2: Why + Capabilities 左右互锁 -->
-                <div class="grid lg:grid-cols-12 gap-14">
-                    <div class="lg:col-span-4">
-                        <p class="soc-section-label mb-4">Why Choose SOC</p>
-                        <ul class="soc-why-list">
-                            <li><span class="soc-why-bullet" aria-hidden="true"></span>Real-time threat monitoring</li>
-                            <li><span class="soc-why-bullet" aria-hidden="true"></span>Professional incident response</li>
-                            <li><span class="soc-why-bullet" aria-hidden="true"></span>Cost-effective security operations</li>
-                        </ul>
-                    </div>
-                    <div class="lg:col-span-8">
-                        <p class="soc-section-label mb-4">Capabilities</p>
-                        <h3 class="mt-1 text-2xl md:text-3xl font-semibold text-white tracking-tight mb-8">What SOC Can Do</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                            <article class="soc-cap-panel">
-                                <div class="soc-cap-accent"></div>
-                                <h4 class="soc-cap-title mt-2">Proactive Threat Detection</h4>
-                                <p class="soc-cap-body">Continuous monitoring and automated alerting across Teams, Slack, Email and more.</p>
-                            </article>
-                            <article class="soc-cap-panel">
-                                <div class="soc-cap-accent"></div>
-                                <h4 class="soc-cap-title mt-2">Professional Incident Response</h4>
-                                <p class="soc-cap-body">24×7 security experts ready to investigate and respond rapidly.</p>
-                                <div class="space-y-2 pt-2">
-                                    <p class="soc-pain-line"><span>46%</span> understaffed</p>
-                                    <p class="soc-pain-line"><span>56%</span> retention difficulty</p>
-                                </div>
-                            </article>
-                            <article class="soc-cap-panel">
-                                <div class="soc-cap-accent"></div>
-                                <h4 class="soc-cap-title mt-2">Compliance & Governance</h4>
-                                <p class="soc-cap-body">Support monitoring requirements across industry regulations and security standards.</p>
-                                <p class="soc-frameworks-inline">PCI DSS · ISO 27001 · NIST CSF 2.0</p>
-                            </article>
-                        </div>
-                    </div>
+           <!-- 2: Why + Capabilities 左右互锁（边距优化版） -->
+<div class="grid lg:grid-cols-12 gap-10 lg:gap-16 py-12 lg:py-16">
+    <!-- 左：Why Choose SOC -->
+    <div class="lg:col-span-4">
+
+        <!-- 👇 关键：h3 和下方卡片的边距，这里用 mb-10 / mb-12 拉开距离 -->
+        <h3 class="mt-1 text-2xl md:text-3xl font-semibold text-white tracking-tight mb-8 md:mb-12">Why Choose SOC</h3>
+
+        <!-- 卡片容器 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+                <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
+                <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Real-time threat monitoring</h4>
+                <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
+                    Continuously monitor threats across your environment to detect suspicious activity early, reduce risk, and support faster security decision-making.
+                </p>
+            </article>
+            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+                <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
+                <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Professional incident response</h4>
+                <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
+                    Respond to cyber incidents with expert guidance, structured investigation, and rapid containment to minimize business impact and recovery time.
+                </p>
+            </article>
+            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+                <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
+                <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Cost-effective security operations</h4>
+                <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
+                    Strengthen security operations with scalable, efficient services that improve protection, reduce operational burden, and optimize security investment.
+                </p>
+            </article>
+        </div>
+    </div>
+
+    <!-- 右：What SOC Can Do -->
+    <div class="lg:col-span-8">
+        <!-- 👇 同样：h3 和下方卡片的边距 -->
+        <h3 class="mt-1 text-2xl md:text-3xl font-semibold text-white tracking-tight mb-8 md:mb-12 ">What SOC Can Do</h3>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+                <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
+                <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Proactive Threat Detection</h4>
+                <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
+                    Continuous monitoring and automated alerting across Teams, Slack, Email and more.
+                </p>
+            </article>
+            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+                <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
+                <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Professional Incident Response</h4>
+                <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
+                    24×7 security experts ready to investigate and respond rapidly.
+                </p>
+                <div class="space-y-2 pt-4 mt-4 border-t border-gray-800">
+                    <p class="soc-pain-line text-gray-300">
+                        <span class="text-red-500 font-semibold">46%</span> understaffed
+                    </p>
+                    <p class="soc-pain-line text-gray-300">
+                        <span class="text-red-500 font-semibold">56%</span> retention difficulty
+                    </p>
                 </div>
+            </article>
+            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+                <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
+                <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Compliance & Governance</h4>
+                <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
+                    Support monitoring requirements across industry regulations and security standards.
+                </p>
+                <p class="soc-frameworks-inline mt-4 text-gray-400 text-sm">
+                    PCI DSS · ISO 27001 · NIST CSF 2.0
+                </p>
+            </article>
+        </div>
+    </div>
+</div>
 
                 <!-- 3: Compliance + CTA 合并为一个视觉区 -->
                 <div class="soc-compliance-rail">
@@ -524,7 +566,7 @@
                         <div class="soc-compliance-logos">
                             <span class="soc-logo-plain"><img src="/img/ppt-picdss.png" alt="PCI DSS"></span>
                             <span class="soc-logo-plain"><img src="/img/ppt-ISOIEC27001:2022.png" alt="ISO 27001"></span>
-                            <span class="soc-logo-plain"><img src="/img/ppt-NISTCybersecurityFramework%202.0.png" alt="NIST CSF 2.0"></span>
+                            <span class="soc-logo-plain soc-logo-transparent"><img src="/img/ppt-NISTCybersecurityFramework%202.0.png" alt="NIST CSF 2.0"></span>
                         </div>
                         <p class="text-xs text-white/35">Supports enterprise governance and security frameworks</p>
                     </div>
