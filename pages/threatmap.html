@@ -272,7 +272,7 @@
   <div id="app"></div>
 
   <div id="toolbar">
-    <button id="toggleBtn" type="button" aria-label="切换到球体" title="切换到球体">
+    <button id="toggleBtn" type="button" aria-label="切换到平面" title="切换到平面">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="9"></circle>
         <path d="M3 12h18"></path>
@@ -420,12 +420,12 @@
     };
 
     const state = {
-      mode: 'plane',
-      targetMode: 'plane',
-      morph: 0,
-      targetMorph: 0,
-      zoomFactor: 1,
-      targetZoomFactor: 1,
+      mode: 'sphere',
+      targetMode: 'sphere',
+      morph: 1,
+      targetMorph: 1,
+      zoomFactor: 0.94,
+      targetZoomFactor: 0.94,
       planeWidth: 10,
       planeHeight: 5,
       isDragging: false,
@@ -1658,8 +1658,8 @@
 
     createGrid();
     lockUserMovement();
-    setFixedPlaneCamera();
-    applyLayoutMode('plane');
+    setFixedSphereCamera();
+    applyLayoutMode('sphere');
     updatePlaneSize();
 
     (async () => {
