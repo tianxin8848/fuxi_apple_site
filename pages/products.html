@@ -63,12 +63,71 @@
         }
         .animate-on-scroll {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            filter: blur(8px);
+            transform: translate3d(0, 30px, 0) scale(0.985);
+            transition:
+                opacity 950ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
+                filter 950ms cubic-bezier(0.22, 1, 0.36, 1);
+            transition-delay: var(--reveal-delay, 0ms);
+            will-change: transform, opacity, filter;
         }
         .animate-on-scroll.visible {
             opacity: 1;
-            transform: translateY(0);
+            filter: blur(0);
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+        .text-reveal {
+            opacity: 0;
+            transform: translate3d(0, 0, 0);
+            filter: blur(8px);
+            transition:
+                opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+                filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+            transition-delay: var(--text-delay, 0ms);
+            will-change: transform, opacity, filter;
+        }
+        .text-reveal.visible {
+            opacity: 1;
+            transform: translate3d(0, 18px, 0);
+            filter: blur(0);
+        }
+        .text-gradient-reveal {
+            background-image: linear-gradient(
+                90deg,
+                #ffffff 0%,
+                var(--color-accent-bright) 42%,
+                var(--color-accent) 72%,
+                #fff5f3 100%
+            );
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGradientShift 2.4s ease-out both;
+        }
+        @keyframes textGradientShift {
+            from {
+                background-position: 150% 0;
+            }
+            to {
+                background-position: 0 0;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            .animate-on-scroll,
+            .text-reveal,
+            .text-gradient-reveal {
+                animation: none !important;
+                transition: none !important;
+                opacity: 1 !important;
+                filter: none !important;
+                transform: none !important;
+            }
         }
         .feature-card {
             transition: all 0.3s ease;
@@ -407,12 +466,13 @@
         <div class="relative z-10 container mx-auto text-center">
             <div class="animate-[fadeUp_0.8s_ease-out]">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-                    FUXI<span class="text-cyber-red"> Security Platform</span>
+                    <span class="text-reveal [--text-delay:50ms]">FUXI</span>
+                    <span class="text-cyber-red text-reveal text-gradient-reveal [--text-delay:220ms]"> Security Platform</span>
                 </h1>
-                <p class="text-lg md:text-xl text-gray-200 mt-6 max-w-3xl mx-auto leading-relaxed">
+                <p class="text-lg md:text-xl text-gray-200 mt-6 max-w-3xl mx-auto leading-relaxed text-reveal [--text-delay:380ms]">
                     An Al-enhanced, portable SIEM providing preventive, detective, and corrective security layers for businesses of any scale. Unify your log collection and incident response within a single, multi-layered defense framework
                 </p>
-                <div class="mt-10">
+                <div class="mt-10 text-reveal [--text-delay:520ms]">
                     <a href="/contact" class="inline-block bg-cyber-red hover:bg-red-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-all shadow-md btn-primary">
                         Talk to an expert
                     </a>
@@ -428,7 +488,7 @@
 
                 <!-- 1: HUD + 文案 + KPI 完全融合 -->
                 <div class="grid lg:grid-cols-12 gap-12 items-center">
-                    <div class="lg:col-span-5">
+                    <div class="lg:col-span-5 animate-on-scroll">
                         <div class="soc-hud h-full min-h-[280px] flex flex-col">
                             <div class="soc-hud-grid--static" aria-hidden="true"></div>
                             <div class="relative z-10 flex flex-col flex-1 p-8 md:p-10">
@@ -444,7 +504,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="lg:col-span-7">
+                    <div class="lg:col-span-7 animate-on-scroll">
                         <h2 id="soc-hero-title" class="text-3xl sm:text-4xl lg:text-[2.65rem] font-semibold tracking-tight text-white leading-[1.15]">
                             Security Operation Centre (SOC)
                         </h2>
@@ -485,28 +545,28 @@
            <!-- 2: Why + Capabilities 左右互锁（边距优化版） -->
 <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 py-12 lg:py-16">
     <!-- 左：Why Choose SOC -->
-    <div class="lg:col-span-4">
+    <div class="lg:col-span-4 animate-on-scroll">
 
         <!-- 👇 关键：h3 和下方卡片的边距，这里用 mb-10 / mb-12 拉开距离 -->
         <h3 class="mt-1 text-2xl md:text-3xl font-semibold text-white tracking-tight mb-8 md:mb-12">Why Choose SOC</h3>
 
         <!-- 卡片容器 -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+            <article class="soc-cap-panel animate-on-scroll p-6 rounded-lg bg-gray-900/60 border border-gray-800">
                 <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
                 <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Real-time threat monitoring</h4>
                 <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
                     Continuously monitor threats across your environment to detect suspicious activity early, reduce risk, and support faster security decision-making.
                 </p>
             </article>
-            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+            <article class="soc-cap-panel animate-on-scroll p-6 rounded-lg bg-gray-900/60 border border-gray-800">
                 <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
                 <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Professional incident response</h4>
                 <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
                     Respond to cyber incidents with expert guidance, structured investigation, and rapid containment to minimize business impact and recovery time.
                 </p>
             </article>
-            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+            <article class="soc-cap-panel animate-on-scroll p-6 rounded-lg bg-gray-900/60 border border-gray-800">
                 <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
                 <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Efficient security operations</h4>
                 <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
@@ -517,18 +577,18 @@
     </div>
 
     <!-- 右：What SOC Can Do -->
-    <div class="lg:col-span-8 mt-8">
+    <div class="lg:col-span-8 mt-8 animate-on-scroll">
         <h3 class="mt-1 text-2xl md:text-3xl font-semibold text-white tracking-tight mb-8 md:mb-12 ">What SOC Can Do</h3>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+            <article class="soc-cap-panel animate-on-scroll p-6 rounded-lg bg-gray-900/60 border border-gray-800">
                 <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
                 <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Proactive Threat Detection</h4>
                 <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
                     Continuous monitoring and automated alerting across Teams, Slack, Email and more.
                 </p>
             </article>
-            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+            <article class="soc-cap-panel animate-on-scroll p-6 rounded-lg bg-gray-900/60 border border-gray-800">
                 <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
                 <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Professional Incident Response</h4>
                 <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
@@ -543,7 +603,7 @@
                     </p>
                 </div>
             </article>
-            <article class="soc-cap-panel p-6 rounded-lg bg-gray-900/60 border border-gray-800">
+            <article class="soc-cap-panel animate-on-scroll p-6 rounded-lg bg-gray-900/60 border border-gray-800">
                 <div class="soc-cap-accent w-8 h-0.5 bg-red-500 mb-4"></div>
                 <h4 class="soc-cap-title mt-2 text-lg font-semibold text-white">Compliance & Governance</h4>
                 <p class="soc-cap-body mt-3 text-gray-300 leading-relaxed">
@@ -558,7 +618,7 @@
 </div>
 
                 <!-- 3: Compliance + CTA 合并为一个视觉区 -->
-                <div class="soc-compliance-rail">
+                <div class="soc-compliance-rail animate-on-scroll">
                     <div class="flex flex-col gap-2">
                         <div class="soc-compliance-logos">
                             <span class="soc-logo-plain"><img src="/img/ppt-picdss.png" alt="PCI DSS"></span>
@@ -642,6 +702,12 @@
     }
 
     const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    const textRevealElements = document.querySelectorAll('.text-reveal');
+    animatedElements.forEach((el, index) => {
+        if (!el.style.getPropertyValue('--reveal-delay')) {
+            el.style.setProperty('--reveal-delay', `${Math.min(index * 70, 320)}ms`);
+        }
+    });
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if(entry.isIntersecting) {
@@ -653,6 +719,10 @@
     animatedElements.forEach(el => observer.observe(el));
 
     document.addEventListener('DOMContentLoaded', () => {
+        requestAnimationFrame(() => {
+            textRevealElements.forEach(el => el.classList.add('visible'));
+        });
+
         animatedElements.forEach(el => {
             const rect = el.getBoundingClientRect();
             if(rect.top < window.innerHeight - 100) {
