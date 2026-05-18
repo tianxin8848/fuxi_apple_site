@@ -39,6 +39,7 @@ module.exports = merge(common, {
             '/blog': '/pages/blog.html',
             '/company': '/pages/company.html',
             '/contact': '/pages/contact.html',
+            '/threatmap': '/pages/threatmap.html',
           };
 
           // 检查是否是无后缀URL
