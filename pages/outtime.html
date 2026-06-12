@@ -192,6 +192,8 @@
         .visit-slide.active { opacity: 1; pointer-events: auto; }
         .visit-slide img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 8s ease-out; }
         .visit-slide.active img { transform: scale(1); }
+        .visit-slide img.slide-fit-contain { object-fit: contain; object-position: center center; transform: none; background-color: #070505; }
+        .visit-slide.active img.slide-fit-contain { transform: none; }
         .visit-slide-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(4,0,0,0.55) 0%, rgba(4,0,0,0.35) 40%, rgba(4,0,0,0.82) 100%); }
         .visit-caption-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.25rem 1.5rem 1.5rem; background: linear-gradient(to top, rgba(4,0,0,0.92), transparent); border-top: 1px solid rgba(230,61,61,0.35); }
         .visit-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: #e63d3d; width: 0; z-index: 5; transition: width linear; }
@@ -378,20 +380,20 @@
 
     <script>
         var PHOTO_CANDIDATES = [
-            { file: "CKX00228.JPG", date: "2026-06-09", title: "Delegation Group Photo", desc: "HK Foshan Association leaders and young entrepreneurs at KUKA headquarters", featured: true },
-            { file: "CKX00216.JPG", date: "2026-06-09", title: "Visit Group Photo", desc: "Group photo in front of the KUKA exhibition hall", featured: true },
-            { file: "CKX01228.JPG", date: "2026-06-09", title: "Welcome Handshake", desc: "Warm welcome ceremony upon delegation arrival", featured: true },
-            { file: "CKX00346.JPG", date: "2026-06-10", title: "Corporate Exhibition Tour", desc: "Innovation, Value, Responsibility themed exhibition area", featured: true },
-            { file: "IMG_0381.jpeg", date: "2026-06-10", title: "Keynote Session", desc: "Shared roots, shared future theme event", featured: true },
-            { file: "WhatsApp Image 2026-06-10 at 12.33.38.jpeg", date: "2026-06-10", title: "Leadership Discussion", desc: "In-depth exchanges during the visit", featured: true },
-            { file: "CKX00632.JPG", date: "2026-06-09", title: "Welcome Reception", desc: "Welcome event highlights from the delegation tour" },
-            { file: "CKX00343.JPG", date: "2026-06-10", title: "Industrial Park Tour", desc: "On-site visit to key industrial parks in Foshan" },
-            { file: "CKX00347.JPG", date: "2026-06-10", title: "Enterprise Visit", desc: "Learning about manufacturing innovation outcomes" },
-            { file: "CKX00400.JPG", date: "2026-06-10", title: "Exchange Session", desc: "Leadership meeting with company executives" },
-            { file: "CKX00664.JPG", date: "2026-06-10", title: "Visit Highlights", desc: "Documentation from the Foshan delegation tour" },
-            { file: "CKX01209.JPG", date: "2026-06-09", title: "Arrival Welcome", desc: "Delegation warmly received upon arrival" },
-            { file: "CKX01232.JPG", date: "2026-06-10", title: "Site Tour & Discussion", desc: "In-depth exchange with enterprise teams" },
-            { file: "IMG_0393.jpeg", date: "2026-06-10", title: "Theme Event", desc: "Greater Bay Area government-enterprise cooperation session" }
+            { file: "\u53cc\u4eba\u7167-1.JPG", date: "2026-06-09", title: "Leadership Portrait", desc: "Two leaders at the delegation welcome venue" },
+            { file: "\u53cc\u4eba\u7167-3.jpeg", date: "2026-06-09", title: "Welcome Handshake", desc: "Warm greeting at the visit arrival ceremony", slideFit: "contain" },
+            { file: "\u53cc\u4eba\u7167-4.jpeg", date: "2026-06-09", title: "Gift Exchange", desc: "Courtesy gifts presented during the welcome reception" },
+            { file: "\u53cc\u4eba\u7167\u7247-2.jpeg", date: "2026-06-10", title: "Keynote Stage Photo", desc: "Shared roots, shared future theme event on stage" },
+            { file: "\u53cc\u4eba\u7167\u7247.JPG", date: "2026-06-10", title: "Stage Portrait", desc: "Government-enterprise exchange at the keynote session" },
+            { file: "\u53cc\u4eba\u7167-\u5408\u7167-\u5927\u4f1a\u5802.JPG", date: "2026-06-10", title: "Assembly Hall Portrait", desc: "Two leaders at the main assembly hall" },
+            { file: "\u53cc\u4eba\u7167-\u5408\u7167-\u5927\u62c7\u6307.JPG", date: "2026-06-10", title: "Visit Celebration Portrait", desc: "Two leaders celebrating a successful visit" },
+            { file: "\u5408\u7167.JPG", date: "2026-06-09", title: "Delegation Group Photo", desc: "HK Foshan Association leaders and young entrepreneurs group photo" },
+            { file: "\u5408\u7167-\u5927\u4f1a\u5802\u5927\u62c7\u6307.JPG", date: "2026-06-10", title: "Assembly Hall Celebration", desc: "Delegation celebrating at the assembly hall" },
+            { file: "\u591a\u4eba\u7167.JPG", date: "2026-06-09", title: "Delegation Gathering", desc: "Leaders and entrepreneurs during the Foshan visit" },
+            { file: "\u591a\u4eba\u7167-1.JPG", date: "2026-06-09", title: "Welcome Reception", desc: "Welcome event highlights from the delegation tour" },
+            { file: "\u591a\u4eba\u7167-\u7279\u5199.JPG", date: "2026-06-10", title: "Exchange Session", desc: "Close-up of leadership discussions during the visit" },
+            { file: "\u5355\u4e2a\u7167\u7247.JPG", date: "2026-06-10", title: "Visit Highlights", desc: "Documentation from the Foshan delegation tour" },
+            { file: "\u7167\u7247.JPG", date: "2026-06-10", title: "Site Tour", desc: "On-site visit to key industrial parks in Foshan" }
         ];
         var PHOTOS = [];
         var featuredPhotos = [];
@@ -451,6 +453,7 @@
                 slideImg.alt = photo.title;
                 slideImg.loading = i === 0 ? "eager" : "lazy";
                 slideImg.src = photoUrl(photo.file);
+                if (photo.slideFit === "contain") slideImg.className = "slide-fit-contain";
                 bindImageFallback(slideImg, slide);
                 slide.appendChild(slideImg);
                 slidesEl.appendChild(slide);
@@ -598,8 +601,7 @@
             return probeImage(photoUrl(photo.file)).then(function (ok) { return ok ? photo : null; });
         })).then(function (results) {
             PHOTOS = results.filter(Boolean);
-            featuredPhotos = PHOTOS.filter(function (p) { return p.featured; });
-            if (!featuredPhotos.length) featuredPhotos = PHOTOS.slice(0, Math.min(6, PHOTOS.length));
+            featuredPhotos = PHOTOS.filter(function (p) { return p.file.indexOf("\u53cc\u4eba") !== -1; });
             document.getElementById("photo-count-stat").textContent = String(PHOTOS.length);
             buildSlides();
             buildGrid();
