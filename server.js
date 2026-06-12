@@ -11,15 +11,15 @@ const publicRoot = process.env.USE_DIST === 'true' && fs.existsSync(distDir)
   ? distDir
   : __dirname;
 
-// Serve media assets. Production build copies img/img/ → dist/img/, so match
+// Serve media assets. Production build copies img/img/ �? dist/img/, so match
 // that locally: serve img/img/ at /img/ first, then fall through to img/ for
 // sub-directories like /img/logimg/ and /img/pdf/.
 app.use('/img', express.static(path.join(__dirname, 'img', 'img')));
 app.use('/img', express.static(path.join(__dirname, 'img')));
-// 静态文件服务（关闭默认 index，避免 "/" 被 index.html 抢先命中）
+// 静态文件服务?���?�闭默认 index?��避�? "/" 被 index.html 抢先命中?�?
 app.use(express.static(publicRoot, { index: false }));
 
-// 无后缀URL重写规则
+// �?后缀URL重�?��?�?
 const pageRoutes = {
   '/': '/pages/index.html',
   '/products': '/pages/products.html',
@@ -28,16 +28,17 @@ const pageRoutes = {
   '/company': '/pages/company.html',
   '/contact': '/pages/contact.html',
   '/threatmap': '/pages/threatmap.html',
+  '/outtime': '/pages/outtime.html',
 };
 
-// 处理无后缀URL
+// �?�?�?后缀URL
 Object.entries(pageRoutes).forEach(([route, file]) => {
   app.get(route, (req, res) => {
     res.sendFile(path.join(publicRoot, file));
   });
 });
 
-// 处理带.html后缀的URL（重定向到无后缀版本）
+// �?�?带.html后缀的URL?��重定向到�?后缀版本?�?
 app.get('/pages/:page.html', (req, res) => {
   const page = req.params.page;
   if (page === 'index') {
@@ -50,20 +51,20 @@ app.get('/pages/:page.html', (req, res) => {
   }
 });
 
-// 处理根目录的index.html重定向
+// �?�?根目录的index.html重定向
 app.get('/index.html', (req, res) => {
   res.redirect(301, '/');
 });
 
-// 404处理
+// 404�?�?
 app.use((req, res) => {
   res.status(404).sendFile(path.join(publicRoot, '404.html'));
 });
 
 app.listen(port, () => {
   console.log(`生产服务器运行在 http://localhost:${port}`);
-  console.log(`静态资源目录: ${publicRoot}`);
-  console.log('支持的无后缀URL:');
+  console.log(`静态�?源目�?: ${publicRoot}`);
+  console.log('支持的�?后缀URL:');
   Object.keys(pageRoutes).forEach(route => {
     console.log(`  ${route}`);
   });
