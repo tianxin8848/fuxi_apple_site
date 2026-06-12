@@ -37,6 +37,10 @@
     {
       "source": "/threatmap",
       "destination": "/pages/threatmap.html"
+    },
+    {
+      "source": "/outtime",
+      "destination": "/pages/outtime.html"
     }
   ]
 }
