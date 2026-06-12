@@ -3,10 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CRITICAL_HEAD_PARTIAL_BEGIN -->
+    <meta name="theme-color" content="#323030">
+    <meta name="color-scheme" content="dark">
+    <style id="critical-shell">
+        html {
+            scrollbar-gutter: stable;
+            background-color: #323030;
+        }
+        body {
+            margin: 0;
+            background-color: #323030;
+            color: #f4f0f0;
+            -webkit-font-smoothing: antialiased;
+        }
+        nav.nav-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background-color: rgb(4, 0, 0);
+            border-bottom: 1px solid rgb(255, 0, 0);
+            transition: none;
+        }
+        nav.nav-blur > .container {
+            height: 48px;
+            box-sizing: border-box;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav.nav-blur .nav-logo {
+            flex-shrink: 0;
+            width: 162px;
+            height: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        nav.nav-blur .nav-logo img {
+            display: block;
+            width: auto;
+            height: 40px;
+            max-width: 162px;
+            object-fit: contain;
+            object-position: left center;
+        }
+        nav.nav-blur .nav-desktop-links {
+            display: none;
+        }
+        nav.nav-blur .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        nav.nav-blur .nav-mobile-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: #fff;
+            background: none;
+            border: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        nav.nav-blur #mobile-menu {
+            display: none;
+        }
+        nav.nav-blur a.text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 500;
+            color: #e5e7eb;
+            text-decoration: none;
+        }
+        .nav-cta-apple {
+            border-radius: 9999px;
+            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            background: #ff1a1a;
+            line-height: 1;
+            white-space: nowrap;
+            color: #fff;
+            text-decoration: none;
+        }
+        @media (min-width: 768px) {
+            nav.nav-blur > .container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+            nav.nav-blur .nav-desktop-links {
+                display: flex;
+                align-items: center;
+                gap: 1.75rem;
+            }
+            nav.nav-blur .nav-mobile-btn {
+                display: none;
+            }
+        }
+        @media (min-width: 640px) {
+            nav.nav-blur .nav-actions {
+                gap: 0.75rem;
+            }
+        }
+    </style>
+    <link rel="preload" href="/css/vendor/tailwind.css" as="style">
+    <link rel="preload" href="/css/site-nav.css" as="style">
+    <link rel="preload" href="/css/theme-fuxi-red-black.css" as="style">
+    <script>
+        (function () {
+            function prefetch(url) {
+                if (!url || url.charAt(0) !== "/" || document.querySelector('link[rel="prefetch"][href="' + url + '"]')) {
+                    return;
+                }
+                var link = document.createElement("link");
+                link.rel = "prefetch";
+                link.href = url;
+                document.head.appendChild(link);
+            }
+            document.addEventListener("mouseover", function (event) {
+                var anchor = event.target.closest("nav a[href]");
+                if (anchor) {
+                    prefetch(anchor.getAttribute("href"));
+                }
+            }, { passive: true });
+        })();
+    </script>
+    <!-- CRITICAL_HEAD_PARTIAL_END -->
+
+
+
     <title>Contact | Get in Touch</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <!-- Tailwind CSS v3 + Font Awesome (for icons) - Local versions -->
-    <link rel="stylesheet" href="../css/vendor/tailwind.css">
+    <link rel="stylesheet" href="/css/vendor/tailwind.css">
     <!-- Custom Tailwind config override for modern dark/cyber theme -->
     <script>
         tailwind.config = {
@@ -37,11 +179,11 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="../css/vendor/google-sans-flex-local.css">
+    <link rel="stylesheet" href="/css/vendor/google-sans-flex-local.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/nav-baseline.css">
-    <link rel="stylesheet" href="../css/site-nav.css">
-    <link rel="stylesheet" href="../css/theme-fuxi-red-black.css">
+    <link rel="stylesheet" href="/css/nav-baseline.css">
+    <link rel="stylesheet" href="/css/site-nav.css">
+    <link rel="stylesheet" href="/css/theme-fuxi-red-black.css">
     <style>
         .btn-primary {
             transition: all 0.2s ease;
@@ -256,10 +398,10 @@
     <!-- SITE_NAV_PARTIAL_BEGIN -->
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
+            <a href="/" class="nav-logo flex items-center gap-2" aria-label="Fuxi Tech home">
+                <img src="/img/fuxi-tech%20logo.jpg" alt="Fuxi Tech Logo" width="162" height="40" decoding="async" onerror="this.closest('.nav-logo')?.classList.add('nav-logo--missing')">
             </a>
-            <div class="hidden md:flex items-center space-x-7">
+            <div class="nav-desktop-links hidden md:flex items-center space-x-7">
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
                 <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
                 <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
@@ -267,9 +409,9 @@
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
             </div>
-            <div class="flex items-center gap-2 sm:gap-3">
+            <div class="nav-actions flex items-center gap-2 sm:gap-3">
                 <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
-                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
+                <button class="nav-mobile-btn md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
                     <i class="fas fa-bars text-base" aria-hidden="true"></i>
                     <span>Menu</span>
                 </button>
@@ -287,6 +429,9 @@
         </div>
     </nav>
     <!-- SITE_NAV_PARTIAL_END -->
+
+
+
 
 
 

@@ -1,5 +1,7 @@
 :root {
     --nav-bottom: 48px;
+    --nav-logo-width: 162px;
+    --nav-logo-height: 40px;
 }
 
 .nav-blur {
@@ -14,10 +16,25 @@ nav.nav-blur > .container {
     box-sizing: border-box;
 }
 
-nav.nav-blur > .container img {
-    max-height: 40px;
+nav.nav-blur .nav-logo {
+    flex-shrink: 0;
+    width: var(--nav-logo-width);
+    height: var(--nav-logo-height);
+    overflow: hidden;
+}
+
+nav.nav-blur .nav-logo img {
+    display: block;
     width: auto;
+    height: var(--nav-logo-height);
+    max-width: var(--nav-logo-width);
     object-fit: contain;
+    object-position: left center;
+}
+
+nav.nav-blur .nav-logo--missing {
+    width: 0;
+    overflow: hidden;
 }
 
 .nav-cta-apple {

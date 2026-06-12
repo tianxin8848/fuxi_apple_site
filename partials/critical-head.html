@@ -1,0 +1,138 @@
+    <meta name="theme-color" content="#323030">
+    <meta name="color-scheme" content="dark">
+    <style id="critical-shell">
+        html {
+            scrollbar-gutter: stable;
+            background-color: #323030;
+        }
+        body {
+            margin: 0;
+            background-color: #323030;
+            color: #f4f0f0;
+            -webkit-font-smoothing: antialiased;
+        }
+        nav.nav-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background-color: rgb(4, 0, 0);
+            border-bottom: 1px solid rgb(255, 0, 0);
+            transition: none;
+        }
+        nav.nav-blur > .container {
+            height: 48px;
+            box-sizing: border-box;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav.nav-blur .nav-logo {
+            flex-shrink: 0;
+            width: 162px;
+            height: 40px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        nav.nav-blur .nav-logo img {
+            display: block;
+            width: auto;
+            height: 40px;
+            max-width: 162px;
+            object-fit: contain;
+            object-position: left center;
+        }
+        nav.nav-blur .nav-desktop-links {
+            display: none;
+        }
+        nav.nav-blur .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        nav.nav-blur .nav-mobile-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: #fff;
+            background: none;
+            border: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        nav.nav-blur #mobile-menu {
+            display: none;
+        }
+        nav.nav-blur a.text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            font-weight: 500;
+            color: #e5e7eb;
+            text-decoration: none;
+        }
+        .nav-cta-apple {
+            border-radius: 9999px;
+            padding: 6px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            background: #ff1a1a;
+            line-height: 1;
+            white-space: nowrap;
+            color: #fff;
+            text-decoration: none;
+        }
+        @media (min-width: 768px) {
+            nav.nav-blur > .container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+            nav.nav-blur .nav-desktop-links {
+                display: flex;
+                align-items: center;
+                gap: 1.75rem;
+            }
+            nav.nav-blur .nav-mobile-btn {
+                display: none;
+            }
+        }
+        @media (min-width: 640px) {
+            nav.nav-blur .nav-actions {
+                gap: 0.75rem;
+            }
+        }
+    </style>
+    <link rel="preload" href="/img/fuxi-tech%20logo.jpg" as="image">
+    <link rel="preload" href="/css/vendor/tailwind.css" as="style">
+    <link rel="preload" href="/css/site-nav.css" as="style">
+    <link rel="preload" href="/css/theme-fuxi-red-black.css" as="style">
+    <script>
+        (function () {
+            function prefetch(url) {
+                if (!url || url.charAt(0) !== "/" || document.querySelector('link[rel="prefetch"][href="' + url + '"]')) {
+                    return;
+                }
+                var link = document.createElement("link");
+                link.rel = "prefetch";
+                link.href = url;
+                document.head.appendChild(link);
+            }
+            document.addEventListener("mouseover", function (event) {
+                var anchor = event.target.closest("nav a[href]");
+                if (anchor) {
+                    prefetch(anchor.getAttribute("href"));
+                }
+            }, { passive: true });
+        })();
+    </script>

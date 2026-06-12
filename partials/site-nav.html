@@ -1,9 +1,9 @@
     <nav class="fixed top-0 left-0 w-full z-50 nav-blur">
         <div class="container mx-auto px-5 lg:px-8 flex justify-between items-center ">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/fuxi-tech logo.jpg" alt="Fuxi Tech Logo" class="w-auto" onerror="this.style.display='none'">
+            <a href="/" class="nav-logo flex items-center gap-2" aria-label="Fuxi Tech home">
+                <img src="/img/fuxi-tech%20logo.jpg" alt="Fuxi Tech Logo" width="162" height="40" decoding="async" onerror="this.closest('.nav-logo')?.classList.add('nav-logo--missing')">
             </a>
-            <div class="hidden md:flex items-center space-x-7">
+            <div class="nav-desktop-links hidden md:flex items-center space-x-7">
                 <a href="/" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Home</a>
                 <a href="/products" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Products</a>
                 <a href="/solutions" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition nav-link-trigger" data-nav-dropdown-trigger>Solutions</a>
@@ -11,9 +11,9 @@
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
             </div>
-            <div class="flex items-center gap-2 sm:gap-3">
+            <div class="nav-actions flex items-center gap-2 sm:gap-3">
                 <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
-                <button class="md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
+                <button class="nav-mobile-btn md:hidden text-white text-base font-medium focus:outline-none inline-flex items-center gap-1.5" id="mobile-menu-btn" aria-label="Open mobile menu">
                     <i class="fas fa-bars text-base" aria-hidden="true"></i>
                     <span>Menu</span>
                 </button>
