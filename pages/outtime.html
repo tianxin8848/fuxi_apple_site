@@ -186,7 +186,8 @@
     <style>
         .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
-        .visit-hero { position: relative; min-height: 72vh; min-height: 72svh; overflow: hidden; }
+        .visit-hero { position: relative; height: 100vh; height: 100svh; height: 100dvh; overflow: hidden; }
+        #visit-slides { position: absolute; inset: 0; }
         .visit-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; pointer-events: none; }
         .visit-slide.active { opacity: 1; pointer-events: auto; }
         .visit-slide img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 8s ease-out; }
@@ -221,7 +222,7 @@
         .event-stat strong { display: block; font-size: 1.75rem; font-weight: 800; color: #e63d3d; line-height: 1.2; }
         .event-stat span { font-size: 0.8rem; color: #b9aeae; }
         .gallery-empty { text-align: center; padding: 3rem 1.5rem; color: #b9aeae; border: 1px dashed rgba(255,255,255,0.15); border-radius: 0.75rem; }
-        @media (max-width: 768px) { .lightbox-nav--prev { left: 0.25rem; } .lightbox-nav--next { right: 0.25rem; } .visit-hero { min-height: 58vh; min-height: 58svh; } }
+        @media (max-width: 768px) { .lightbox-nav--prev { left: 0.25rem; } .lightbox-nav--next { right: 0.25rem; } }
     </style>
 </head>
 <body class="font-sans text-white bg-dark-bg">
@@ -266,10 +267,10 @@
 
     <div class="bg-cover bg-center bg-fixed bg-no-repeat" style="background-image: url('/img/background.png');">
 
-        <section class="visit-hero pt-12" id="visit-hero" aria-label="Featured visit photos">
+        <section class="visit-hero" id="visit-hero" aria-label="Featured visit photos">
             <div id="visit-slides"></div>
             <div class="visit-slide-overlay" aria-hidden="true"></div>
-            <div class="absolute inset-x-0 top-20 z-10 px-5 pointer-events-none">
+            <div class="absolute inset-x-0 top-16 md:top-20 z-10 px-5 pointer-events-none">
                 <div class="container mx-auto text-center">
                     <div class="event-badge mb-4 mx-auto w-fit pointer-events-auto">
                         <i class="fas fa-camera text-cyber-red" aria-hidden="true"></i>
