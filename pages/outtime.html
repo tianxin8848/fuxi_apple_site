@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -145,8 +145,8 @@
     <!-- CRITICAL_HEAD_PARTIAL_END -->
 
 
-    <title>领导考察 | Fuxi Technology</title>
-    <meta name="description" content="近期领导出行与考察活动影像记录。">
+    <title>Leadership Visits | Fuxi Technology</title>
+    <meta name="description" content="Photo highlights from recent leadership visits and on-site inspections.">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/vendor/tailwind.css">
     <script>
@@ -220,6 +220,7 @@
         .event-stat { text-align: center; padding: 1.25rem; border-radius: 0.75rem; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); }
         .event-stat strong { display: block; font-size: 1.75rem; font-weight: 800; color: #e63d3d; line-height: 1.2; }
         .event-stat span { font-size: 0.8rem; color: #b9aeae; }
+        .gallery-empty { text-align: center; padding: 3rem 1.5rem; color: #b9aeae; border: 1px dashed rgba(255,255,255,0.15); border-radius: 0.75rem; }
         @media (max-width: 768px) { .lightbox-nav--prev { left: 0.25rem; } .lightbox-nav--next { right: 0.25rem; } .visit-hero { min-height: 58vh; min-height: 58svh; } }
     </style>
 </head>
@@ -238,7 +239,7 @@
                 <a href="/blog" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Newsletters</a>
                 <a href="/company" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Company</a>
                 <a href="/threatmap" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">ThreatMap</a>
-                <a href="/outtime" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">领导考察</a>
+                <a href="/outtime" class="text-sm font-medium text-gray-200 hover:text-cyber-red transition">Leadership Visits</a>
             </div>
             <div class="nav-actions flex items-center gap-2 sm:gap-3">
                 <a href="/contact" class="nav-cta-apple text-white text-xs sm:text-sm">Contact Us</a>
@@ -255,7 +256,7 @@
             <a href="/solutions" class="py-2 text-gray-200 hover:text-cyber-red">Solutions</a>
             <a href="/blog" class="py-2 text-gray-200 hover:text-cyber-red">Newsletters</a>
             <a href="/company" class="py-2 text-gray-200 hover:text-cyber-red">Company</a>
-            <a href="/outtime" class="py-2 text-gray-200 hover:text-cyber-red">领导考察</a>
+            <a href="/outtime" class="py-2 text-gray-200 hover:text-cyber-red">Leadership Visits</a>
             <a href="/contact" class="py-2 text-gray-200 hover:text-cyber-red">Contact</a>
             <a href="/contact" class="bg-cyber-red text-center py-2 rounded-md font-semibold">Contact Us</a>
         </div>
@@ -265,20 +266,20 @@
 
     <div class="bg-cover bg-center bg-fixed bg-no-repeat" style="background-image: url('/img/background.png');">
 
-        <section class="visit-hero pt-12" id="visit-hero" aria-label="近期考察影像轮播">
+        <section class="visit-hero pt-12" id="visit-hero" aria-label="Featured visit photos">
             <div id="visit-slides"></div>
             <div class="visit-slide-overlay" aria-hidden="true"></div>
             <div class="absolute inset-x-0 top-20 z-10 px-5 pointer-events-none">
                 <div class="container mx-auto text-center">
                     <div class="event-badge mb-4 mx-auto w-fit pointer-events-auto">
                         <i class="fas fa-camera text-cyber-red" aria-hidden="true"></i>
-                        <span>近期活动影像</span>
+                        <span>Recent Activity Highlights</span>
                     </div>
                     <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight drop-shadow-lg">
-                        领导<span class="text-cyber-red">考察</span>
+                        Leadership <span class="text-cyber-red">Visits</span>
                     </h1>
                     <p class="text-base md:text-lg text-gray-200 mt-4 max-w-2xl mx-auto leading-relaxed drop-shadow">
-                        记录领导出行与实地考察的精彩瞬间，见证政企交流与合作发展。
+                        Documenting leadership travel and on-site inspections that strengthen government-enterprise collaboration.
                     </p>
                 </div>
             </div>
@@ -288,14 +289,14 @@
                 <p class="text-gray-300 text-sm mt-1 line-clamp-2" id="visit-slide-desc"></p>
             </div>
             <div class="visit-progress" id="visit-progress" aria-hidden="true"></div>
-            <button class="visit-nav-btn visit-nav-btn--prev" id="visit-prev" aria-label="上一张"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-            <button class="visit-nav-btn visit-nav-btn--next" id="visit-next" aria-label="下一张"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+            <button class="visit-nav-btn visit-nav-btn--prev" id="visit-prev" aria-label="Previous photo"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+            <button class="visit-nav-btn visit-nav-btn--next" id="visit-next" aria-label="Next photo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
         </section>
 
         <section class="px-5 py-4 relative">
             <div class="absolute inset-0 bg-black/60" aria-hidden="true"></div>
             <div class="relative z-10 container mx-auto">
-                <div class="flex gap-2 overflow-x-auto pb-1" id="visit-thumbs" role="tablist" aria-label="轮播缩略图"></div>
+                <div class="flex gap-2 overflow-x-auto pb-1" id="visit-thumbs" role="tablist" aria-label="Slideshow thumbnails"></div>
             </div>
         </section>
 
@@ -303,26 +304,26 @@
             <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
             <div class="relative z-10 container mx-auto max-w-5xl">
                 <div class="animate-on-scroll text-center mb-10">
-                    <h2 class="text-2xl md:text-3xl font-bold">近期<span class="text-cyber-red">考察活动</span></h2>
-                    <p class="text-muted-text mt-3 max-w-2xl mx-auto">香港佛山社团总会职首和香港青年企业家佛山访问考察团</p>
+                    <h2 class="text-2xl md:text-3xl font-bold">Recent <span class="text-cyber-red">Inspection Tour</span></h2>
+                    <p class="text-muted-text mt-3 max-w-2xl mx-auto">HK Foshan Association Leaders &amp; Young Entrepreneurs Foshan Visit Delegation</p>
                 </div>
                 <div class="animate-on-scroll bg-black/40 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8">
                     <div class="flex flex-col md:flex-row md:items-start gap-6 md:gap-10">
                         <div class="md:flex-1">
-                            <div class="text-cyber-red font-bold text-sm tracking-wide mb-2">2026年6月9日 – 10日 · 广东佛山</div>
-                            <h3 class="text-xl md:text-2xl font-bold leading-snug">香港佛山社团总会职首和香港青年企业家佛山访问考察团</h3>
-                            <p class="text-gray-300 mt-4 leading-relaxed text-sm md:text-base">考察团先后走访 KUKA 等企业及重点产业园区，深入了解佛山制造业创新成果与营商环境。活动期间举行欢迎仪式、主题座谈与企业参观，促进粤港澳大湾区域政企交流与合作。</p>
+                            <div class="text-cyber-red font-bold text-sm tracking-wide mb-2">June 9&ndash;10, 2026 &middot; Foshan, Guangdong</div>
+                            <h3 class="text-xl md:text-2xl font-bold leading-snug">HK Foshan Association Leaders &amp; Young Entrepreneurs Foshan Visit Delegation</h3>
+                            <p class="text-gray-300 mt-4 leading-relaxed text-sm md:text-base">The delegation visited KUKA and key industrial parks to learn about Foshan&rsquo;s manufacturing innovation and business environment. Welcome ceremonies, keynote sessions, and site tours supported Greater Bay Area government-enterprise exchange.</p>
                             <ul class="mt-5 space-y-2 text-sm text-gray-400">
-                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>考察团合影 · KUKA 总部</span></li>
-                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>欢迎仪式 · 政企交流洽谈</span></li>
-                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>企业展厅参观 · 创新价值责任主题展</span></li>
-                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>主题演讲 · 同根同源同心同行</span></li>
+                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>Delegation group photo &middot; KUKA headquarters</span></li>
+                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>Welcome ceremony &middot; government-enterprise exchange</span></li>
+                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>Exhibition tour &middot; Innovation, Value, Responsibility showcase</span></li>
+                                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-cyber-red mt-0.5" aria-hidden="true"></i><span>Keynote session &middot; Shared roots, shared future</span></li>
                             </ul>
                         </div>
                         <div class="grid grid-cols-3 gap-3 md:w-64 shrink-0">
-                            <div class="event-stat"><strong>2</strong><span>考察天数</span></div>
-                            <div class="event-stat"><strong>21</strong><span>影像记录</span></div>
-                            <div class="event-stat col-span-3 md:col-span-1"><strong><i class="fas fa-map-marker-alt text-lg" aria-hidden="true"></i></strong><span>广东佛山</span></div>
+                            <div class="event-stat"><strong>2</strong><span>Visit Days</span></div>
+                            <div class="event-stat"><strong id="photo-count-stat">&mdash;</strong><span>Photo Records</span></div>
+                            <div class="event-stat col-span-3 md:col-span-1"><strong><i class="fas fa-map-marker-alt text-lg" aria-hidden="true"></i></strong><span>Foshan, Guangdong</span></div>
                         </div>
                     </div>
                 </div>
@@ -333,19 +334,19 @@
             <div class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
             <div class="relative z-10 container mx-auto">
                 <div class="text-center mb-10 animate-on-scroll">
-                    <h2 class="text-2xl md:text-3xl font-bold">活动<span class="text-cyber-red">影像集</span></h2>
-                    <p class="text-muted-text mt-2 text-sm">点击照片可全屏浏览</p>
+                    <h2 class="text-2xl md:text-3xl font-bold">Activity <span class="text-cyber-red">Gallery</span></h2>
+                    <p class="text-muted-text mt-2 text-sm">Click any photo to view full screen</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="photo-grid"></div>
             </div>
         </section>
     </div>
 
-    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="照片预览">
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo preview">
         <div class="lightbox-inner">
-            <button class="lightbox-close" id="lightbox-close" aria-label="关闭"><i class="fas fa-times" aria-hidden="true"></i></button>
-            <button class="lightbox-nav lightbox-nav--prev" id="lightbox-prev" aria-label="上一张"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-            <button class="lightbox-nav lightbox-nav--next" id="lightbox-next" aria-label="下一张"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+            <button class="lightbox-close" id="lightbox-close" aria-label="Close"><i class="fas fa-times" aria-hidden="true"></i></button>
+            <button class="lightbox-nav lightbox-nav--prev" id="lightbox-prev" aria-label="Previous photo"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+            <button class="lightbox-nav lightbox-nav--next" id="lightbox-next" aria-label="Next photo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
             <div class="lightbox-img-wrap"><img id="lightbox-img" src="" alt=""></div>
             <div class="text-center px-2">
                 <p class="text-cyber-red text-xs font-semibold" id="lightbox-date"></p>
@@ -375,117 +376,235 @@
     </footer>
 
     <script>
-        var PHOTOS = [
-            { file: "CKX00228.JPG", date: "2026-06-09", title: "考察团合影", desc: "香港佛山社团总会职首与青年企业家考察团 · KUKA 总部", featured: true },
-            { file: "CKX00216.JPG", date: "2026-06-09", title: "访问考察团合影", desc: "考察团在 KUKA 企业展厅前合影留念", featured: true },
-            { file: "CKX00656.JPG", date: "2026-06-09", title: "欢迎仪式", desc: "考察团抵达 · 酒店大堂集体合影", featured: true },
-            { file: "CKX01228.JPG", date: "2026-06-09", title: "欢迎握手", desc: "考察团抵达欢迎仪式 · 双方亲切握手", featured: true },
-            { file: "CKX00346.JPG", date: "2026-06-10", title: "参观企业展厅", desc: "考察团参观创新价值责任主题展区", featured: true },
-            { file: "IMG_0381.jpeg", date: "2026-06-10", title: "主题演讲", desc: "同根同源同心同行 · 共建共享共赢", featured: true },
-            { file: "WhatsApp Image 2026-06-10 at 12.33.38.jpeg", date: "2026-06-10", title: "领导交流洽谈", desc: "考察期间领导深入交流", featured: true },
-            { file: "CKX00211.JPG", date: "2026-06-09", title: "考察团合影", desc: "佛山访问考察团活动记录" },
-            { file: "CKX00224.JPG", date: "2026-06-09", title: "政企座谈", desc: "考察团与企业代表座谈交流" },
-            { file: "CKX00343.JPG", date: "2026-06-10", title: "园区参观", desc: "实地考察产业园区建设情况" },
-            { file: "CKX00347.JPG", date: "2026-06-10", title: "企业走访", desc: "深入了解制造业创新成果" },
-            { file: "CKX00400.JPG", date: "2026-06-10", title: "考察交流", desc: "领导与企业负责人深入沟通" },
-            { file: "CKX00632.JPG", date: "2026-06-09", title: "欢迎晚宴", desc: "考察团欢迎活动影像" },
-            { file: "CKX00637.JPG", date: "2026-06-09", title: "活动合影", desc: "考察团活动精彩瞬间" },
-            { file: "CKX00643.JPG", date: "2026-06-10", title: "展厅参观", desc: "考察团参观现代化生产线" },
-            { file: "CKX00649.JPG", date: "2026-06-10", title: "技术交流", desc: "了解智能制造与技术创新" },
-            { file: "CKX00653.JPG", date: "2026-06-10", title: "实地考察", desc: "走访重点产业项目" },
-            { file: "CKX00664.JPG", date: "2026-06-10", title: "考察记录", desc: "佛山访问考察团行程影像" },
-            { file: "CKX01209.JPG", date: "2026-06-09", title: "抵达欢迎", desc: "考察团受到热情欢迎" },
-            { file: "CKX01232.JPG", date: "2026-06-10", title: "参观交流", desc: "考察团与企业团队深入交流" },
-            { file: "IMG_0393.jpeg", date: "2026-06-10", title: "主题活动现场", desc: "粤港澳大湾区政企合作主题分享" }
+        var PHOTO_CANDIDATES = [
+            { file: "CKX00228.JPG", date: "2026-06-09", title: "Delegation Group Photo", desc: "HK Foshan Association leaders and young entrepreneurs at KUKA headquarters", featured: true },
+            { file: "CKX00216.JPG", date: "2026-06-09", title: "Visit Group Photo", desc: "Group photo in front of the KUKA exhibition hall", featured: true },
+            { file: "CKX01228.JPG", date: "2026-06-09", title: "Welcome Handshake", desc: "Warm welcome ceremony upon delegation arrival", featured: true },
+            { file: "CKX00346.JPG", date: "2026-06-10", title: "Corporate Exhibition Tour", desc: "Innovation, Value, Responsibility themed exhibition area", featured: true },
+            { file: "IMG_0381.jpeg", date: "2026-06-10", title: "Keynote Session", desc: "Shared roots, shared future theme event", featured: true },
+            { file: "WhatsApp Image 2026-06-10 at 12.33.38.jpeg", date: "2026-06-10", title: "Leadership Discussion", desc: "In-depth exchanges during the visit", featured: true },
+            { file: "CKX00632.JPG", date: "2026-06-09", title: "Welcome Reception", desc: "Welcome event highlights from the delegation tour" },
+            { file: "CKX00343.JPG", date: "2026-06-10", title: "Industrial Park Tour", desc: "On-site visit to key industrial parks in Foshan" },
+            { file: "CKX00347.JPG", date: "2026-06-10", title: "Enterprise Visit", desc: "Learning about manufacturing innovation outcomes" },
+            { file: "CKX00400.JPG", date: "2026-06-10", title: "Exchange Session", desc: "Leadership meeting with company executives" },
+            { file: "CKX00664.JPG", date: "2026-06-10", title: "Visit Highlights", desc: "Documentation from the Foshan delegation tour" },
+            { file: "CKX01209.JPG", date: "2026-06-09", title: "Arrival Welcome", desc: "Delegation warmly received upon arrival" },
+            { file: "CKX01232.JPG", date: "2026-06-10", title: "Site Tour & Discussion", desc: "In-depth exchange with enterprise teams" },
+            { file: "IMG_0393.jpeg", date: "2026-06-10", title: "Theme Event", desc: "Greater Bay Area government-enterprise cooperation session" }
         ];
+        var PHOTOS = [];
+        var featuredPhotos = [];
         var PHOTO_BASE = "/img/Photos/";
         var SLIDE_INTERVAL = 6000;
-        function photoUrl(file) { return PHOTO_BASE + encodeURIComponent(file); }
-        function formatDate(dateStr) {
-            var parts = dateStr.split("-");
-            return parts[0] + "年" + parseInt(parts[1], 10) + "月" + parseInt(parts[2], 10) + "日";
-        }
-        var featuredPhotos = PHOTOS.filter(function (p) { return p.featured; });
-        var currentSlide = 0, slideTimer = null;
+        var currentSlide = 0;
+        var slideTimer = null;
+        var lightboxIndex = 0;
+
         var progressEl = document.getElementById("visit-progress");
         var slidesEl = document.getElementById("visit-slides");
         var thumbsEl = document.getElementById("visit-thumbs");
+        var gridEl = document.getElementById("photo-grid");
+        var lightbox = document.getElementById("lightbox");
+
+        function photoUrl(file) {
+            return PHOTO_BASE + encodeURIComponent(file);
+        }
+
+        function formatDate(dateStr) {
+            var parts = dateStr.split("-");
+            var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            return months[parseInt(parts[1], 10) - 1] + " " + parseInt(parts[2], 10) + ", " + parts[0];
+        }
+
+        function probeImage(url) {
+            return new Promise(function (resolve) {
+                var img = new Image();
+                img.onload = function () { resolve(true); };
+                img.onerror = function () { resolve(false); };
+                img.src = url;
+            });
+        }
+
+        function bindImageFallback(img, container) {
+            img.addEventListener("error", function () {
+                if (container && container.parentNode) {
+                    container.parentNode.removeChild(container);
+                }
+            }, { once: true });
+        }
+
         function buildSlides() {
+            slidesEl.innerHTML = "";
+            thumbsEl.innerHTML = "";
+            if (!featuredPhotos.length) {
+                document.getElementById("visit-caption-bar").style.display = "none";
+                document.getElementById("visit-prev").style.display = "none";
+                document.getElementById("visit-next").style.display = "none";
+                progressEl.style.display = "none";
+                return;
+            }
             featuredPhotos.forEach(function (photo, i) {
                 var slide = document.createElement("div");
                 slide.className = "visit-slide" + (i === 0 ? " active" : "");
-                slide.innerHTML = '<img src="' + photoUrl(photo.file) + '" alt="' + photo.title + '" loading="' + (i === 0 ? "eager" : "lazy") + '">';
+                var slideImg = document.createElement("img");
+                slideImg.alt = photo.title;
+                slideImg.loading = i === 0 ? "eager" : "lazy";
+                slideImg.src = photoUrl(photo.file);
+                bindImageFallback(slideImg, slide);
+                slide.appendChild(slideImg);
                 slidesEl.appendChild(slide);
+
                 var thumb = document.createElement("button");
                 thumb.className = "visit-thumb" + (i === 0 ? " active" : "");
                 thumb.setAttribute("aria-label", photo.title);
-                thumb.setAttribute("data-index", i);
-                thumb.innerHTML = '<img src="' + photoUrl(photo.file) + '" alt="" loading="lazy">';
+                thumb.setAttribute("data-index", String(i));
+                var thumbImg = document.createElement("img");
+                thumbImg.alt = "";
+                thumbImg.loading = "lazy";
+                thumbImg.src = photoUrl(photo.file);
+                bindImageFallback(thumbImg, thumb);
+                thumb.appendChild(thumbImg);
                 thumb.addEventListener("click", function () { goToSlide(i, true); });
                 thumbsEl.appendChild(thumb);
             });
         }
+
+        function buildGrid() {
+            gridEl.innerHTML = "";
+            if (!PHOTOS.length) {
+                gridEl.innerHTML = '<p class="gallery-empty col-span-full">No photos are available right now.</p>';
+                return;
+            }
+            PHOTOS.forEach(function (photo, i) {
+                var card = document.createElement("article");
+                card.className = "photo-card animate-on-scroll";
+                card.style.transitionDelay = (i % 4) * 0.08 + "s";
+                var img = document.createElement("img");
+                img.alt = photo.title;
+                img.loading = "lazy";
+                img.src = photoUrl(photo.file);
+                bindImageFallback(img, card);
+                var info = document.createElement("div");
+                info.className = "photo-card-info";
+                info.innerHTML = '<span class="photo-card-date">' + formatDate(photo.date) + '</span><h3 class="font-semibold text-sm">' + photo.title + '</h3><p class="text-gray-400 text-xs mt-0.5">' + photo.desc + '</p>';
+                card.appendChild(img);
+                card.appendChild(info);
+                card.addEventListener("click", function () { openLightbox(i); });
+                gridEl.appendChild(card);
+            });
+            document.querySelectorAll(".animate-on-scroll").forEach(function (el) {
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("visible");
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+                observer.observe(el);
+            });
+        }
+
         function updateCaption(i) {
+            if (!featuredPhotos.length) return;
             var photo = featuredPhotos[i];
             document.getElementById("visit-slide-date").textContent = formatDate(photo.date);
             document.getElementById("visit-slide-title").textContent = photo.title;
             document.getElementById("visit-slide-desc").textContent = photo.desc;
         }
+
         function goToSlide(i, resetTimer) {
+            if (!featuredPhotos.length) return;
             currentSlide = (i + featuredPhotos.length) % featuredPhotos.length;
             slidesEl.querySelectorAll(".visit-slide").forEach(function (s, idx) { s.classList.toggle("active", idx === currentSlide); });
             thumbsEl.querySelectorAll(".visit-thumb").forEach(function (t, idx) { t.classList.toggle("active", idx === currentSlide); });
             updateCaption(currentSlide);
             if (resetTimer) startSlideTimer();
         }
+
         function startSlideTimer() {
+            if (!featuredPhotos.length) return;
             if (slideTimer) clearTimeout(slideTimer);
-            progressEl.style.transition = "none"; progressEl.style.width = "0";
-            requestAnimationFrame(function () { requestAnimationFrame(function () {
-                progressEl.style.transition = "width " + SLIDE_INTERVAL + "ms linear";
-                progressEl.style.width = "100%";
-            }); });
-            slideTimer = setTimeout(function () { goToSlide(currentSlide + 1, false); startSlideTimer(); }, SLIDE_INTERVAL);
+            progressEl.style.transition = "none";
+            progressEl.style.width = "0";
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    progressEl.style.transition = "width " + SLIDE_INTERVAL + "ms linear";
+                    progressEl.style.width = "100%";
+                });
+            });
+            slideTimer = setTimeout(function () {
+                goToSlide(currentSlide + 1, false);
+                startSlideTimer();
+            }, SLIDE_INTERVAL);
         }
-        document.getElementById("visit-prev").addEventListener("click", function () { goToSlide(currentSlide - 1, true); });
-        document.getElementById("visit-next").addEventListener("click", function () { goToSlide(currentSlide + 1, true); });
-        var gridEl = document.getElementById("photo-grid");
-        PHOTOS.forEach(function (photo, i) {
-            var card = document.createElement("article");
-            card.className = "photo-card animate-on-scroll";
-            card.innerHTML = '<img src="' + photoUrl(photo.file) + '" alt="' + photo.title + '" loading="lazy"><div class="photo-card-info"><span class="photo-card-date">' + formatDate(photo.date) + '</span><h3 class="font-semibold text-sm">' + photo.title + '</h3><p class="text-gray-400 text-xs mt-0.5">' + photo.desc + '</p></div>';
-            card.addEventListener("click", function () { openLightbox(i); });
-            gridEl.appendChild(card);
-        });
-        var lightboxIndex = 0, lightbox = document.getElementById("lightbox");
-        function openLightbox(i) { lightboxIndex = i; renderLightbox(); lightbox.classList.add("open"); document.body.style.overflow = "hidden"; }
-        function closeLightbox() { lightbox.classList.remove("open"); document.body.style.overflow = ""; }
+
+        function openLightbox(i) {
+            lightboxIndex = i;
+            renderLightbox();
+            lightbox.classList.add("open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove("open");
+            document.body.style.overflow = "";
+        }
+
         function renderLightbox() {
             var photo = PHOTOS[lightboxIndex];
-            document.getElementById("lightbox-img").src = photoUrl(photo.file);
-            document.getElementById("lightbox-img").alt = photo.title;
+            var img = document.getElementById("lightbox-img");
+            img.onerror = function () { closeLightbox(); };
+            img.src = photoUrl(photo.file);
+            img.alt = photo.title;
             document.getElementById("lightbox-date").textContent = formatDate(photo.date);
             document.getElementById("lightbox-title").textContent = photo.title;
             document.getElementById("lightbox-desc").textContent = photo.desc;
         }
+
+        document.getElementById("visit-prev").addEventListener("click", function () { goToSlide(currentSlide - 1, true); });
+        document.getElementById("visit-next").addEventListener("click", function () { goToSlide(currentSlide + 1, true); });
         document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
-        document.getElementById("lightbox-prev").addEventListener("click", function () { lightboxIndex = (lightboxIndex - 1 + PHOTOS.length) % PHOTOS.length; renderLightbox(); });
-        document.getElementById("lightbox-next").addEventListener("click", function () { lightboxIndex = (lightboxIndex + 1) % PHOTOS.length; renderLightbox(); });
+        document.getElementById("lightbox-prev").addEventListener("click", function () {
+            lightboxIndex = (lightboxIndex - 1 + PHOTOS.length) % PHOTOS.length;
+            renderLightbox();
+        });
+        document.getElementById("lightbox-next").addEventListener("click", function () {
+            lightboxIndex = (lightboxIndex + 1) % PHOTOS.length;
+            renderLightbox();
+        });
         lightbox.addEventListener("click", function (e) { if (e.target === lightbox) closeLightbox(); });
         document.addEventListener("keydown", function (e) {
             if (!lightbox.classList.contains("open")) return;
             if (e.key === "Escape") closeLightbox();
-            if (e.key === "ArrowLeft") { lightboxIndex = (lightboxIndex - 1 + PHOTOS.length) % PHOTOS.length; renderLightbox(); }
-            if (e.key === "ArrowRight") { lightboxIndex = (lightboxIndex + 1) % PHOTOS.length; renderLightbox(); }
+            if (e.key === "ArrowLeft") {
+                lightboxIndex = (lightboxIndex - 1 + PHOTOS.length) % PHOTOS.length;
+                renderLightbox();
+            }
+            if (e.key === "ArrowRight") {
+                lightboxIndex = (lightboxIndex + 1) % PHOTOS.length;
+                renderLightbox();
+            }
         });
-        var menuBtn = document.getElementById("mobile-menu-btn"), mobileMenu = document.getElementById("mobile-menu");
-        if (menuBtn && mobileMenu) menuBtn.addEventListener("click", function () { mobileMenu.classList.toggle("hidden"); });
-        var animatedElements = document.querySelectorAll(".animate-on-scroll");
-        var observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) { if (entry.isIntersecting) { entry.target.classList.add("visible"); observer.unobserve(entry.target); } });
-        }, { threshold: 0.12 });
-        animatedElements.forEach(function (el) { observer.observe(el); });
-        buildSlides(); updateCaption(0); startSlideTimer();
+
+        var menuBtn = document.getElementById("mobile-menu-btn");
+        var mobileMenu = document.getElementById("mobile-menu");
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener("click", function () { mobileMenu.classList.toggle("hidden"); });
+        }
+
+        Promise.all(PHOTO_CANDIDATES.map(function (photo) {
+            return probeImage(photoUrl(photo.file)).then(function (ok) { return ok ? photo : null; });
+        })).then(function (results) {
+            PHOTOS = results.filter(Boolean);
+            featuredPhotos = PHOTOS.filter(function (p) { return p.featured; });
+            if (!featuredPhotos.length) featuredPhotos = PHOTOS.slice(0, Math.min(6, PHOTOS.length));
+            document.getElementById("photo-count-stat").textContent = String(PHOTOS.length);
+            buildSlides();
+            buildGrid();
+            updateCaption(0);
+            startSlideTimer();
+        });
     </script>
 </body>
 </html>
