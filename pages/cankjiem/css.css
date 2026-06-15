@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Ephesis&display=swap');
+body{
+  background:#2A2A2A
+}
+#carousel-area {
+  position: relative;
+  overflow: hidden;
+  top:50%;
+  height:600px;
+  height: auto;
+  cursor: inherit;
+}
+
+
+#carousel {
+  position: relative;
+  height: 380px;
+  width: 100%;
+  margin: 280px auto 60px auto;
+  top: 50%;
+  transform: translateY(-50%);
+  overflow: hidden;
+}
+
+
+#carousel div {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  transition: transform 1s ease-out, width 0.5s, height 0.5s, left 1s, opacity 1s, z-index 1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  background-color: #acff6c;
+  overflow: hidden;
+}
+#carousel .img-wrap .img-text{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #acff6c;
+  opacity: 0;
+  z-index: 11;
+  transition: 0.4s;
+  pointer-events: none;
+  font-family: "Ephesis";
+  font-weight: 300;
+  font-size: 1rem;
+  letter-spacing: 0.05rem;
+  line-height: 2;
+  z-index: 1;
+}
+
+#carousel .img-wrap {
+  width: 100%;
+  height:100%;
+  clip-path: polygon(31% 1%, 69% 1%, 99% 31%, 99% 69%, 69% 99%, 31% 99%, 1% 69%, 1% 31%);
+  object-fit: cover;
+  overflow: hidden;
+  transition: transform 1s ease-out, width 0.5s, height 0.5s, left 1s, opacity 1s, z-index 1s;
+}
+
+.img-wrapper img {
+  position: absolute;
+  width: 100%;
+  height:100%;
+  object-fit: contain;
+  transition: transform 0.5s, opacity 0.5s, filter 0.5s;
+  mix-blend-mode: normal;
+
+}
+
+
+#carousel div.prev {
+  z-index: 5;
+  left: 28%;
+  width: 280px;
+  height: 280px;
+  transform: translateY(0%) translateX(-50%);
+}
+
+#carousel div.prev .img-wrap {
+  width: 280px;
+  height: 280px;
+  overflow: hidden;
+  clip-path: polygon(31% 1%, 69% 1%, 99% 31%, 99% 69%, 69% 99%, 31% 99%, 1% 69%, 1% 31%);
+}
+#carousel div.prev img {
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+#carousel div.prev :hover  img {
+  filter: brightness(70%);
+  transform: scale(1.2);
+}
+
+#carousel div.prev :hover .img-text  {
+  opacity: 1;
+
+}
+
+
+#carousel div.prevLeftSecond {
+  z-index: 2;
+  left: 40%;
+  width: 230px;
+  height: 230px;
+  transform: translateY(5%) translateX(-65%);
+  /* opacity: 0.7; */
+  filter: brightness(60%);
+}
+
+#carousel div.prevLeftSecond .img-wrap {
+  width: 230px;
+  height: 230px;
+}
+
+
+
+#carousel div.selected {
+  z-index: 10;
+  left: 50%;
+  transform: translateY(0%) translateX(-50%);
+}
+
+#carousel div.selected  :hover .img-text {
+  opacity: 1;
+
+}
+
+#carousel div.selected img {
+  transition: transform 0.5s ease, filter 0.5s ease;
+
+}
+
+#carousel div.selected:hover img {
+
+  filter: brightness(70%);
+  transform: scale(1.2);
+}
+
+
+#carousel div.next {
+  z-index: 5;
+  left: 72%;
+  width: 280px;
+  height: 280px;
+  transform: translateY(0%) translateX(-50%);
+}
+
+#carousel div.next .img-wrap {
+  width: 280px;
+  height: 280px;
+}
+
+#carousel div.next img {
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+#carousel div.next :hover  img {
+  filter: brightness(70%);
+  transform: scale(1.2);
+}
+
+
+#carousel div.next  :hover .img-text {
+  opacity: 1;
+
+}
+
+#carousel div.nextRightSecond {
+  z-index: 2;
+  left: 60%;
+  width: 230px;
+  height: 230px;
+  transform: translateY(5%) translateX(-35%);
+  /* opacity: 0.7; */
+  filter: brightness(60%);
+}
+
+#carousel div.nextRightSecond .img-wrap {
+  width: 230px;
+  height: 230px;
+}
+
+.buttons {
+  position: absolute;
+  top: 500px;
+  left: 50%;
+  transform: translateX(-50%);
+
+
+
+}
+
+.buttons .icon-btn {
+  background: none;
+  border: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.buttons .icon-btn .icon-img {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  margin: 0 25px;
+  padding: 10px 20px;
+  transition: filter 0.3s ease;
+}
+
+.buttons .icon-btn:hover .icon-img {
+
+  filter: invert(42%) saturate(1352%) hue-rotate(140deg) brightness(120%)
+        contrast(119%);
+}
+.buttons .icon-btn:active .icon-img {
+  transform: translateY(2px);
+  filter:  hue-rotate(150deg) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+}
+
+
