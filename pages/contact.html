@@ -190,28 +190,10 @@
     <link rel="stylesheet" href="/css/theme-fuxi-red-black.css">
     <style>
         .btn-primary {
-            transition: all 0.2s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px -6px rgba(230, 61, 61, 0.45);
         }
         .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
         }
         .contact-card {
-            transition: all 0.3s ease;
-        }
-        .contact-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--color-border-hover);
-            box-shadow: 0 10px 25px -5px rgba(230, 61, 61, 0.22);
         }
         .form-input {
             background-color: var(--color-card-bg);
@@ -750,29 +732,6 @@
                 mobileMenu.classList.toggle('hidden');
             });
         }
-
-        // scroll animation using intersection observer (pure vanilla)
-        const animatedElements = document.querySelectorAll('.animate-on-scroll');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-        animatedElements.forEach(el => observer.observe(el));
-
-        // manually trigger visible for any element already in view (just in case)
-        document.addEventListener('DOMContentLoaded', () => {
-            animatedElements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if(rect.top < window.innerHeight - 100) {
-                    el.classList.add('visible');
-                    observer.unobserve(el);
-                }
-            });
-        });
 
         // Contact map: mainland CN → AMap JS API 2.0 (Loader); else → Google embed iframe
         (function initContactMapByRegion() {
